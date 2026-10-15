@@ -1,0 +1,14 @@
+/* Pindah Batang (angka 7-segmen) */
+.stk svg{display:block;width:min(100%,400px);margin:0 auto;touch-action:manipulation}
+.stk polygon{cursor:pointer;stroke:none}
+.stk .l,.stk .f{fill:var(--sk,#FF7AB6)}
+.stk .l{transition:fill .15s}
+.stk .f{pointer-events:none}
+.stk .e{fill:color-mix(in srgb,var(--ink) 13%,var(--bg));opacity:1}
+.stk .o{fill:color-mix(in srgb,var(--ink) 26%,var(--bg))}
+.stk .h{animation:bl .5s 4}
+@keyframes bl{50%{fill:var(--y);opacity:1}}
+.stk.ok .l,.stk.ok .f{fill:#6FC48F}
+.stk.bad .l,.stk.bad .f{fill:#E57A7A}
+.stk .x{fill:#000;fill-opacity:.13;pointer-events:none}
+.sw{display:flex;gap:10px;align-items:center}.sw button{width:28px;height:28px;border-radius:50%;border:3px solid var(--ln)}.sw .on{box-shadow:0 0 0 3px var(--bg),0 0 0 6px var(--ink)}

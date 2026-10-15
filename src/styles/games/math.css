@@ -1,0 +1,11 @@
+/* Game hitungan (Hitung Cepat, Benar/Salah, Operator, Ketik Jawaban, Bandingkan, Tabel Kali) */
+#ma,#mp{touch-action:none} /* tidak ada zoom/gulir yang membatalkan ketukan cepat */
+.tm{height:16px;border:3px solid var(--ln);background:var(--card);margin-bottom:14px}.tm i{display:block;height:100%;background:var(--k);width:100%}
+.box{display:grid;place-items:center;min-height:130px;padding:14px;margin-bottom:16px;background:var(--y);color:#000;border:3px solid var(--ln);border-radius:14px;box-shadow:6px 6px 0 var(--ln);font-size:clamp(1.8rem,9vw,2.6rem);font-weight:700;text-align:center;white-space:pre-wrap}
+.box.ok{background:var(--g);animation:pop .25s}.box.bad{background:var(--r);animation:shk .3s}
+@keyframes pop{50%{transform:scale(1.04)}}@keyframes shk{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.ans{display:grid;grid-template-columns:1fr 1fr;gap:14px}.ans.t3{grid-template-columns:repeat(3,1fr)}
+.ans .b:nth-child(2){background:var(--g)}.ans .b:nth-child(3){background:var(--o)}.ans .b:nth-child(4){background:var(--v)}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.pad .b{padding:12px 0;background:var(--card);color:var(--ink)}
+.pad.sp{grid-template-columns:repeat(5,1fr);margin-top:16px}
+.disp{height:48px;text-align:center;font-size:2rem;font-weight:700;border-bottom:4px solid var(--ink);width:60%;margin:0 auto 14px}

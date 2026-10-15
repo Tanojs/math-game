@@ -1,0 +1,10 @@
+/* Game 24 */
+.g24{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:6px 0 14px}
+.cd24{padding:22px 6px;font-size:clamp(2rem,10vw,2.8rem);font-weight:700;text-align:center;color:#000;background:var(--y);border:3px solid var(--ln);border-radius:14px;box-shadow:5px 5px 0 var(--ln)}
+.cd24:nth-child(2){background:var(--c)}.cd24:nth-child(3){background:var(--g)}.cd24:nth-child(4){background:var(--k)}
+.cd24.sel{outline:4px solid var(--ink);outline-offset:3px}
+.cd24.gone{visibility:hidden}
+.cd24.bad{animation:shk .3s}
+.ops{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.ops button{padding:12px 0;font-size:1.7rem;font-weight:700;background:var(--card);color:var(--ink);border:3px solid var(--ln);border-radius:12px;box-shadow:3px 3px 0 var(--ln)}
+.ops .on{background:var(--v);color:#000}

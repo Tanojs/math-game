@@ -1,0 +1,110 @@
+name: Android APK
+# HANYA manual (Actions -> Android APK -> Run workflow). Tidak ada pemicu otomatis: tidak ada rilis / penggantian
+# versi produksi yang terjadi sendiri. Hasilnya berupa file APK di bagian "Artifacts" pada halaman run.
+on:
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: "release = bertanda tangan tetap (butuh 3 secret keystore) | debug = hanya untuk coba-coba"
+        type: choice
+        options: [release, debug]
+        default: release
+
+permissions:
+  contents: read
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      BUILD_TYPE: ${{ inputs.build_type }}
+      KS_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      KS_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      VERSION_CODE_OFFSET: ${{ vars.VERSION_CODE_OFFSET || 0 }}
+    steps:
+      - name: Cek secret penandatanganan
+        if: inputs.build_type == 'release'
+        run: |
+          if [ -z "$KS_B64" ] || [ -z "$KS_PASS" ] || [ -z "$KS_ALIAS" ]; then
+            echo "::error::Secret ANDROID_KEYSTORE_BASE64 / ANDROID_KEYSTORE_PASSWORD / ANDROID_KEY_ALIAS belum diisi. Jalankan workflow 'Buat keystore' sekali, atau pilih build_type=debug."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Pasang dependensi
+        run: if [ -f package-lock.json ]; then npm ci; else npm install; fi
+
+      - name: Typecheck, tes, dan build web
+        run: |
+          npm run typecheck
+          npm test
+          npm run build
+
+      - name: Pastikan hasil build tidak memuat sumber internet
+        run: |
+          if grep -rIEn "(src|href)=[\"']https?://" dist/index.html; then echo "::error::index.html memuat sumber eksternal"; exit 1; fi
+          if grep -rIEn "url\(['\"]?https?://" dist --include=*.css; then echo "::error::CSS memuat url eksternal"; exit 1; fi
+
+      - name: Siapkan proyek Android (Capacitor)
+        run: |
+          if [ ! -d android ]; then npx cap add android; fi
+          npx cap sync android
+          cp -r resources/android/res/. android/app/src/main/res/
+          VN=$(node -p "require('./package.json').version")
+          VC=$((GITHUB_RUN_NUMBER + VERSION_CODE_OFFSET))
+          F=android/app/build.gradle
+          sed -i -E "s/versionCode[ =]+[0-9]+/versionCode $VC/; s/versionName[ =]+\"[^\"]*\"/versionName \"$VN\"/" "$F"
+          grep -q "versionCode $VC" "$F" && grep -q "versionName \"$VN\"" "$F" || { echo "::error::Gagal mengatur versi di $F"; exit 1; }
+          echo "VN=$VN" >> "$GITHUB_ENV"
+          echo "VC=$VC" >> "$GITHUB_ENV"
+
+      - name: Build APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          if [ "$BUILD_TYPE" = "release" ]; then ./gradlew --no-daemon assembleRelease; else ./gradlew --no-daemon assembleDebug; fi
+
+      - name: Tanda tangani (release) / salin (debug)
+        run: |
+          mkdir -p out
+          if [ "$BUILD_TYPE" = "release" ]; then
+            IN=$(ls android/app/build/outputs/apk/release/*.apk | head -1)
+            echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+            BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+            "$BT/zipalign" -p -f 4 "$IN" "$RUNNER_TEMP/aligned.apk"
+            "$BT/apksigner" sign --ks "$RUNNER_TEMP/release.jks" --ks-pass env:KS_PASS --key-pass env:KS_PASS \
+              --ks-key-alias "$KS_ALIAS" --out "out/Math-Games-$VN-$VC.apk" "$RUNNER_TEMP/aligned.apk"
+            "$BT/apksigner" verify --print-certs "out/Math-Games-$VN-$VC.apk" | tee out/cert.txt
+            rm -f "$RUNNER_TEMP/release.jks"
+          else
+            cp android/app/build/outputs/apk/debug/app-debug.apk "out/Math-Games-$VN-$VC-debug.apk"
+          fi
+
+      - name: Ringkasan
+        run: |
+          {
+            echo "### APK siap diunduh"
+            echo "- Versi: \`$VN\` (versionCode \`$VC\`), tipe: \`$BUILD_TYPE\`"
+            echo "- SHA-256: \`$(sha256sum out/*.apk | cut -d' ' -f1)\`"
+            if [ "$BUILD_TYPE" = "release" ]; then
+              echo "- Sidik jari sertifikat (harus SAMA di setiap build agar bisa update): \`$(grep 'SHA-256 digest' out/cert.txt | head -1 | sed 's/.*: //')\`"
+            else
+              echo "- ⚠️ Build debug memakai kunci acak milik runner: tidak bisa menimpa/update APK dari build lain. Pakai release untuk APK sungguhan."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Math-Games-${{ env.VN }}-${{ env.VC }}-${{ inputs.build_type }}
+          path: out/*.apk
+          retention-days: 30

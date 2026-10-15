@@ -1,0 +1,4 @@
+/* Token warna & tema. Mode gelap: otomatis (Sistem) atau paksa lewat data-theme di <html>. */
+:root{--bg:#FFF6E0;--ink:#000;--ln:#000;--card:#fff;--bl:#2A5BD7;--y:#FFE14D;--k:#FF7AB6;--c:#5CE1E6;--g:#9BE564;--o:#FFA94D;--v:#B8A1FF;--r:#FF6B5E;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1B1D2A;--ink:#F4F1EA;--card:#2A2E40;--ln:#000;--bl:#8CB0FF}}
+:root[data-theme="dark"]{--bg:#1B1D2A;--ink:#F4F1EA;--card:#2A2E40;--ln:#000;--bl:#8CB0FF}

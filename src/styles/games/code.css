@@ -1,0 +1,12 @@
+/* Tebak Kode */
+.cdh{display:flex;flex-direction:column;gap:8px;margin:6px 0 14px}
+.cdr{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.cdg{display:flex;gap:6px}
+.cdg i{display:grid;place-items:center;width:40px;height:40px;font-style:normal;font-size:1.3rem;font-weight:700;background:var(--card);color:var(--ink);border:3px solid var(--ln);border-radius:9px}
+.cdg i.f{background:var(--y);color:#000}
+.cdr.cur .cdg i{border-style:dashed}
+.cdf{display:flex;gap:6px}
+.fx,.fn{display:inline-grid;place-items:center;min-width:30px;height:30px;padding:0 6px;font-weight:700;border-radius:50%;border:3px solid var(--ln)}
+.fx{background:var(--g);color:#000}.fn{background:var(--card);color:var(--ink)}
+.msg .fx,.msg .fn{width:16px;min-width:16px;height:16px;padding:0;vertical-align:middle}
+.pad .b:disabled{opacity:.3;box-shadow:none}

@@ -1,0 +1,13 @@
+/* Menu utama (grid ikon) + gaya ikon Solid/Garis/Putih */
+#hg{display:grid;grid-template-columns:repeat(3,1fr);gap:18px 14px}
+.ic{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;aspect-ratio:1;padding:6px;background:var(--y);color:#000;border:3px solid var(--ln);border-radius:14px;box-shadow:5px 5px 0 var(--ln);font-size:.78rem;font-weight:700;line-height:1.1;text-align:center}
+.ic:nth-child(7n+2){background:var(--k)}.ic:nth-child(7n+3){background:var(--c)}.ic:nth-child(7n+4){background:var(--g)}.ic:nth-child(7n+5){background:var(--o)}.ic:nth-child(7n+6){background:var(--v)}.ic:nth-child(7n){background:var(--r)}
+.ic span{display:block;width:58%;aspect-ratio:1}.ic span>svg{width:100%;height:100%;display:block}
+.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.hd .ttl{margin-bottom:22px}
+.tq{flex:none;width:46px;height:46px;display:grid;place-items:center;background:var(--c);color:#000;border:3px solid var(--ln);border-radius:12px;box-shadow:3px 3px 0 var(--ln)}
+.tq:active{box-shadow:1px 1px 0 var(--ln);filter:brightness(.93)}
+#hg.is-line .ic span svg *{fill:none!important;stroke:#000;stroke-width:2.4px;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-linecap:round}
+#hg.is-line .ic span svg text{stroke-width:1.1px}
+#hg.is-white .ic span svg{color:#fff;filter:drop-shadow(1.7px 0 0 #000) drop-shadow(-1.7px 0 0 #000) drop-shadow(0 1.7px 0 #000) drop-shadow(0 -1.7px 0 #000)}
+#hg.is-white .ic span svg text{fill:#000}
+#hg.is-white .ic[data-k=sdk] span svg path,#hg.is-white .ic span svg [fill-opacity=".2"]{display:none}

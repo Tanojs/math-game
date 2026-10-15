@@ -1,0 +1,5 @@
+/* Sudoku */
+.sd{grid-template:repeat(9,minmax(0,1fr))/repeat(9,minmax(0,1fr));gap:1px;background:var(--ln);padding:3px;border-radius:6px}
+.sd>div{border:0;border-radius:0;font-size:6cqw;cursor:pointer}
+.sd .r3{border-bottom:3px solid var(--ln)}.sd .c3{border-right:3px solid var(--ln)}
+.sd .us{color:var(--bl)}.sd .hl{background:var(--c);color:#000}.sd .sel{background:var(--y);color:#000}.sd .er{color:var(--r)}

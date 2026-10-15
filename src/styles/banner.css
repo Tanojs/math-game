@@ -1,0 +1,30 @@
+/* Spanduk hasil + animasi gerak bersama */
+.sq,.rv{position:relative}.sq.g4>button{will-change:transform}
+.sq>.bn,.rv>.bn,.cbd>.bn,.rsb>.bn{position:absolute;inset:0;z-index:20;display:grid;place-items:center;border:0;border-radius:0;background:rgba(0,0,0,.28);overflow:hidden;cursor:pointer;animation:bnbg .25s ease-out}
+.bn b{position:relative;z-index:1;max-width:88%;padding:.5em .9em;text-align:center;font-size:clamp(1.3rem,8cqw,2.4rem);line-height:1.15;color:#000;border:4px solid var(--ln);box-shadow:6px 6px 0 var(--ln);transform:rotate(-3deg);animation:bnpop .55s cubic-bezier(.2,1.6,.4,1) both}
+.bn.win b{background:var(--y)}.bn.lose b{background:var(--r)}.bn.draw b{background:var(--c)}
+.bn.still,.bn.still b{animation:none}
+.bn.fade{pointer-events:none;background:none;animation:bnfade 3.2s ease-out forwards}
+.bn i{position:absolute;left:50%;top:50%;width:10px;height:14px;background:var(--c);border:2px solid #000;opacity:0;animation:bnconf 1.2s ease-out forwards}
+@keyframes bnpop{0%{transform:scale(.2) rotate(-12deg);opacity:0}100%{transform:scale(1) rotate(-3deg);opacity:1}}
+@keyframes bnbg{from{background:rgba(0,0,0,0)}}
+@keyframes bnconf{0%{opacity:1;transform:translate(0,0) rotate(0)}100%{opacity:0;transform:translate(var(--dx),calc(var(--dy) + 120px)) rotate(var(--rot))}}
+@keyframes bnfade{0%,75%{opacity:1}100%{opacity:0}}
+@keyframes mkpop{0%{transform:scale(.2)}70%{transform:scale(1.25)}100%{transform:scale(1)}}
+@keyframes wnpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@keyframes chkpulse{0%,100%{filter:none}50%{filter:brightness(1.25) saturate(1.4)}}
+@keyframes cubehop{0%,100%{transform:translateY(0)}30%{transform:translateY(-18px) scale(1.04)}60%{transform:translateY(0)}80%{transform:translateY(-7px)}}
+.t3x3 .nw{animation:mkpop .28s ease-out}
+.t3x3 .win{animation:wnpulse .7s ease-in-out 3}
+.ch .chk{animation:chkpulse .9s ease-in-out infinite}
+.rv.cel{animation:cubehop .9s ease-out}
+@media (prefers-reduced-motion:reduce){.bn i{display:none}.bn,.bn b,.t3x3 .nw,.t3x3 .win,.ch .chk,.rv.cel{animation:none!important}}
+.bn b{white-space:pre-line}
+/* 2048: ubin dengan identitas tetap, bergeser lewat transisi CSS (GPU, mulus) */
+.sq>.tls{position:absolute;inset:0;display:block;background:none;border:0;border-radius:0;overflow:visible;pointer-events:none}
+.tl{position:absolute;left:0;top:0;width:calc((100% - 18px)/4);height:calc((100% - 18px)/4);transform:translate(calc(var(--c)*(100% + 6px)),calc(var(--r)*(100% + 6px)));transition:transform 130ms cubic-bezier(.25,.8,.35,1);will-change:transform}
+.ti{display:grid;place-items:center;width:100%;height:100%;border:3px solid var(--ln);border-radius:10px;font-weight:700;line-height:1}
+.ti.pop{animation:tlpop .2s ease-out .1s backwards}.ti.mg{animation:tlmg .2s ease-out}
+@keyframes tlpop{from{transform:scale(.2);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes tlmg{0%{transform:scale(1)}50%{transform:scale(1.18)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.tl{transition:none}.ti.pop,.ti.mg{animation:none}}

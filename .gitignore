@@ -1,0 +1,17 @@
+node_modules
+dist
+.vercel
+*.log
+.DS_Store
+.env*
+
+# Proyek native dibuat ulang otomatis oleh workflow (npx cap add android)
+/android
+/ios
+dist-single
+
+# JANGAN PERNAH di-commit: kunci penandatangan APK
+*.jks
+*.keystore
+keystore.b64
+secrets.txt

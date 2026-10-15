@@ -1,0 +1,4 @@
+/* Ketuk Berurutan */
+.tpg>button{background:var(--c);color:#000;font-size:calc(42cqw/var(--n,3));box-shadow:3px 3px 0 var(--ln)}
+.tpg>button.done{opacity:.22;box-shadow:none}
+.tpg>button.bad{background:#E57A7A}

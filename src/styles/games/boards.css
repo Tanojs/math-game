@@ -1,0 +1,7 @@
+/* Papan kotak: XOX, 15 Puzzle, 2048 (ukuran kotak dikunci agar tidak berubah) */
+.sq{display:grid;gap:6px;width:min(100%,460px);aspect-ratio:1;margin:0 auto;touch-action:none;user-select:none;container-type:inline-size}
+.sq>div,.sq>button{display:grid;place-items:center;background:var(--card);color:var(--ink);border:3px solid var(--ln);border-radius:10px;font-weight:700;min-width:0;min-height:0;overflow:hidden;line-height:1}
+.t3x3{grid-template:repeat(3,minmax(0,1fr))/repeat(3,minmax(0,1fr))}.t3x3>button{font-size:calc(72cqw/var(--n,3));box-shadow:4px 4px 0 var(--ln)}.t3x3 .X{color:var(--bl)}.t3x3 .O{color:var(--r)}
+.g4{grid-template:repeat(4,minmax(0,1fr))/repeat(4,minmax(0,1fr))}.g4>button{background:var(--c);color:#000;font-size:calc(40cqw/var(--n,4));box-shadow:4px 4px 0 var(--ln)}.g4>button:active{box-shadow:1px 1px 0 var(--ln);filter:brightness(.93)}
+.g4>.em{background:none;border-style:dashed}
+.t3x3 .win{background:var(--g);color:#000}
