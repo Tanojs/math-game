@@ -2,6 +2,15 @@ import { $, $$ } from '../core/dom.js';
 import type { Cleanup } from '../core/types.js';
 import { GAMES } from '../games/registry.js';
 import { renderScores } from './scores.js';
+import { sfx } from '../core/sfx.js';
+
+/** Putar ulang animasi masuk pada sebuah layar. */
+const enter = (id: string): void => {
+  const el = $(id);
+  el.classList.remove('enter');
+  void el.offsetWidth; // paksa reflow agar animasi mulai dari awal
+  el.classList.add('enter');
+};
 
 export type Tab = 'home' | 'gm' | 'scr' | 'set';
 const TABS: Tab[] = ['home', 'gm', 'scr', 'set'];
@@ -24,6 +33,8 @@ export function play(id: string): void {
   try { location.hash = id; } catch { /* diabaikan */ }
   $('#home').classList.add('hide');
   $('#gm').classList.remove('hide');
+  enter('#gm');
+  sfx('open');
   $('#gt').textContent = game.name;
   $('#inf').textContent = '';
   const stage = $('#st');
@@ -41,6 +52,8 @@ export function goHome(): void {
   stopCurrent();
   $('#inf').textContent = '';
   showTab('home');
+  enter('#home');
+  sfx('back');
 }
 
 /** Pindah tab dari navigasi bawah (menghentikan game yang sedang berjalan). */

@@ -1,0 +1,8 @@
+/* Animasi buka/tutup game */
+@keyframes gmIn{from{opacity:0;transform:translateY(26px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes hmIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
+#gm.enter{animation:gmIn .32s cubic-bezier(.2,.8,.2,1)}
+#home.enter{animation:hmIn .24s ease-out}
+#hg .ic{transition:transform .12s}
+#hg .ic:active{transform:scale(.93)}
+@media (prefers-reduced-motion:reduce){#gm.enter,#home.enter{animation:none}#hg .ic{transition:none}}

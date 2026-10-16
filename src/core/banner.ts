@@ -1,4 +1,6 @@
 /** Spanduk hasil permainan yang tampil DI ATAS papan (menang / kalah / seri), dengan confetti saat menang. */
+import { sfx } from './sfx.js';
+
 export type BannerKind = 'win' | 'lose' | 'draw';
 
 const CONFETTI = ['#FFE14D', '#FF6B5E', '#9BE564', '#5CE1E6', '#B8A1FF', '#FFA94D'];
@@ -12,6 +14,7 @@ export interface BannerOpts {
 
 export function celebrate(host: HTMLElement, text: string, kind: BannerKind, opts: BannerOpts = {}): void {
   host.querySelector(':scope > .bn')?.remove();
+  if (!opts.still) sfx(kind);
   const bn = document.createElement('div');
   bn.className = `bn ${kind}${opts.still ? ' still' : ''}${opts.fade ? ' fade' : ''}`;
   const label = document.createElement('b');

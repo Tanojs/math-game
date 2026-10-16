@@ -3,6 +3,7 @@ import { segment, LEVELS } from '../../core/html.js';
 import { celebrate, clearBanner, type BannerKind } from '../../core/banner.js';
 import type { Mount } from '../../core/types.js';
 import { chooseBotMove, count, flipsFor, initialBoard, isOver, legalMoves, hasMoves, opp, playMove, type Board, type Side } from './engine.js';
+import { sfx } from '../../core/sfx.js';
 
 const BOT_DELAY = 650;
 const FLIP_STEP = 70;
@@ -103,6 +104,8 @@ export const mountReversi: Mount = (_id, el, info) => {
     hist.push({ board, turn, last, msg });
     const side = turn, r = playMove(board, i, side);
     animate(i, r.flipped);
+    sfx('pop');
+    r.flipped.forEach((_, k) => sfx('flip', 140 + k * FLIP_STEP));
     if (navigator.vibrate) navigator.vibrate(10);
     board = r.board; last = i; msg = '';
     const next = opp(side);

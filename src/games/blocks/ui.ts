@@ -3,6 +3,7 @@ import { segment, type Level } from '../../core/html.js';
 import type { Mount } from '../../core/types.js';
 import { best } from '../../app/records.js';
 import { isSolved, N, pickPuzzle, slideRange, type BlocksPuzzle, type Pos } from './logic.js';
+import { sfx } from '../../core/sfx.js';
 
 let level: Level = 0;
 const COLORS = ['--c', '--g', '--o', '--v', '--k', '--y'];
@@ -48,6 +49,7 @@ export const mountBlocks: Mount = (id, el, info) => {
   };
 
   const finish = (): void => {
+    sfx('win');
     done = true;
     solved++;
     best(id + level, solved);
@@ -90,6 +92,7 @@ export const mountBlocks: Mount = (id, el, info) => {
     drag = null;
     const snap = Math.round(Math.min(d.now, d.real));
     place(d.i, snap, true);
+    if (snap !== d.start) sfx('pop');
     if (snap !== d.start) {
       pos[d.i] = snap;
       moves++;

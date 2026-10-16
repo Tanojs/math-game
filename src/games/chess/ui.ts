@@ -7,6 +7,7 @@ import {
   type Move, type Position,
 } from './engine.js';
 import { pieceHtml, pieceSvg } from './pieces.js';
+import { sfx } from '../../core/sfx.js';
 
 const START: Record<string, number> = { p: 8, n: 2, b: 2, r: 2, q: 1 };
 const VAL: Record<string, number> = { p: 1, n: 3, b: 3, r: 5, q: 9 };
@@ -200,6 +201,7 @@ export const mountChess: Mount = (_id, el, info) => {
   const play = (m: Move): void => {
     hist.push({ pos, white, last, end, check });
     animateMove(m);
+    sfx(pos.sq[m[1]] ? 'capture' : 'move');
     if (navigator.vibrate && (pos.sq[m[1]] || false)) navigator.vibrate(12);
     pos = apply(pos, m);
     white = !white;

@@ -6,11 +6,14 @@ import { clearRecords } from './records.js';
 import { applyIconStyle, setIconStyle, type IconStyle } from './iconStyle.js';
 import { applyTheme, cycleTheme, setTheme, type Theme } from './theme.js';
 import { gotoTab, initRouter, play, showTab, type Tab } from './router.js';
+import { initSound } from './sound.js';
 
 const SETTINGS_HTML = `<div id="scr" class="hide"></div>
 <div id="set" class="hide"><h1 class="ttl">Pengaturan</h1>
 <div class="card"><h3>Tema</h3><div class="seg" id="thm"><button data-th="system">Sistem</button><button data-th="light">Terang</button><button data-th="dark">Gelap</button></div></div>
 <div class="card"><h3>Ikon</h3><div class="seg" id="ics"><button data-is="solid">Solid</button><button data-is="line">Garis</button><button data-is="white">Putih</button></div></div>
+<div class="card"><h3>Efek suara</h3><div class="seg" id="snd-fx"><button data-v="1">Nyala</button><button data-v="0">Mati</button></div></div>
+<div class="card"><h3>Musik</h3><div class="seg" id="snd-mu"><button data-v="1">Nyala</button><button data-v="0">Mati</button></div></div>
 <div class="card"><h3>Rekor</h3><button class="cta alt" id="rs">Hapus semua rekor</button></div>
 <div class="card"><h3>Tentang</h3><p>Ikon: Phosphor (MIT), Font Awesome Free (CC BY 4.0)</p></div></div>`;
 
@@ -72,6 +75,7 @@ export function initApp(): void {
   buildHome();
   buildNav();
   wireSettings();
+  initSound();
   applyTheme();
   applyIconStyle();
   showTab('home');

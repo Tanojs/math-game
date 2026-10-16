@@ -63,6 +63,14 @@ Buka file APK → izinkan **Install aplikasi tidak dikenal** untuk browser/file 
 - **Publik:** menit Actions standar gratis tanpa batas, tapi kode terlihat semua orang, dan APK di Artifacts bisa diunduh siapa pun yang login GitHub. Secret tetap tersembunyi.
 - **Privat:** gratis 2.000 menit/bulan + 500 MB (cukup untuk ±130 build/bulan).
 
+## Memperbarui APK (setelah ada perubahan kode)
+1. Salin berkas baru ke folder repo di Termux (jangan hapus folder `.git`), lalu `git add -A && git commit -m "..." && git push`.
+2. Naikkan `"version"` di `package.json` (mis. `1.1.0`); `versionCode` naik otomatis.
+3. Actions → **Android APK** → Run workflow → `release` → unduh → pasang **di atas** aplikasi lama (rekor tetap).
+
+## Suara
+Semua suara dibuat langsung oleh kode (Web Audio): efek ketukan, benar/salah, menang/kalah, langkah catur/Reversi, dan musik latar 8 birama — **tanpa file audio**, jadi tetap kecil dan offline. Pengaturan Efek suara & Musik ada di tab **Atur** (bawaan: nyala). Musik otomatis berhenti saat aplikasi di latar belakang.
+
 ## Alur cabang & rilis
 - `development` = pengembangan; `main` = stabil. Kerjakan di `development` → buka Pull Request ke `main` → CI harus hijau → gabung.
 - Saran: GitHub → Settings → Branches → aktifkan *branch protection* di `main` (wajib CI lulus).
@@ -77,6 +85,8 @@ Rekor/pengaturan tetap ada setelah aplikasi ditutup, HP direstart, dan update no
 - [ ] Selesaikan 1 game → cek tab **Rekor** → tutup paksa aplikasi → buka lagi → rekor masih ada.
 - [ ] Ganti tema (gelap) → restart HP → tema tetap.
 - [ ] Tombol **Back** HP: di dalam game → kembali ke menu; di menu → keluar aplikasi.
+- [ ] **Suara:** ketuk tombol/papan → ada bunyi "tik"; musik latar mengalun setelah sentuhan pertama; ke layar utama HP / buka aplikasi lain → **musik berhenti**, kembali → lanjut; Atur → matikan Efek/Musik → benar-benar diam (pilihan tersimpan setelah restart).
+- [ ] Animasi masuk saat membuka game terlihat mulus (tidak patah).
 - [ ] Putar layar / layar kecil: tampilan tidak terpotong, tombol navigasi bawah tidak tertutup gesture bar.
 - [ ] Pasang APK versi baru di atas yang lama → rekor tetap.
 

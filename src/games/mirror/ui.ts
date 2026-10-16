@@ -3,6 +3,7 @@ import { segment, type Level } from '../../core/html.js';
 import type { Mount } from '../../core/types.js';
 import { best } from '../../app/records.js';
 import { check, makePuzzle, type MirrorPuzzle } from './logic.js';
+import { sfx } from '../../core/sfx.js';
 
 let level: Level = 0, pick = 0; // bertahan selama sesi
 /** Warna blok yang bisa dipilih (hijau dicadangkan untuk "semua benar", merah untuk "salah"). */
@@ -36,6 +37,7 @@ export const mountMirror: Mount = (id, el, info) => {
     });
     if (res.solved && !done) {
       done = true;
+      sfx('win');
       solved++;
       best(id + level, solved);
       const rr = el.querySelector('.rr');

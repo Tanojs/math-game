@@ -1,0 +1,191 @@
+/**
+ * Suara sintetis (Web Audio) — TANPA file audio, jadi tetap ringan & offline.
+ * Data suara (Voice) dipisah dari pemutarnya supaya mudah dites dan bisa dirender offline.
+ */
+export type SfxKind = 'tap' | 'pop' | 'good' | 'bad' | 'win' | 'lose' | 'draw' | 'flip' | 'move' | 'capture' | 'open' | 'back';
+
+export interface Voice {
+  type: OscillatorType;
+  /** Frekuensi awal (Hz) dan opsional frekuensi akhir (meluncur). */
+  f0: number;
+  f1?: number;
+  /** Waktu mulai (detik, relatif), durasi, dan puncak volume. */
+  t: number;
+  dur: number;
+  gain: number;
+  attack?: number;
+  /** Low-pass (Hz) agar nada lebih lembut. */
+  lp?: number;
+}
+
+export const noteFreq = (midi: number): number => 440 * 2 ** ((midi - 69) / 12);
+
+const v = (type: OscillatorType, f0: number, t: number, dur: number, gain: number, extra: Partial<Voice> = {}): Voice => ({ type, f0, t, dur, gain, ...extra });
+const n = noteFreq;
+
+export const SFX: Record<SfxKind, Voice[]> = {
+  tap: [v('sine', 900, 0, 0.05, 0.2, { f1: 620 })],
+  pop: [v('triangle', 540, 0, 0.09, 0.3, { f1: 300 })],
+  good: [v('sine', n(76), 0, 0.13, 0.28), v('sine', n(81), 0.09, 0.2, 0.28)],
+  bad: [v('sawtooth', 170, 0, 0.2, 0.2, { f1: 105, lp: 900 })],
+  win: [
+    v('triangle', n(72), 0, 0.16, 0.3), v('triangle', n(76), 0.1, 0.16, 0.3),
+    v('triangle', n(79), 0.2, 0.16, 0.3), v('triangle', n(84), 0.3, 0.5, 0.32),
+  ],
+  lose: [
+    v('triangle', n(67), 0, 0.2, 0.28, { lp: 1800 }), v('triangle', n(64), 0.16, 0.2, 0.28, { lp: 1800 }),
+    v('triangle', n(60), 0.32, 0.45, 0.28, { lp: 1800 }),
+  ],
+  draw: [v('triangle', n(72), 0, 0.18, 0.26), v('triangle', n(72), 0.2, 0.3, 0.26)],
+  flip: [v('square', 1100, 0, 0.035, 0.07, { f1: 700, lp: 3200 })],
+  move: [v('triangle', 320, 0, 0.07, 0.3, { f1: 180 }), v('sine', 120, 0, 0.06, 0.22)],
+  capture: [v('triangle', 260, 0, 0.1, 0.34, { f1: 110 }), v('sawtooth', 200, 0, 0.06, 0.1, { lp: 700 })],
+  open: [v('sine', 330, 0, 0.2, 0.15, { f1: 760, attack: 0.04 })],
+  back: [v('sine', 700, 0, 0.15, 0.14, { f1: 360 })],
+};
+
+// ---------- musik latar (loop 8 birama, ±20 detik) ----------
+export const BPM = 96;
+export const BEAT = 60 / BPM;
+export const BAR = BEAT * 4;
+
+interface Chord { root: number; tones: readonly number[] }
+export const PROGRESSION: readonly Chord[] = [
+  { root: 48, tones: [60, 64, 67] }, // C
+  { root: 45, tones: [57, 60, 64] }, // Am
+  { root: 41, tones: [57, 60, 65] }, // F
+  { root: 43, tones: [59, 62, 67] }, // G
+  { root: 48, tones: [60, 64, 67] }, // C
+  { root: 40, tones: [59, 64, 67] }, // Em
+  { root: 41, tones: [57, 60, 65] }, // F
+  { root: 43, tones: [59, 62, 67] }, // G
+];
+
+/** Melodi per birama: [ketuk ke-, nada MIDI, panjang (ketuk)]. */
+export const MELODY: ReadonlyArray<ReadonlyArray<readonly [number, number, number]>> = [
+  [[0, 76, 1], [1, 79, 1], [2, 81, 1], [3, 79, 1]],
+  [[0, 76, 1.5], [2, 72, 1], [3, 76, 1]],
+  [[0, 77, 1], [1, 81, 1], [2, 79, 1], [3, 77, 1]],
+  [[0, 74, 1.5], [2, 79, 1], [3, 74, 1]],
+  [[0, 76, 1], [1, 79, 1], [2, 84, 1.5]],
+  [[0, 83, 1], [1, 79, 1], [2, 76, 1], [3, 79, 1]],
+  [[0, 81, 1], [1, 77, 1], [2, 72, 1], [3, 77, 1]],
+  [[0, 79, 1], [1, 74, 1], [2, 71, 2]],
+];
+
+const ARP = [0, 1, 2, 1, 0, 1, 2, 1] as const;
+
+/** Semua suara satu birama musik (waktu relatif terhadap awal birama). */
+export function musicBar(i: number): Voice[] {
+  const k = ((i % PROGRESSION.length) + PROGRESSION.length) % PROGRESSION.length;
+  const ch = PROGRESSION[k] as Chord;
+  const out: Voice[] = [];
+  out.push(v('triangle', n(ch.root), 0, BEAT * 1.8, 0.16, { attack: 0.01 }));
+  out.push(v('triangle', n(ch.root), BEAT * 2, BEAT * 1.8, 0.14, { attack: 0.01 }));
+  for (const tone of ch.tones) out.push(v('sine', n(tone), 0, BAR * 0.98, 0.03, { attack: 0.3 })); // pad lembut
+  ARP.forEach((idx, s) => out.push(v('triangle', n((ch.tones[idx] as number) + 12), s * BEAT * 0.5, BEAT * 0.45, 0.045, { attack: 0.01 })));
+  for (const [b, midi, len] of MELODY[k] as ReadonlyArray<readonly [number, number, number]>) {
+    out.push(v('sine', n(midi), b * BEAT, len * BEAT * 0.95, 0.085, { attack: 0.03 }));
+  }
+  return out;
+}
+
+/** Memainkan sekumpulan suara pada `dest`, mulai di waktu konteks `when`. */
+export function playVoices(ctx: BaseAudioContext, dest: AudioNode, voices: readonly Voice[], when: number): void {
+  for (const x of voices) {
+    const t0 = when + x.t, a = x.attack ?? 0.005;
+    const o = ctx.createOscillator();
+    o.type = x.type;
+    o.frequency.setValueAtTime(x.f0, t0);
+    if (x.f1) o.frequency.exponentialRampToValueAtTime(x.f1, t0 + x.dur);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(Math.max(x.gain, 0.0002), t0 + a);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + x.dur);
+    if (x.lp) {
+      const f = ctx.createBiquadFilter();
+      f.type = 'lowpass';
+      f.frequency.value = x.lp;
+      o.connect(f);
+      f.connect(g);
+    } else o.connect(g);
+    g.connect(dest);
+    o.start(t0);
+    o.stop(t0 + x.dur + 0.03);
+  }
+}
+
+const MUSIC_LEVEL = 0.7;
+
+/** Pengelola suara: konteks audio dibuat saat ada sentuhan pertama (aturan autoplay browser/WebView). */
+export class SoundEngine {
+  sfxOn = true;
+  musicOn = true;
+  private ctx: AudioContext | null = null;
+  private sfxBus: GainNode | null = null;
+  private musBus: GainNode | null = null;
+  private active = true;
+  private timer = 0;
+  private nextBar = 0;
+  private bar = 0;
+
+  /** Panggil dari dalam event sentuhan/klik. Aman dipanggil berulang kali. */
+  unlock(): void {
+    if (!this.ctx) {
+      const w = window as unknown as { AudioContext?: typeof AudioContext; webkitAudioContext?: typeof AudioContext };
+      const C = w.AudioContext ?? w.webkitAudioContext;
+      if (!C) return;
+      try { this.ctx = new C(); } catch { return; }
+      const comp = this.ctx.createDynamicsCompressor();
+      comp.connect(this.ctx.destination);
+      this.sfxBus = this.ctx.createGain();
+      this.sfxBus.gain.value = 0.9;
+      this.sfxBus.connect(comp);
+      this.musBus = this.ctx.createGain();
+      this.musBus.gain.value = 0;
+      this.musBus.connect(comp);
+    }
+    if (this.active && this.ctx.state !== 'running') void this.ctx.resume().catch(() => undefined);
+    this.syncMusic();
+  }
+
+  play(kind: SfxKind, delayMs = 0): void {
+    if (!this.ctx || !this.sfxBus || !this.sfxOn || !this.active) return;
+    playVoices(this.ctx, this.sfxBus, SFX[kind], this.ctx.currentTime + 0.005 + delayMs / 1000);
+  }
+
+  setMusic(on: boolean): void { this.musicOn = on; this.syncMusic(); }
+
+  /** false saat aplikasi di latar belakang: hentikan semua suara. */
+  setActive(on: boolean): void {
+    this.active = on;
+    if (!this.ctx) return;
+    if (on) void this.ctx.resume().catch(() => undefined);
+    else void this.ctx.suspend().catch(() => undefined);
+    this.syncMusic();
+  }
+
+  private syncMusic(): void {
+    if (!this.ctx || !this.musBus) return;
+    const run = this.musicOn && this.active;
+    this.musBus.gain.setTargetAtTime(run ? MUSIC_LEVEL : 0, this.ctx.currentTime, 0.08);
+    if (run && !this.timer) {
+      this.nextBar = this.ctx.currentTime + 0.15;
+      this.timer = window.setInterval(() => this.tick(), 300);
+      this.tick();
+    } else if (!run && this.timer) {
+      clearInterval(this.timer);
+      this.timer = 0;
+    }
+  }
+
+  private tick(): void {
+    const c = this.ctx, bus = this.musBus;
+    if (!c || !bus) return;
+    while (this.nextBar < c.currentTime + 1.2) {
+      playVoices(c, bus, musicBar(this.bar), this.nextBar);
+      this.nextBar += BAR;
+      this.bar++;
+    }
+  }
+}

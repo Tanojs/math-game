@@ -116,3 +116,6 @@ Membuat ulang atau menambah soal: `npm run gen:blocks -- 300` (mencari selama 30
 
 ## APK Android (offline)
 Proyek ini siap dibungkus Capacitor menjadi APK yang memuat semua aset secara lokal (tanpa Vercel/internet). Panduan lengkap dari HP, kunci penandatangan, alur `main`/`development`, checklist uji, dan catatan AdMob: [`docs/ANDROID.md`](docs/ANDROID.md).
+
+## Suara & animasi
+Efek suara + musik latar disintesis lewat Web Audio (tanpa file audio, offline), bisa dimatikan di tab Atur. Membuka game memakai animasi masuk (hormati pengaturan *reduce motion*).
