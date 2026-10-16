@@ -9,6 +9,10 @@ on:
         type: choice
         options: [release, debug]
         default: release
+      with_ads:
+        description: "Sertakan iklan AdMob. Matikan jika build gagal karena plugin iklan (APK tetap jadi, tanpa iklan)."
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -44,6 +48,10 @@ jobs:
       - name: Pasang dependensi
         run: if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
+      - name: Lepas plugin AdMob (with_ads dimatikan)
+        if: inputs.with_ads == false
+        run: npm uninstall @capacitor-community/admob
+
       - name: Typecheck, tes, dan build web
         run: |
           npm run typecheck
@@ -67,6 +75,17 @@ jobs:
           grep -q "versionCode $VC" "$F" && grep -q "versionName \"$VN\"" "$F" || { echo "::error::Gagal mengatur versi di $F"; exit 1; }
           echo "VN=$VN" >> "$GITHUB_ENV"
           echo "VC=$VC" >> "$GITHUB_ENV"
+
+      - name: Pasang App ID AdMob di Android
+        if: inputs.with_ads
+        run: |
+          APP_ID=$(node -e "const m=require('fs').readFileSync('src/app/ads-config.ts','utf8').match(/ADMOB_APP_ID\s*=\s*'([^']+)'/); if(!m) process.exit(1); console.log(m[1])")
+          echo "AdMob App ID: $APP_ID"
+          R=android/app/src/main/res/values/strings.xml
+          M=android/app/src/main/AndroidManifest.xml
+          sed -i "s#</resources>#    <string name=\"admob_app_id\">$APP_ID</string>\n</resources>#" "$R"
+          sed -i "s#</application>#    <meta-data android:name=\"com.google.android.gms.ads.APPLICATION_ID\" android:value=\"@string/admob_app_id\" />\n    </application>#" "$M"
+          grep -q admob_app_id "$R" && grep -q "gms.ads.APPLICATION_ID" "$M" || { echo "::error::Gagal memasang AdMob App ID"; exit 1; }
 
       - name: Build APK
         working-directory: android

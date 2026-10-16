@@ -15,15 +15,6 @@ export const mountMirror: Mount = (id, el, info) => {
   let moves = 0, solved = 0, done = false, painting: boolean | null = null, lastKey = '';
   let cells: HTMLElement[] = [];
 
-  /** Isi tinggi layar: kontrol di atas, papan di tengah, tombol di bawah (tidak menumpuk di atas). */
-  const fit = (): void => {
-    const w = el.querySelector<HTMLElement>('.mrw');
-    if (!w) return;
-    const nav = document.querySelector('.nb')?.parentElement;
-    const top = w.getBoundingClientRect().top + window.scrollY;
-    w.style.minHeight = `${Math.max(0, window.innerHeight - top - (nav ? nav.getBoundingClientRect().height : 72) - 32)}px`;
-  };
-
   const buttons = (): string =>
     '<button class="cta alt" id=rs>Ulangi</button>' + (done ? '<button class=cta id=nx>Soal berikutnya</button>' : '<button class="cta alt" id=nw>Soal baru</button>');
 
@@ -56,7 +47,6 @@ export const mountMirror: Mount = (id, el, info) => {
       `<div class=mrm><div class=mrb id=mrb style="--n:${s}"><div class="mrh l">${left}</div><div class="mrh r">${rt}</div></div></div>` +
       `<div class=rr>${buttons()}</div></div>`;
     cells = [...el.querySelectorAll<HTMLElement>('.mrh.r .mrc')];
-    fit();
     sync();
   };
 
@@ -107,7 +97,6 @@ export const mountMirror: Mount = (id, el, info) => {
   el.onpointerup = stop;
   el.onpointercancel = stop;
 
-  window.addEventListener('resize', fit);
   load(true);
-  return () => { window.removeEventListener('resize', fit); el.onclick = el.onpointerdown = el.onpointermove = el.onpointerup = el.onpointercancel = null; };
+  return () => { el.onclick = el.onpointerdown = el.onpointermove = el.onpointerup = el.onpointercancel = null; };
 };

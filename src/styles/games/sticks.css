@@ -1,4 +1,4 @@
-/* Pindah Batang (angka 7-segmen) */
+/* Pindahkan Batang (angka 7-segmen) */
 .stk svg{display:block;width:min(100%,400px);margin:0 auto;touch-action:manipulation}
 .stk polygon{cursor:pointer;stroke:none}
 .stk .l,.stk .f{fill:var(--sk,#FF7AB6)}

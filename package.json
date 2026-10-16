@@ -1,6 +1,6 @@
 {
   "name": "math-games",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "type": "module",
   "description": "19+ game latihan otak (hitung, puzzle, catur, Reversi, Rubik) - Vite + TypeScript, bisa dibungkus jadi APK Android offline (Capacitor)",
@@ -19,8 +19,10 @@
     "android:add": "cap add android"
   },
   "dependencies": {
-    "@capacitor/core": "^8.0.0",
+    "@capacitor-community/admob": "^8.0.0",
     "@capacitor/android": "^8.0.0",
+    "@capacitor/core": "^8.0.0",
+    "@capacitor/share": "^8.0.0",
     "@fontsource/space-grotesk": "^5.2.0"
   },
   "devDependencies": {

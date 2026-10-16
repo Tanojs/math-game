@@ -1,4 +1,4 @@
-import { $, $$, hit } from '../core/dom.js';
+import { $ } from '../core/dom.js';
 import { SoundEngine, type SfxKind } from '../core/audio.js';
 import { getStr, setStr } from '../core/storage.js';
 
@@ -7,17 +7,20 @@ const engine = new SoundEngine();
 engine.sfxOn = getStr(K_SFX) !== '0'; // bawaan: nyala
 engine.musicOn = getStr(K_MUS) !== '0';
 
-const paint = (): void => {
-  $$('#snd-fx [data-v]').forEach((b) => b.classList.toggle('on', (b.dataset.v === '1') === engine.sfxOn));
-  $$('#snd-mu [data-v]').forEach((b) => b.classList.toggle('on', (b.dataset.v === '1') === engine.musicOn));
+const setSwitch = (sel: string, on: boolean): void => {
+  const b = $(sel);
+  b.classList.toggle('on', on);
+  b.setAttribute('aria-checked', String(on));
 };
+const paint = (): void => { setSwitch('#snd-fx', engine.sfxOn); setSwitch('#snd-mu', engine.musicOn); };
 
-/** Suara: efek ketukan, hasil game, dan musik latar. Semua opsional & bisa dimatikan di Pengaturan. */
+/** Suara: efek ketukan, hasil game, dan musik latar. Semua opsional & bisa dimatikan di Setting. */
 export function initSound(): void {
   let last = 0;
-  // Sentuhan pertama membuka konteks audio (syarat autoplay), sekaligus bunyi "tik" di tombol/papan game.
-  document.addEventListener('pointerdown', (e) => {
-    engine.unlock();
+  // Sentuhan pertama membuka konteks audio (syarat autoplay). Bunyi "tik" hanya pada KETUKAN (event click),
+  // bukan pada sentuhan awal, sehingga menggulir layar tidak berbunyi.
+  document.addEventListener('pointerdown', () => engine.unlock(), true);
+  document.addEventListener('click', (e) => {
     if (!engine.sfxOn) return;
     const t = e.target as Element | null;
     if (!t?.closest?.('button, #st, #hg')) return;
@@ -49,21 +52,18 @@ export function initSound(): void {
   addEventListener('pagehide', () => engine.setActive(false));
   addEventListener('pageshow', () => engine.setActive(!document.hidden));
 
-  $('#snd-fx').onclick = (e) => {
-    const b = hit(e, '[data-v]');
-    if (!b) return;
-    engine.sfxOn = b.dataset.v === '1';
+  $('#snd-fx').onclick = () => {
+    engine.sfxOn = !engine.sfxOn;
     setStr(K_SFX, engine.sfxOn ? '1' : '0');
     paint();
     engine.unlock();
-    engine.play('good');
+    if (engine.sfxOn) engine.play('good');
   };
-  $('#snd-mu').onclick = (e) => {
-    const b = hit(e, '[data-v]');
-    if (!b) return;
-    setStr(K_MUS, b.dataset.v === '1' ? '1' : '0');
+  $('#snd-mu').onclick = () => {
+    const on = !engine.musicOn;
+    setStr(K_MUS, on ? '1' : '0');
     engine.unlock();
-    engine.setMusic(b.dataset.v === '1');
+    engine.setMusic(on);
     paint();
   };
   paint();

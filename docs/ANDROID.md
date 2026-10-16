@@ -69,7 +69,7 @@ Buka file APK → izinkan **Install aplikasi tidak dikenal** untuk browser/file 
 3. Actions → **Android APK** → Run workflow → `release` → unduh → pasang **di atas** aplikasi lama (rekor tetap).
 
 ## Suara
-Semua suara dibuat langsung oleh kode (Web Audio): efek ketukan, benar/salah, menang/kalah, langkah catur/Reversi, dan musik latar 8 birama — **tanpa file audio**, jadi tetap kecil dan offline. Pengaturan Efek suara & Musik ada di tab **Atur** (bawaan: nyala). Musik otomatis berhenti saat aplikasi di latar belakang.
+Semua suara dibuat langsung oleh kode (Web Audio): efek ketukan, benar/salah, menang/kalah, langkah catur/Reversi, dan musik latar 8 birama — **tanpa file audio**, jadi tetap kecil dan offline. Pengaturan Efek suara & Musik ada di tab **Setting** (bawaan: nyala). Musik otomatis berhenti saat aplikasi di latar belakang.
 
 ## Alur cabang & rilis
 - `development` = pengembangan; `main` = stabil. Kerjakan di `development` → buka Pull Request ke `main` → CI harus hijau → gabung.
@@ -85,19 +85,31 @@ Rekor/pengaturan tetap ada setelah aplikasi ditutup, HP direstart, dan update no
 - [ ] Selesaikan 1 game → cek tab **Rekor** → tutup paksa aplikasi → buka lagi → rekor masih ada.
 - [ ] Ganti tema (gelap) → restart HP → tema tetap.
 - [ ] Tombol **Back** HP: di dalam game → kembali ke menu; di menu → keluar aplikasi.
-- [ ] **Suara:** ketuk tombol/papan → ada bunyi "tik"; musik latar mengalun setelah sentuhan pertama; ke layar utama HP / buka aplikasi lain → **musik berhenti**, kembali → lanjut; Atur → matikan Efek/Musik → benar-benar diam (pilihan tersimpan setelah restart).
+- [ ] **Suara:** ketuk tombol/papan → ada bunyi "tik"; musik latar mengalun setelah sentuhan pertama; ke layar utama HP / buka aplikasi lain → **musik berhenti**, kembali → lanjut; Setting → matikan Efek/Musik → benar-benar diam (pilihan tersimpan setelah restart).
 - [ ] Animasi masuk saat membuka game terlihat mulus (tidak patah).
 - [ ] Putar layar / layar kecil: tampilan tidak terpotong, tombol navigasi bawah tidak tertutup gesture bar.
 - [ ] Pasang APK versi baru di atas yang lama → rekor tetap.
 
-## AdMob (nanti, belum dipasang)
-Sengaja **belum** diintegrasikan agar APK offline tetap sederhana. Saat siap:
-- Buat akun AdMob + app + unit iklan; pasang plugin `@capacitor-community/admob` (kompatibel dengan Capacitor 8).
-- Isi **App ID** di `AndroidManifest.xml` (`com.google.android.gms.ads.APPLICATION_ID`). App ID salah/kosong bisa membuat aplikasi crash saat start → uji dulu.
-- Selama pengembangan pakai **ID iklan uji** Google (`ca-app-pub-3940256099942544/...`), jangan klik iklan sungguhan milik sendiri.
-- Siapkan formulir persetujuan (**UMP/consent**) untuk pengguna wilayah tertentu, dan isi *Data safety* bila ke Play Store.
-- Panggil iklan di `try/catch` dan **jangan `await` di jalur gameplay**: tanpa internet / gagal memuat → game tetap jalan.
-- Karena `android/` dibuat ulang oleh workflow, pengaturan manifest sebaiknya ditambahkan lewat langkah di `android.yml` (atau commit folder `android/` dan hapus dari `.gitignore`).
+## AdMob (iklan banner)
+Sudah terpasang dengan **ID contoh Google** (iklan bertanda "Test Ad", tidak menghasilkan uang). Banner hanya tampil di **Game (menu), Rekor, dan Setting**, dan **disembunyikan saat bermain** (mencegah klik tak sengaja, sesuai kebijakan AdMob). Tanpa internet / iklan gagal dimuat: game tetap jalan normal.
+
+Saat akun AdMob siap:
+1. Buat aplikasi + unit iklan **Banner** di admob.google.com (Android).
+2. Edit `src/app/ads-config.ts` (bisa lewat editor web GitHub di HP): isi `ADMOB_APP_ID` (berbentuk `~`) dan `ADMOB_BANNER_ID` (berbentuk `/`), lalu ubah `ADS_TESTING` menjadi `false`. Tes otomatis menolak format ID yang salah.
+3. Build ulang APK. Workflow memasang App ID ke `AndroidManifest.xml` otomatis dari berkas yang sama.
+4. **Jangan klik iklan milikmu sendiri** saat ID asli aktif (bisa membuat akun AdMob diblokir). Untuk menguji, tetap pakai ID contoh.
+5. Isi pesan persetujuan (GDPR/UMP) di AdMob → *Privacy & messaging* bila aplikasi tersedia di wilayah Uni Eropa/Inggris.
+
+Jika build gagal gara-gara plugin iklan: **Run workflow** lalu **matikan `with_ads`** — APK tetap dibuat, tanpa iklan. Kirim lognya agar diperbaiki.
+
+## Kebijakan privasi
+Wajib bila memakai AdMob atau menerbitkan di Play Store. Sudah ada: halaman di aplikasi (**Setting → Kebijakan privasi**) dan berkas web `public/privacy.html` (setelah deploy ke Vercel: `https://DOMAINMU/privacy.html`; itulah URL yang diminta Play Console). **Isi email kontak** di `CONTACT_EMAIL` (`src/app/brand.ts`) dan di `public/privacy.html` sebelum dipublikasikan. Ubah teksnya bila fitur berubah (mis. menambah analitik).
+
+## Tombol Bagikan
+Setting → **Bagikan game ini** membuka lembar bagikan Android (plugin `@capacitor/share`); di browser memakai Web Share atau menyalin tautan. Tautan yang dibagikan = `SHARE_URL` di `src/app/brand.ts` (sekarang halaman GitHub repo; ganti dengan situs / halaman unduhanmu).
+
+## Mengganti nama game
+Mudah dan aman untuk data pemain. Ubah **tiga** tempat (tes `tests/app.test.ts` memastikan ketiganya sama): `APP_NAME` di `src/app/brand.ts`, `appName` di `capacitor.config.ts`, dan `<title>` di `index.html`. Build ulang → nama di bawah ikon HP berubah (dibuat ulang tiap build). **Jangan ubah `appId`** (kunci identitas aplikasi: rekor & update bergantung padanya). Nama file APK diatur di `android.yml` (`Math-Games-…`), opsional.
 
 ## Yang belum bisa dibuktikan dari lingkungan pembuatan
 Typecheck (kecuali `@types/node` yang belum terpasang), 63 tes, build satu-file, dan uji browser offline sudah dijalankan. **`vite build`, `cap add/sync`, Gradle, dan instal di HP belum** (tidak ada internet/Android SDK di sana): langkah itu pertama kali dijalankan oleh workflow GitHub. Jika ada error di sana, kirim log-nya.

@@ -4,6 +4,7 @@
 @import './home.css';
 @import './nav.css';
 @import './motion.css';
+@import './settings.css';
 @import './games/math.css';
 @import './games/boards.css';
 @import './games/sudoku.css';

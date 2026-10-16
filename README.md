@@ -3,7 +3,7 @@
 Kumpulan 19 game latihan otak:
 
 - **Hitungan:** Hitung Cepat, Benar/Salah, Operator, Ketik Jawaban, Bandingkan, Tabel Kali, Hubungkan, Game 24, Piramida Angka
-- **Puzzle:** Pindah Batang, 15 Puzzle (4x4/5x5/6x6), 2048, Sudoku, Rubik 2x2/3x3/4x4, Geser Balok, Cermin (cocokkan bayangan cermin), Tebak Kode
+- **Puzzle:** Pindahkan Batang, 15 Puzzle (4x4/5x5/6x6), 2048, Sudoku, Rubik 2x2/3x3/4x4, Geser Balok, Cermin (cocokkan bayangan cermin), Tebak Kode
 - **Melawan bot atau teman (satu HP, gantian):** XOX (3x3 sampai 5x5), Catur (aturan resmi), Reversi (piringan dibalik saat terjepit). Keduanya: pilih Bot / Teman, level Mudah-Sedang-Sulit, dan main sebagai Putih atau Hitam (lawan bot). Di mode Teman, bidak catur sisi atas diputar menghadap pemain seberang
 - **Fokus & kecepatan:** Ketuk Berurutan
 
@@ -80,7 +80,7 @@ scripts/                  alat bantu (gen-blocks-bank.ts: membuat ulang bank soa
 
 `npm test` menjalankan 48 tes unit, antara lain: mesin catur dicocokkan dengan 6 posisi uji standar
 (perft sampai 4 langkah, mencakup rokade, en passant, promosi), semua putaran Rubik 2x2/3x3/4x4 kembali
-ke awal setelah 4 kali, Sudoku selalu punya tepat satu solusi, soal Pindah Batang butuh tepat 1/2/3 pemindahan,
+ke awal setelah 4 kali, Sudoku selalu punya tepat satu solusi, soal Pindahkan Batang butuh tepat 1/2/3 pemindahan,
 bot XOX 3x3 tidak pernah kalah, 2048 dibandingkan dengan implementasi referensi, semua soal Game 24 punya solusi sesuai tingkatnya,
 Piramida Angka selalu bisa dipecahkan hanya dengan logika, Tebak Kode selalu bisa dipecahkan dengan strategi eliminasi,
 dan langkah minimum tiap soal Geser Balok dihitung ulang dengan BFS.
@@ -118,4 +118,6 @@ Membuat ulang atau menambah soal: `npm run gen:blocks -- 300` (mencari selama 30
 Proyek ini siap dibungkus Capacitor menjadi APK yang memuat semua aset secara lokal (tanpa Vercel/internet). Panduan lengkap dari HP, kunci penandatangan, alur `main`/`development`, checklist uji, dan catatan AdMob: [`docs/ANDROID.md`](docs/ANDROID.md).
 
 ## Suara & animasi
-Efek suara + musik latar disintesis lewat Web Audio (tanpa file audio, offline), bisa dimatikan di tab Atur. Membuka game memakai animasi masuk (hormati pengaturan *reduce motion*).
+Efek suara + musik latar disintesis lewat Web Audio (tanpa file audio, offline), bisa dimatikan di tab Setting. Membuka game memakai animasi masuk (hormati pengaturan *reduce motion*).
+
+Setting memuat: tema, ikon, suara, Bagikan, Kebijakan privasi, Tentang. Iklan AdMob (banner di menu saja) dan kebijakan privasi dijelaskan di [`docs/ANDROID.md`](docs/ANDROID.md).

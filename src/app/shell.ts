@@ -7,15 +7,26 @@ import { applyIconStyle, setIconStyle, type IconStyle } from './iconStyle.js';
 import { applyTheme, cycleTheme, setTheme, type Theme } from './theme.js';
 import { gotoTab, initRouter, play, showTab, type Tab } from './router.js';
 import { initSound } from './sound.js';
+import { initAds } from './ads.js';
+import { shareApp } from './share.js';
+import { aboutHtml, openSheet, privacyHtml, toast } from './pages.js';
 
 const SETTINGS_HTML = `<div id="scr" class="hide"></div>
-<div id="set" class="hide"><h1 class="ttl">Pengaturan</h1>
-<div class="card"><h3>Tema</h3><div class="seg" id="thm"><button data-th="system">Sistem</button><button data-th="light">Terang</button><button data-th="dark">Gelap</button></div></div>
-<div class="card"><h3>Ikon</h3><div class="seg" id="ics"><button data-is="solid">Solid</button><button data-is="line">Garis</button><button data-is="white">Putih</button></div></div>
-<div class="card"><h3>Efek suara</h3><div class="seg" id="snd-fx"><button data-v="1">Nyala</button><button data-v="0">Mati</button></div></div>
-<div class="card"><h3>Musik</h3><div class="seg" id="snd-mu"><button data-v="1">Nyala</button><button data-v="0">Mati</button></div></div>
-<div class="card"><h3>Rekor</h3><button class="cta alt" id="rs">Hapus semua rekor</button></div>
-<div class="card"><h3>Tentang</h3><p>Ikon: Phosphor (MIT), Font Awesome Free (CC BY 4.0)</p></div></div>`;
+<div id="set" class="hide"><h1 class="ttl">Setting</h1>
+<div class="sg"><h3 class="sh">Tampilan</h3><div class="sl">
+<div class="sr col"><span>Tema</span><div class="seg" id="thm"><button data-th="system">Sistem</button><button data-th="light">Terang</button><button data-th="dark">Gelap</button></div></div>
+<div class="sr col"><span>Ikon</span><div class="seg" id="ics"><button data-is="solid">Solid</button><button data-is="line">Garis</button><button data-is="white">Putih</button></div></div>
+</div></div>
+<div class="sg"><h3 class="sh">Suara</h3><div class="sl">
+<div class="sr"><span>Efek suara</span><button class="sw" id="snd-fx" role="switch" aria-label="Efek suara"><i></i></button></div>
+<div class="sr"><span>Musik</span><button class="sw" id="snd-mu" role="switch" aria-label="Musik"><i></i></button></div>
+</div></div>
+<div class="sg"><h3 class="sh">Lainnya</h3><div class="sl">
+<button class="sr" id="st-share"><span>Bagikan game ini</span><b class="chev">›</b></button>
+<button class="sr" id="st-priv"><span>Kebijakan privasi</span><b class="chev">›</b></button>
+<button class="sr" id="st-about"><span>Tentang</span><b class="chev">›</b></button>
+<button class="sr danger" id="rs">Hapus semua rekor</button>
+</div></div></div>`;
 
 function buildHome(): void {
   $('#hg').innerHTML = GAMES.map(
@@ -28,7 +39,7 @@ function buildHome(): void {
 }
 
 function buildNav(): void {
-  const items: Array<[Tab, string]> = [['home', 'Game'], ['scr', 'Rekor'], ['set', 'Atur']];
+  const items: Array<[Tab, string]> = [['home', 'Game'], ['scr', 'Rekor'], ['set', 'Setting']];
   document.body.insertAdjacentHTML(
     'beforeend',
     '<nav id="nv" aria-label="Navigasi">' +
@@ -51,6 +62,13 @@ function wireSettings(): void {
     const b = hit(e, '[data-is]');
     if (b) setIconStyle(b.dataset.is as IconStyle);
   };
+  $('#st-share').onclick = async () => {
+    const r = await shareApp();
+    if (r === 'copied') toast('Tautan disalin ke papan klip');
+    else if (r === 'failed') toast('Tidak bisa membagikan dari sini');
+  };
+  $('#st-priv').onclick = () => openSheet('Kebijakan privasi', privacyHtml());
+  $('#st-about').onclick = () => openSheet('Tentang', aboutHtml());
   // Hapus rekor: dua ketukan agar tidak terhapus tak sengaja
   let timer = 0;
   $('#rs').onclick = () => {
@@ -76,6 +94,7 @@ export function initApp(): void {
   buildNav();
   wireSettings();
   initSound();
+  initAds();
   applyTheme();
   applyIconStyle();
   showTab('home');

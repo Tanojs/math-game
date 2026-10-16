@@ -27,7 +27,7 @@ export const GAMES: GameDef[] = [
   { id: 'mtc', name: 'Hubungkan', mount: mountConnect },
   { id: 'g24', name: 'Game 24', mount: mountGame24 },
   { id: 'pyr', name: 'Piramida Angka', mount: mountPyramid },
-  { id: 'stk', name: 'Pindah Batang', mount: mountSticks },
+  { id: 'stk', name: 'Pindahkan Batang', mount: mountSticks },
   { id: 'ttt', name: 'XOX', mount: mountXox },
   { id: 'g15', name: '15 Puzzle', mount: mountPuzzle15 },
   { id: 'g2048', name: '2048', mount: mount2048 },

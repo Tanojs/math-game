@@ -18,8 +18,19 @@ let stop: Cleanup | null = null;
 
 const stopCurrent = (): void => { stop?.(); stop = null; };
 
+/** Tinggi area game = sisa layar (di atas bar navigasi) supaya isi game bisa diletakkan di tengah / dekat jempol. */
+const fitGame = (): void => {
+  const gm = $('#gm');
+  if (gm.classList.contains('hide')) return;
+  const nav = document.getElementById('nv');
+  const top = gm.getBoundingClientRect().top + window.scrollY;
+  gm.style.minHeight = `${Math.max(0, window.innerHeight - top - (nav ? nav.getBoundingClientRect().height : 72) - 32)}px`;
+};
+addEventListener('resize', fitGame);
+
 export function showTab(t: Tab): void {
   document.body.classList.toggle('ig', t === 'gm');
+  document.dispatchEvent(new CustomEvent('mg-screen', { detail: t === 'gm' ? 'game' : 'menu' }));
   TABS.forEach((x) => $('#' + x).classList.toggle('hide', x !== t));
   $$('.nb').forEach((b) => b.classList.toggle('on', b.dataset.t === (t === 'gm' ? 'home' : t)));
   if (t === 'scr') renderScores();
@@ -30,11 +41,13 @@ export function play(id: string): void {
   const game = GAMES.find((g) => g.id === id);
   if (!game) return;
   document.body.classList.add('ig');
+  document.dispatchEvent(new CustomEvent('mg-screen', { detail: 'game' }));
   try { location.hash = id; } catch { /* diabaikan */ }
   $('#home').classList.add('hide');
   $('#gm').classList.remove('hide');
   enter('#gm');
   sfx('open');
+  fitGame();
   $('#gt').textContent = game.name;
   $('#inf').textContent = '';
   const stage = $('#st');

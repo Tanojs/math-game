@@ -16,7 +16,7 @@ export function renderScores(): void {
     row('Game 24', levelChips('g24')) +
     row('Piramida Angka', levelChips('pyr')) +
     row('2048', `<i>${getRecord('g2048')}</i>`) +
-    row('Pindah Batang', levelChips('stk')) +
+    row('Pindahkan Batang', levelChips('stk')) +
     rubik.map(([n, k]) => row('Rubik ' + n, `<i>${getRecord(k) ? fmtTime(getRecord(k)) : '-'}</i>`)).join('') +
     row('Ketuk Berurutan', LEVELS.map((n, i) => `<i>${n} ${getRecord('tap' + i) ? fmtTime(getRecord('tap' + i)) : '-'}</i>`).join('')) +
     row('Tebak Kode', levelChips('cod')) +

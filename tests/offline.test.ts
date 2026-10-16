@@ -17,6 +17,8 @@ test('offline: kode dan CSS tidak memakai jaringan (fetch / XHR / URL http)', ()
   for (const f of files) {
     const s = fs.readFileSync(f, 'utf8');
     assert.doesNotMatch(s, /\bfetch\s*\(|XMLHttpRequest|WebSocket\s*\(/, `${f} memakai jaringan`);
+    // URL hanya boleh sebagai TAUTAN teks di halaman kebijakan privasi / tautan bagikan (tidak dimuat otomatis).
+    if (/[\\/](pages|brand)\.ts$/.test(f)) continue;
     assert.doesNotMatch(s.replace(/http:\/\/www\.w3\.org\/\d+\/\w+/g, ''), /https?:\/\//, `${f} memuat URL eksternal`);
   }
 });
