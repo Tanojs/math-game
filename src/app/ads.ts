@@ -1,9 +1,11 @@
 import { ADMOB_BANNER_ID, ADS_ENABLED, ADS_TESTING } from './ads-config.js';
 import { nativePlugin } from './native.js';
 
+interface ConsentInfo { status: string; isConsentFormAvailable: boolean; canRequestAds: boolean }
+
 interface AdMobPlugin {
-  requestConsentInfo(): Promise<{ status: string; isConsentFormAvailable: boolean; canRequestAds: boolean }>;
-  showConsentForm(): Promise<{ status: string; canRequestAds: boolean }>;
+  requestConsentInfo(): Promise<ConsentInfo>;
+  showConsentForm(): Promise<ConsentInfo>;
   initialize(): Promise<void>;
   showBanner(o: { adId: string; adSize: string; position: string; margin: number; isTesting: boolean }): Promise<void>;
   hideBanner(): Promise<void>;
