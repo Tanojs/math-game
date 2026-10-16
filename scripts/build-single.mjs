@@ -17,7 +17,7 @@ const walk = (d) => {
     else if (p.endsWith('.ts') && !p.endsWith('.d.ts')) {
       const id = path.relative(root, p).split(path.sep).join('/').replace(/\.ts$/, '');
       const src = fs.readFileSync(p, 'utf8')
-        .replace(/import\.meta\.env\.MODE/g, "'production'")
+        .replace(/import\.meta\.env\.MODE/g, JSON.stringify(process.env.MG_MODE ?? 'production'))
         .replace(/^import\s+'\.\/styles\/index\.css';?\s*$/m, '')
         .replace(/^import\s*\{[^}]*\}\s*from\s*'@capacitor\/core';?\s*$/gm, 'const Capacitor = { isNativePlatform: () => false, isPluginAvailable: (_n: string) => false }; const registerPlugin = <T,>(_n: string): T => undefined as unknown as T;') // build web biasa: tanpa runtime native
         .replace(/^import\s+'@fontsource\/[^']+';?.*$/gm, ''); // font npm: dibundel Vite; di sini diganti tautan Google Fonts (lihat bawah)

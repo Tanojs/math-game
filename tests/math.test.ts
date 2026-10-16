@@ -72,3 +72,10 @@ test('pointsFor: bonus beruntun maksimal di 10', () => {
   assert.equal(pointsFor(10), 30);
   assert.equal(pointsFor(50), 30);
 });
+
+test('Benar/Salah: Salah di kiri (tombol 1), Benar di kanan (tombol 2, berwarna hijau)', () => {
+  for (let i = 0; i < 20; i++) {
+    const q = makeQuestion('tf', 0);
+    assert.deepEqual((q.choices ?? []).map((c) => c.l), ['Salah', 'Benar']);
+  }
+});

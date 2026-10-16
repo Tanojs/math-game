@@ -3,6 +3,7 @@ import { segment, type Level } from '../../core/html.js';
 import type { Mount } from '../../core/types.js';
 import { bestTime, fmtTime } from '../../app/records.js';
 import { makeBoard, PENALTY_MS, SIZES } from './logic.js';
+import { sfx } from '../../core/sfx.js';
 
 let level: Level = 0;
 
@@ -16,7 +17,7 @@ export const mountTap: Mount = (id, el, info) => {
   const draw = (): void => {
     el.innerHTML =
       segment('l', ['Mudah', 'Sedang', 'Sulit'], level) +
-      `<div class="sq tpg" style="--n:${n};grid-template:repeat(${n},minmax(0,1fr))/repeat(${n},minmax(0,1fr))">` +
+      `<div class="sq tpg" data-nosnd style="--n:${n};grid-template:repeat(${n},minmax(0,1fr))/repeat(${n},minmax(0,1fr))">` +
       board.map((v) => `<button data-v=${v}>${v}</button>`).join('') +
       `</div><div class=msg>${msg}</div><button class=cta id=re>Main lagi</button>`;
   };
@@ -44,10 +45,12 @@ export const mountTap: Mount = (id, el, info) => {
     if (e.button !== 0) return;
     const b = hit(e, '[data-v]');
     if (!b || ended || b.classList.contains('done')) return;
+    sfx('tap'); // bunyi saat jari menyentuh: ketukan cepat dengan beberapa jari tidak menghasilkan event click
     if (Number(b.dataset.v) === next) {
       b.classList.add('done');
       if (++next > n * n) {
         ended = true;
+        sfx('win');
         clearInterval(iv);
         const ms = elapsed();
         const record = bestTime(id + level, ms);

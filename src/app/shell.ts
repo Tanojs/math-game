@@ -18,8 +18,8 @@ const SETTINGS_HTML = `<div id="scr" class="hide"></div>
 <div class="sr col"><span>Ikon</span><div class="seg" id="ics"><button data-is="solid">Solid</button><button data-is="line">Garis</button><button data-is="white">Putih</button></div></div>
 </div></div>
 <div class="sg"><h3 class="sh">Suara</h3><div class="sl">
-<div class="sr"><span>Efek suara</span><button class="sw" id="snd-fx" role="switch" aria-label="Efek suara"><i></i></button></div>
-<div class="sr"><span>Musik</span><button class="sw" id="snd-mu" role="switch" aria-label="Musik"><i></i></button></div>
+<div class="sr"><span>Efek suara</span><button class="tgl" id="snd-fx" role="switch" aria-label="Efek suara"><i></i></button></div>
+<div class="sr"><span>Musik</span><button class="tgl" id="snd-mu" role="switch" aria-label="Musik"><i></i></button></div>
 </div></div>
 <div class="sg"><h3 class="sh">Lainnya</h3><div class="sl">
 <button class="sr" id="st-share"><span>Bagikan game ini</span><b class="chev">›</b></button>

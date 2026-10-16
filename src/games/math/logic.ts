@@ -49,7 +49,7 @@ export function makeQuestion(id: MathId, d: Level): Question {
       const truth = Math.random() < 0.5;
       let x = e.v;
       if (!truth) do x = e.v + R(-5, 5); while (x === e.v || x < 0);
-      return { q: `${e.t} = ${x}`, choices: [{ l: 'Benar', ok: truth }, { l: 'Salah', ok: !truth }] };
+      return { q: `${e.t} = ${x}`, choices: [{ l: 'Salah', ok: !truth }, { l: 'Benar', ok: truth }] }; // warna mengikuti posisi: kanan = hijau = Benar
     }
     case 'op':
       return {

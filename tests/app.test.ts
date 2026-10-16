@@ -47,3 +47,17 @@ test('suara klik hanya pada event click (bukan pointerdown) agar scroll tidak be
   assert.match(s, /addEventListener\('click'/);
   assert.doesNotMatch(s, /addEventListener\('pointerdown'[\s\S]{0,120}engine\.play\('tap'\)/);
 });
+
+test('CSS: tidak ada kelas dasar (.nama{...}) yang didefinisikan di dua berkas berbeda (mencegah tabrakan seperti .sw / .rc)', () => {
+  const ALLOWED = new Set(['mode', 'modes', 'rv']); // sengaja: penyesuaian tata letak / selektor daftar
+  const defs = new Map<string, Set<string>>();
+  const walk = (d: string): string[] => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]));
+  for (const f of walk(path.join(root, 'src/styles')).filter((x) => x.endsWith('.css'))) {
+    for (const m of fs.readFileSync(f, 'utf8').matchAll(/(?:^|[}\n,])\s*\.([a-zA-Z][\w-]*)\s*\{/g)) {
+      const k = m[1] as string;
+      (defs.get(k) ?? defs.set(k, new Set()).get(k))?.add(f);
+    }
+  }
+  const clash = [...defs].filter(([k, v]) => v.size > 1 && !ALLOWED.has(k)).map(([k, v]) => `${k}: ${[...v].map((x) => path.basename(x)).join(', ')}`);
+  assert.deepEqual(clash, []);
+});

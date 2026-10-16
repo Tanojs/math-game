@@ -30,7 +30,7 @@ export const mountChess: Mount = (_id, el, info) => {
   let white = true, end = '', check = false;
   let last: number[] = [];
   let sel = -1, targets: Move[] = [];
-  let promoPend: Move[] | null = null;
+  let promoPend: Move[] | null = null, promoAt = 0;
   let thinking = false, dead = false, flipped = false;
   let timer = 0, endTimer = 0;
   const hist: Snap[] = [];
@@ -257,6 +257,7 @@ export const mountChess: Mount = (_id, el, info) => {
   const hidePromo = (): void => { promoPend = null; promoEl.className = 'cpromo'; promoEl.innerHTML = ''; };
   const showPromo = (ms: Move[]): void => {
     promoPend = ms;
+    promoAt = performance.now();
     const w = isWhitePiece(pos.sq[(ms[0] as Move)[0]] as string);
     promoEl.innerHTML = '<div>' + (['q', 'r', 'b', 'n'] as const).map((t) => `<button data-p=${t}>${pieceHtml(w ? t.toUpperCase() : t)}</button>`).join('') + '</div>';
     promoEl.className = 'cpromo on';
@@ -316,7 +317,8 @@ export const mountChess: Mount = (_id, el, info) => {
     if (l) { level = Number(l.dataset.l); return reset(); }
     if (sd) { humanWhite = sd.dataset.s === '0'; return reset(); }
     if (p && promoPend) { const m = promoPend.find((x) => x[2] === p.dataset.p); if (m) play(m); return; }
-    if (promoPend && hit(e, '.cpromo') && !hit(e, '.cpromo button')) { hidePromo(); clearSel(); return; }
+    // Lewati "click" susulan dari ketukan yang BARU membuka pilihan promosi (jari masih menekan area papan yang kini tertutup panel).
+    if (promoPend && hit(e, '.cpromo') && !hit(e, '.cpromo button')) { if (performance.now() - promoAt > 450) { hidePromo(); clearSel(); } return; }
     if (hit(e, '#cun')) return undo();
     if (hit(e, '#cfl')) { flipped = !flipped; layoutAll(); bars(); return; }
     if (hit(e, '#cre')) return reset();

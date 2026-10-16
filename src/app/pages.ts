@@ -1,7 +1,8 @@
 import { $ } from '../core/dom.js';
 import { APP_NAME, APP_VERSION, CONTACT_EMAIL, DEVELOPER, PRIVACY_DATE } from './brand.js';
 import { GAMES } from '../games/registry.js';
-import { ADS_ENABLED } from './ads-config.js';
+import { ADS_ENABLED, ADS_TESTING } from './ads-config.js';
+import { adsStatus } from './ads.js';
 
 let toastTimer = 0;
 export function toast(text: string): void {
@@ -31,7 +32,8 @@ export const aboutHtml = (): string =>
   `<p>${GAMES.length} game latihan otak: hitung cepat, puzzle, catur, Reversi, Rubik, dan banyak lagi. Semua game bisa dimainkan tanpa internet. Rekor dan pengaturan tersimpan di perangkatmu.</p>` +
   `<p>Dibuat oleh ${DEVELOPER}.</p>` +
   '<h4>Kredit &amp; lisensi</h4>' +
-  '<p>Ikon: Phosphor (MIT) dan Font Awesome Free (CC BY 4.0). Font: Space Grotesk (SIL OFL 1.1). Efek suara dan musik dibuat langsung oleh kode.</p>';
+  '<p>Ikon: Phosphor (MIT) dan Font Awesome Free (CC BY 4.0). Font: Space Grotesk (SIL OFL 1.1). Efek suara dan musik dibuat langsung oleh kode.</p>' +
+  `<h4>Info teknis</h4><p>Iklan (${ADS_TESTING ? 'mode uji' : 'produksi'}): ${adsStatus()}</p>`;
 
 export const privacyHtml = (): string =>
   `<p>Terakhir diperbarui: ${PRIVACY_DATE}</p>` +

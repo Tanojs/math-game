@@ -23,7 +23,7 @@ export function initSound(): void {
   document.addEventListener('click', (e) => {
     if (!engine.sfxOn) return;
     const t = e.target as Element | null;
-    if (!t?.closest?.('button, #st, #hg')) return;
+    if (!t?.closest?.('button, #st, #hg') || t.closest('[data-nosnd]')) return; // data-nosnd: area yang membunyikan sendiri
     const now = performance.now();
     if (now - last < 35) return;
     last = now;
