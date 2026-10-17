@@ -14,6 +14,8 @@ export interface Voice {
   dur: number;
   gain: number;
   attack?: number;
+  /** Bila diisi: nada ditahan rata lalu dilepas selama `rel` detik di akhir (pad / melodi yang halus). Tanpa ini: meluruh. */
+  rel?: number;
   /** Low-pass (Hz) agar nada lebih lembut. */
   lp?: number;
 }
@@ -50,15 +52,16 @@ export const BEAT = 60 / BPM;
 export const BAR = BEAT * 4;
 
 interface Chord { root: number; tones: readonly number[] }
+/** `root` = nada bass. Sengaja tidak lebih rendah dari C3 (±131 Hz): speaker HP tidak mampu memainkan nada lebih rendah (terdengar bergetar). */
 export const PROGRESSION: readonly Chord[] = [
   { root: 48, tones: [60, 64, 67] }, // C
-  { root: 45, tones: [57, 60, 64] }, // Am
-  { root: 41, tones: [57, 60, 65] }, // F
-  { root: 43, tones: [59, 62, 67] }, // G
+  { root: 52, tones: [57, 60, 64] }, // Am (bass E3 = Am/E)
+  { root: 53, tones: [57, 60, 65] }, // F
+  { root: 55, tones: [59, 62, 67] }, // G
   { root: 48, tones: [60, 64, 67] }, // C
-  { root: 40, tones: [59, 64, 67] }, // Em
-  { root: 41, tones: [57, 60, 65] }, // F
-  { root: 43, tones: [59, 62, 67] }, // G
+  { root: 52, tones: [59, 64, 67] }, // Em
+  { root: 53, tones: [57, 60, 65] }, // F
+  { root: 55, tones: [59, 62, 67] }, // G
 ];
 
 /** Melodi per birama: [ketuk ke-, nada MIDI, panjang (ketuk)]. */
@@ -80,14 +83,23 @@ export function musicBar(i: number): Voice[] {
   const k = ((i % PROGRESSION.length) + PROGRESSION.length) % PROGRESSION.length;
   const ch = PROGRESSION[k] as Chord;
   const out: Voice[] = [];
-  out.push(v('triangle', n(ch.root), 0, BEAT * 1.8, 0.16, { attack: 0.01 }));
-  out.push(v('triangle', n(ch.root), BEAT * 2, BEAT * 1.8, 0.14, { attack: 0.01 }));
-  for (const tone of ch.tones) out.push(v('sine', n(tone), 0, BAR * 0.98, 0.03, { attack: 0.3 })); // pad lembut
-  ARP.forEach((idx, s) => out.push(v('triangle', n((ch.tones[idx] as number) + 12), s * BEAT * 0.5, BEAT * 0.45, 0.045, { attack: 0.01 })));
+  out.push(v('sine', n(ch.root), 0, BEAT * 1.9, 0.13, { attack: 0.02, rel: 0.5 }));
+  out.push(v('sine', n(ch.root), BEAT * 2, BEAT * 1.9, 0.11, { attack: 0.02, rel: 0.5 }));
+  // pad: sedikit melewati batas birama dan masuk-keluar perlahan, sehingga antar-birama menyatu (tidak berdenyut)
+  for (const tone of ch.tones) out.push(v('sine', n(tone), 0, BAR + 0.4, 0.028, { attack: 0.4, rel: 0.4 }));
+  ARP.forEach((idx, st) => out.push(v('triangle', n((ch.tones[idx] as number) + 12), st * BEAT * 0.5, BEAT * 0.45, 0.04, { attack: 0.012 })));
   for (const [b, midi, len] of MELODY[k] as ReadonlyArray<readonly [number, number, number]>) {
-    out.push(v('sine', n(midi), b * BEAT, len * BEAT * 0.95, 0.085, { attack: 0.03 }));
+    out.push(v('sine', n(midi), b * BEAT, len * BEAT * 0.95, 0.08, { attack: 0.04, rel: 0.18 }));
   }
   return out;
+}
+
+/** Jadwal birama berikutnya. Jika jam audio sudah jauh melewati `nextBar` (mis. aplikasi tadi di latar belakang), mulai dari SEKARANG — jangan mengejar ketertinggalan (itu yang membuat musik menumpuk/terdengar cepat). */
+export function planMusic(nextBar: number, now: number, lookahead = 1.2): { start: number; count: number } {
+  const start = nextBar < now - 0.05 ? now + 0.1 : nextBar;
+  let count = 0;
+  while (start + count * BAR < now + lookahead) count++;
+  return { start, count };
 }
 
 /** Memainkan sekumpulan suara pada `dest`, mulai di waktu konteks `when`. */
@@ -99,9 +111,16 @@ export function playVoices(ctx: BaseAudioContext, dest: AudioNode, voices: reado
     o.frequency.setValueAtTime(x.f0, t0);
     if (x.f1) o.frequency.exponentialRampToValueAtTime(x.f1, t0 + x.dur);
     const g = ctx.createGain();
+    const peak = Math.max(x.gain, 0.0002);
     g.gain.setValueAtTime(0.0001, t0);
-    g.gain.exponentialRampToValueAtTime(Math.max(x.gain, 0.0002), t0 + a);
-    g.gain.exponentialRampToValueAtTime(0.0001, t0 + x.dur);
+    if (x.rel) {
+      g.gain.linearRampToValueAtTime(peak, t0 + a);
+      g.gain.setValueAtTime(peak, Math.max(t0 + a, t0 + x.dur - x.rel));
+      g.gain.linearRampToValueAtTime(0.0001, t0 + x.dur);
+    } else {
+      g.gain.exponentialRampToValueAtTime(peak, t0 + a);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + x.dur);
+    }
     if (x.lp) {
       const f = ctx.createBiquadFilter();
       f.type = 'lowpass';
@@ -115,7 +134,7 @@ export function playVoices(ctx: BaseAudioContext, dest: AudioNode, voices: reado
   }
 }
 
-const MUSIC_LEVEL = 0.7;
+const MUSIC_LEVEL = 0.38;
 
 /** Pengelola suara: konteks audio dibuat saat ada sentuhan pertama (aturan autoplay browser/WebView). */
 export class SoundEngine {
@@ -124,6 +143,9 @@ export class SoundEngine {
   private ctx: AudioContext | null = null;
   private sfxBus: GainNode | null = null;
   private musBus: GainNode | null = null;
+  private musIn: BiquadFilterNode | null = null;
+  /** Satu "sesi" musik = satu node gain; diputus saat musik berhenti sehingga sisa nada yang sudah terjadwal ikut senyap. */
+  private session: GainNode | null = null;
   private active = true;
   private timer = 0;
   private nextBar = 0;
@@ -136,16 +158,32 @@ export class SoundEngine {
       const C = w.AudioContext ?? w.webkitAudioContext;
       if (!C) return;
       try { this.ctx = new C(); } catch { return; }
-      const comp = this.ctx.createDynamicsCompressor();
-      comp.connect(this.ctx.destination);
-      this.sfxBus = this.ctx.createGain();
+      const c = this.ctx;
+      // Pembatas puncak saja (bukan kompresor agresif): efek ketukan tidak membuat musik "memompa" naik-turun.
+      const limiter = c.createDynamicsCompressor();
+      limiter.threshold.value = -3;
+      limiter.knee.value = 0;
+      limiter.ratio.value = 20;
+      limiter.attack.value = 0.003;
+      limiter.release.value = 0.1;
+      limiter.connect(c.destination);
+      this.sfxBus = c.createGain();
       this.sfxBus.gain.value = 0.9;
-      this.sfxBus.connect(comp);
-      this.musBus = this.ctx.createGain();
+      this.sfxBus.connect(limiter);
+      // Musik: buang nada sangat rendah (speaker HP bergetar) dan sangat tinggi (kasar) agar terdengar halus.
+      this.musBus = c.createGain();
       this.musBus.gain.value = 0;
-      this.musBus.connect(comp);
+      this.musBus.connect(limiter);
+      const lp = c.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.value = 3200;
+      lp.connect(this.musBus);
+      this.musIn = c.createBiquadFilter();
+      this.musIn.type = 'highpass';
+      this.musIn.frequency.value = 120;
+      this.musIn.connect(lp);
     }
-    if (this.active && this.ctx.state !== 'running') void this.ctx.resume().catch(() => undefined);
+    if (this.active && this.ctx.state !== 'running') void this.ctx.resume().catch(() => undefined).finally(() => this.syncMusic());
     this.syncMusic();
   }
 
@@ -160,32 +198,37 @@ export class SoundEngine {
   setActive(on: boolean): void {
     this.active = on;
     if (!this.ctx) return;
-    if (on) void this.ctx.resume().catch(() => undefined);
-    else void this.ctx.suspend().catch(() => undefined);
-    this.syncMusic();
+    if (on) void this.ctx.resume().catch(() => undefined).finally(() => this.syncMusic());
+    else { this.syncMusic(); void this.ctx.suspend().catch(() => undefined); }
   }
 
   private syncMusic(): void {
-    if (!this.ctx || !this.musBus) return;
-    const run = this.musicOn && this.active;
-    this.musBus.gain.setTargetAtTime(run ? MUSIC_LEVEL : 0, this.ctx.currentTime, 0.08);
+    const c = this.ctx;
+    if (!c || !this.musBus || !this.musIn) return;
+    const run = this.musicOn && this.active && c.state === 'running';
+    this.musBus.gain.setTargetAtTime(run ? MUSIC_LEVEL : 0, c.currentTime, 0.08);
     if (run && !this.timer) {
-      this.nextBar = this.ctx.currentTime + 0.15;
+      this.session = c.createGain();
+      this.session.connect(this.musIn);
+      this.nextBar = c.currentTime + 0.15;
       this.timer = window.setInterval(() => this.tick(), 300);
       this.tick();
     } else if (!run && this.timer) {
       clearInterval(this.timer);
       this.timer = 0;
+      this.session?.disconnect(); // semua nada musik yang sudah terjadwal langsung senyap
+      this.session = null;
     }
   }
 
   private tick(): void {
-    const c = this.ctx, bus = this.musBus;
+    const c = this.ctx, bus = this.session;
     if (!c || !bus) return;
-    while (this.nextBar < c.currentTime + 1.2) {
-      playVoices(c, bus, musicBar(this.bar), this.nextBar);
-      this.nextBar += BAR;
+    const plan = planMusic(this.nextBar, c.currentTime);
+    for (let i = 0; i < plan.count; i++) {
+      playVoices(c, bus, musicBar(this.bar), plan.start + i * BAR);
       this.bar++;
     }
+    this.nextBar = plan.start + plan.count * BAR;
   }
 }

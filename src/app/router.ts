@@ -15,6 +15,9 @@ const enter = (id: string): void => {
 export type Tab = 'home' | 'gm' | 'scr' | 'set';
 const TABS: Tab[] = ['home', 'gm', 'scr', 'set'];
 let stop: Cleanup | null = null;
+let cur: Tab = 'home';
+/** Layar yang sedang tampil ('gm' = sedang di dalam sebuah game). */
+export const currentTab = (): Tab => cur;
 
 const stopCurrent = (): void => { stop?.(); stop = null; };
 
@@ -29,6 +32,7 @@ const fitGame = (): void => {
 addEventListener('resize', fitGame);
 
 export function showTab(t: Tab): void {
+  cur = t;
   document.body.classList.toggle('ig', t === 'gm');
   document.dispatchEvent(new CustomEvent('mg-screen', { detail: t === 'gm' ? 'game' : 'menu' }));
   TABS.forEach((x) => $('#' + x).classList.toggle('hide', x !== t));
@@ -40,6 +44,7 @@ export function showTab(t: Tab): void {
 export function play(id: string): void {
   const game = GAMES.find((g) => g.id === id);
   if (!game) return;
+  cur = 'gm';
   document.body.classList.add('ig');
   document.dispatchEvent(new CustomEvent('mg-screen', { detail: 'game' }));
   try { location.hash = id; } catch { /* diabaikan */ }

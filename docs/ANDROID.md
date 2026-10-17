@@ -69,7 +69,7 @@ Buka file APK → izinkan **Install aplikasi tidak dikenal** untuk browser/file 
 3. Actions → **Android APK** → Run workflow → `release` → unduh → pasang **di atas** aplikasi lama (rekor tetap).
 
 ## Suara
-Semua suara dibuat langsung oleh kode (Web Audio): efek ketukan, benar/salah, menang/kalah, langkah catur/Reversi, dan musik latar 8 birama — **tanpa file audio**, jadi tetap kecil dan offline. Pengaturan Efek suara & Musik ada di tab **Setting** (bawaan: nyala). Musik otomatis berhenti saat aplikasi di latar belakang.
+Semua suara dibuat langsung oleh kode (Web Audio): efek ketukan, benar/salah, menang/kalah, langkah catur/Reversi, dan musik latar 8 birama — **tanpa file audio**, jadi tetap kecil dan offline. Pengaturan Efek suara & Musik ada di tab **Setting** (bawaan: nyala). Musik otomatis berhenti saat aplikasi di latar belakang dan mulai bersih dari awal saat kembali (tanpa menumpuk). Nada bass sengaja tidak lebih rendah dari ±130 Hz karena speaker HP bergetar bila memainkannya.
 
 ## Alur cabang & rilis
 - `development` = pengembangan; `main` = stabil. Kerjakan di `development` → buka Pull Request ke `main` → CI harus hijau → gabung.
@@ -84,7 +84,7 @@ Rekor/pengaturan tetap ada setelah aplikasi ditutup, HP direstart, dan update no
 - [ ] Mode pesawat **aktif** → buka tiap game dari menu, mainkan sebentar, kembali.
 - [ ] Selesaikan 1 game → cek tab **Rekor** → tutup paksa aplikasi → buka lagi → rekor masih ada.
 - [ ] Ganti tema (gelap) → restart HP → tema tetap.
-- [ ] Tombol **Back** HP: di dalam game → kembali ke menu; di menu → keluar aplikasi.
+- [ ] Tombol **Back** HP: di dalam game → kembali ke menu; di Rekor/Setting → ke menu; lembar Tentang/Privasi → tertutup; di **menu**: sekali = muncul "Tekan sekali lagi untuk keluar", dua kali dalam 2 detik = keluar aplikasi.
 - [ ] **Suara:** ketuk tombol/papan → ada bunyi "tik"; musik latar mengalun setelah sentuhan pertama; ke layar utama HP / buka aplikasi lain → **musik berhenti**, kembali → lanjut; Setting → matikan Efek/Musik → benar-benar diam (pilihan tersimpan setelah restart).
 - [ ] Animasi masuk saat membuka game terlihat mulus (tidak patah).
 - [ ] Putar layar / layar kecil: tampilan tidak terpotong, tombol navigasi bawah tidak tertutup gesture bar.

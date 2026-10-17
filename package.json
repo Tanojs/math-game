@@ -21,6 +21,7 @@
   "dependencies": {
     "@capacitor-community/admob": "^8.0.0",
     "@capacitor/android": "^8.0.0",
+    "@capacitor/app": "^8.0.0",
     "@capacitor/core": "^8.0.0",
     "@capacitor/share": "^8.0.0",
     "@fontsource/space-grotesk": "^5.2.0"

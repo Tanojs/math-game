@@ -8,6 +8,7 @@ import { applyTheme, cycleTheme, setTheme, type Theme } from './theme.js';
 import { gotoTab, initRouter, play, showTab, type Tab } from './router.js';
 import { initSound } from './sound.js';
 import { initAds } from './ads.js';
+import { initBack } from './back.js';
 import { shareApp } from './share.js';
 import { aboutHtml, openSheet, privacyHtml, toast } from './pages.js';
 
@@ -95,6 +96,7 @@ export function initApp(): void {
   wireSettings();
   initSound();
   initAds();
+  initBack();
   applyTheme();
   applyIconStyle();
   showTab('home');
