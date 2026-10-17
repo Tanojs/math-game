@@ -1,5 +1,5 @@
 /* Cermin — sisi kiri contoh, sisi kanan harus menjadi bayangannya */
-.mrw{display:flex;flex-direction:column;flex:1}
+.mrw{display:flex;flex-direction:column;flex:1000 1 auto}
 .mrm{flex:1;display:grid;place-items:center;padding:12px 0}
 .mrw>.rr{margin-top:0;padding-bottom:4px}
 .mpal{display:flex;gap:10px;justify-content:center;margin:2px 0 12px}

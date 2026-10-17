@@ -134,7 +134,7 @@ export function playVoices(ctx: BaseAudioContext, dest: AudioNode, voices: reado
   }
 }
 
-const MUSIC_LEVEL = 0.38;
+const MUSIC_LEVEL = 0.9;
 
 /** Pengelola suara: konteks audio dibuat saat ada sentuhan pertama (aturan autoplay browser/WebView). */
 export class SoundEngine {
@@ -168,7 +168,7 @@ export class SoundEngine {
       limiter.release.value = 0.1;
       limiter.connect(c.destination);
       this.sfxBus = c.createGain();
-      this.sfxBus.gain.value = 0.9;
+      this.sfxBus.gain.value = 1.25;
       this.sfxBus.connect(limiter);
       // Musik: buang nada sangat rendah (speaker HP bergetar) dan sangat tinggi (kasar) agar terdengar halus.
       this.musBus = c.createGain();

@@ -100,6 +100,8 @@ Saat akun AdMob siap:
 4. **Jangan klik iklan milikmu sendiri** saat ID asli aktif (bisa membuat akun AdMob diblokir). Untuk menguji, tetap pakai ID contoh.
 5. Isi pesan persetujuan (GDPR/UMP) di AdMob → *Privacy & messaging* bila aplikasi tersedia di wilayah Uni Eropa/Inggris.
 
+**Tidak perlu membuka situs AdMob dulu** untuk iklan uji: ID contoh Google berfungsi tanpa akun. Jika "Info teknis" menampilkan *Unable to obtain a JavascriptEngine* (kode 0): menurut panduan Google ini berarti permintaan iklan gagal karena **jaringan** (lambat / belum tersedia saat aplikasi baru dibuka); aplikasi mencoba lagi otomatis (jeda 5, 10, 20, 40 dtk, lalu tiap 60 dtk) dan juga saat internet kembali. Jika tetap gagal berkali-kali, periksa internet dan perbarui *Android System WebView* di Play Store.
+
 Jika build gagal gara-gara plugin iklan: **Run workflow** lalu **matikan `with_ads`** — APK tetap dibuat, tanpa iklan. Kirim lognya agar diperbaiki.
 
 ## Kebijakan privasi
