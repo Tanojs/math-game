@@ -220,7 +220,9 @@ export const mountChess: Mount = (_id, el, info) => {
     timer = window.setTimeout(() => {
       timer = 0;
       if (dead || !thinking) return;
-      const m = chooseBotMove(pos, level, !humanWhite);
+      // jangan mengulang posisi yang sudah pernah muncul bila ada langkah lain (supaya tidak mudah seri)
+      const avoid = legalMoves(pos, !humanWhite).filter((x) => (seen.get(positionKey(apply(pos, x), humanWhite)) ?? 0) >= 1);
+      const m = chooseBotMove(pos, level, !humanWhite, { avoid });
       thinking = false;
       if (m) play(m); else refresh();
     }, BOT_DELAY);

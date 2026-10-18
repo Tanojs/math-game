@@ -104,6 +104,13 @@ Saat akun AdMob siap:
 
 Jika build gagal gara-gara plugin iklan: **Run workflow** lalu **matikan `with_ads`** — APK tetap dibuat, tanpa iklan. Kirim lognya agar diperbaiki.
 
+## Musik latar
+Bawaan: tiga lagu orisinal di `src/assets/music/` (Santai Sore, Petualangan Ceria, Fokus Tenang), diputar bergantian. Pilih lagu di **Setting → Pilihan lagu** (Semua bergantian, atau satu lagu diulang; nama diambil dari nama berkas). Tidak suka? Hapus berkasnya dan/atau tambahkan lagu pilihanmu:
+1. Unduh lagu bebas royalti **dan baca lisensinya** (Pixabay Music, FreePD (CC0), incompetech (CC BY: wajib kredit)). Format `.mp3`, `.ogg`, atau `.m4a`, ±1–4 MB per lagu.
+2. Di GitHub (browser, aktifkan *Situs desktop*): buka folder `src/assets/music` → **Add file → Upload files** → pilih lagunya → **Commit**.
+3. Bila lisensi mewajibkan kredit, isi `MUSIC_CREDIT` di `src/app/brand.ts` (tampil di Setting → Tentang).
+4. Build ulang APK. Lagu diputar bergantian dan berulang; berhenti saat aplikasi ke latar belakang; tombol Musik di Setting tetap berlaku. Tanpa lagu di folder itu, aplikasi kembali memakai musik sintetis.
+
 ## Kebijakan privasi
 Wajib bila memakai AdMob atau menerbitkan di Play Store. Sudah ada: halaman di aplikasi (**Setting → Kebijakan privasi**) dan berkas web `public/privacy.html` (setelah deploy ke Vercel: `https://DOMAINMU/privacy.html`; itulah URL yang diminta Play Console). **Isi email kontak** di `CONTACT_EMAIL` (`src/app/brand.ts`) dan di `public/privacy.html` sebelum dipublikasikan. Ubah teksnya bila fitur berubah (mis. menambah analitik).
 

@@ -21,3 +21,9 @@ button.sr:active{background:color-mix(in srgb,var(--y) 40%,transparent)}
 #toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom,0px));z-index:50;transform:translate(-50%,10px);padding:10px 16px;background:var(--ln);color:var(--card);border-radius:12px;font-weight:700;font-size:.9rem;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:86vw;text-align:center}
 #toast.on{opacity:1;transform:translate(-50%,0)}
 @media (prefers-reduced-motion:reduce){.sheet-in{animation:none}.tgl,.tgl i,#toast{transition:none}}
+
+.sr .val{margin-left:auto;font-size:.85rem;font-weight:600;opacity:.7}
+.sr .val+.chev{margin-left:6px}
+.rd{flex:none;width:24px;height:24px;border:3px solid var(--ln);border-radius:50%}
+.opt.on .rd{background:var(--ln);box-shadow:inset 0 0 0 4px var(--card)}
+.sheet .sl{box-shadow:none}

@@ -1,5 +1,8 @@
 interface ImportMetaEnv { readonly MODE: string }
-interface ImportMeta { readonly env: ImportMetaEnv }
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+  glob<T = unknown>(pattern: string, options?: Record<string, unknown>): Record<string, T>;
+}
 
 // Impor CSS (diproses Vite)
 declare module '*.css';

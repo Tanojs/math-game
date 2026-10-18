@@ -3,6 +3,8 @@
  * materi tidak cukup, aturan 50 langkah, dan posisi berulang 3 kali.
  * Papan: indeks 0 = a8 … 63 = h1. Huruf besar = putih, kecil = hitam, '' = kosong.
  */
+import { searchBest, type BotOpts } from './search.js';
+
 export type Promo = 'q' | 'r' | 'b' | 'n';
 export type Move = [from: number, to: number, promo?: Promo];
 export interface Position {
@@ -15,7 +17,6 @@ export interface Position {
   hm: number;
 }
 
-const VALUE: Record<string, number> = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 100 };
 export const isWhitePiece = (s: string): boolean => s === s.toUpperCase();
 const KN: ReadonlyArray<readonly [number, number]> = [[1, 2], [2, 1], [-1, 2], [-2, 1], [1, -2], [2, -1], [-1, -2], [-2, -1]];
 const DG: ReadonlyArray<readonly [number, number]> = [[1, 1], [1, -1], [-1, 1], [-1, -1]];
@@ -145,42 +146,10 @@ export function perft(p: Position, white: boolean, depth: number): number {
   return legalMoves(p, white).reduce((s, m) => s + perft(apply(p, m), !white, depth - 1), 0);
 }
 
-// ---------- evaluasi & bot ----------
-const evaluate = (sq: readonly string[]): number =>
-  sq.reduce((s, piece, i) => {
-    if (!piece) return s;
-    const t = piece.toLowerCase(), w = isWhitePiece(piece);
-    return s + (w ? 1 : -1) * ((VALUE[t] as number) + (t === 'p' ? 0.05 * (w ? 7 - (i >> 3) : (i >> 3) - 1) : 0));
-  }, 0);
-
-/** Nilai tangkapan/promosi (untuk urutan langkah & bot Mudah). */
-const captureValue = (sq: readonly string[], m: Move): number =>
-  (sq[m[1]] ? (VALUE[(sq[m[1]] as string).toLowerCase()] as number) : 0) + (m[2] === 'q' ? 8 : 0);
-
-function negamax(p: Position, white: boolean, depth: number, alpha: number, beta: number): number {
-  if (!depth) return (white ? 1 : -1) * evaluate(p.sq);
-  let best = -1e9;
-  const moves = generate(p, white).sort((x, y) => captureValue(p.sq, y) - captureValue(p.sq, x));
-  for (const m of moves) {
-    const s = -negamax(apply(p, m), !white, depth - 1, -beta, -alpha);
-    if (s > best) best = s;
-    if (best > alpha) alpha = best;
-    if (alpha >= beta) break;
-  }
-  return best === -1e9 ? 0 : best;
-}
-
-/** Langkah bot (hitam secara bawaan, putih jika `botWhite`). Level 0 = Mudah (acak, suka menangkap), 1 = Sedang, 2 = Sulit. */
-export function chooseBotMove(p: Position, level: number, botWhite = false): Move | null {
-  let best: Move | null = null, bv = -1e9;
-  const depth = level === 1 ? 1 : 2;
-  for (const m of legalMoves(p, botWhite)) {
-    const v = level === 0
-      ? captureValue(p.sq, m) + Math.random() * 3
-      : -negamax(apply(p, m), !botWhite, depth, -1e9, 1e9) + Math.random() * 0.2;
-    if (v > bv) { bv = v; best = m; }
-  }
-  return best;
+// ---------- bot ----------
+/** Langkah bot (hitam secara bawaan, putih jika `botWhite`). Level 0 = Mudah, 1 = Sedang, 2 = Sulit (lihat search.ts). */
+export function chooseBotMove(p: Position, level: number, botWhite = false, opts?: BotOpts): Move | null {
+  return searchBest(p, botWhite, level, opts);
 }
 
 // ---------- status permainan ----------

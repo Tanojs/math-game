@@ -8,7 +8,7 @@ test('noteFreq: A4 = 440 Hz, oktaf = dua kali lipat', () => {
 });
 
 test('semua efek suara terdefinisi, valid, dan tidak berpotensi pecah (clipping)', () => {
-  const kinds: SfxKind[] = ['tap', 'pop', 'good', 'bad', 'win', 'lose', 'draw', 'flip', 'move', 'capture', 'open', 'back'];
+  const kinds: SfxKind[] = ['tap', 'pop', 'good', 'bad', 'win', 'lose', 'draw', 'flip', 'move', 'capture', 'open', 'back', 'turn', 'rtk1', 'rtk2', 'rtk3', 'settle'];
   for (const k of kinds) {
     const voices = SFX[k];
     assert.ok(voices && voices.length > 0, `${k} kosong`);

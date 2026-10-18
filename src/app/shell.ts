@@ -9,6 +9,7 @@ import { gotoTab, initRouter, play, showTab, type Tab } from './router.js';
 import { initSound } from './sound.js';
 import { initAds } from './ads.js';
 import { initBack } from './back.js';
+import { currentTrack, pickTrack, trackLabel, trackNames } from './sound.js';
 import { shareApp } from './share.js';
 import { aboutHtml, openSheet, privacyHtml, toast } from './pages.js';
 
@@ -21,6 +22,7 @@ const SETTINGS_HTML = `<div id="scr" class="hide"></div>
 <div class="sg"><h3 class="sh">Suara</h3><div class="sl">
 <div class="sr"><span>Efek suara</span><button class="tgl" id="snd-fx" role="switch" aria-label="Efek suara"><i></i></button></div>
 <div class="sr"><span>Musik</span><button class="tgl" id="snd-mu" role="switch" aria-label="Musik"><i></i></button></div>
+<button class="sr hide" id="st-track"><span>Pilihan lagu</span><b class="val" id="trk-name">Semua bergantian</b><b class="chev">›</b></button>
 </div></div>
 <div class="sg"><h3 class="sh">Lainnya</h3><div class="sl">
 <button class="sr" id="st-share"><span>Bagikan game ini</span><b class="chev">›</b></button>
@@ -68,6 +70,20 @@ function wireSettings(): void {
     if (r === 'copied') toast('Tautan disalin ke papan klip');
     else if (r === 'failed') toast('Tidak bisa membagikan dari sini');
   };
+  if (trackNames().length > 1) {
+    $('#st-track').classList.remove('hide');
+    const opts = (): string => ['Semua bergantian', ...trackNames()].map((n, k) =>
+      `<button class="sr opt${currentTrack() === k - 1 ? ' on' : ''}" data-t="${k - 1}"><span>${n}</span><b class="rd"></b></button>`).join('');
+    const refresh = (): void => { $('#trk-name').textContent = trackLabel(); };
+    refresh();
+    $('#st-track').onclick = () => openSheet('Pilihan lagu', `<div class="sl">${opts()}</div>`, (e, root) => {
+      const b = (e.target as Element).closest<HTMLElement>('[data-t]');
+      if (!b) return;
+      pickTrack(Number(b.dataset.t));
+      root.querySelector('.sl')!.innerHTML = opts();
+      refresh();
+    });
+  }
   $('#st-priv').onclick = () => openSheet('Kebijakan privasi', privacyHtml());
   $('#st-about').onclick = () => openSheet('Tentang', aboutHtml());
   // Hapus rekor: dua ketukan agar tidak terhapus tak sengaja

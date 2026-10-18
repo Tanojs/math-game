@@ -1,11 +1,16 @@
 import { $ } from '../core/dom.js';
 import { SoundEngine, type SfxKind } from '../core/audio.js';
 import { getStr, setStr } from '../core/storage.js';
+import { TRACK_LIST } from '../core/tracks.js';
 
 const K_SFX = 'mgsfx', K_MUS = 'mgmus';
 const engine = new SoundEngine();
 engine.sfxOn = getStr(K_SFX) !== '0'; // bawaan: nyala
 engine.musicOn = getStr(K_MUS) !== '0';
+engine.tracks = TRACK_LIST.map((t) => t.url);
+const K_TRK = 'mgtrk';
+const savedTrack = TRACK_LIST.findIndex((t) => t.name === getStr(K_TRK));
+engine.trackPick = savedTrack; // -1 bila belum dipilih / lagu sudah tidak ada
 
 const setSwitch = (sel: string, on: boolean): void => {
   const b = $(sel);
@@ -67,4 +72,16 @@ export function initSound(): void {
     paint();
   };
   paint();
+}
+
+export const trackNames = (): string[] => TRACK_LIST.map((t) => t.name);
+export const currentTrack = (): number => engine.trackPick;
+export const trackLabel = (): string => (engine.trackPick >= 0 ? TRACK_LIST[engine.trackPick]?.name ?? 'Semua bergantian' : 'Semua bergantian');
+
+/** Pilih lagu (-1 = semua bergantian). Bila musik sedang mati, otomatis dinyalakan agar langsung terdengar. */
+export function pickTrack(i: number): void {
+  setStr(K_TRK, i >= 0 ? TRACK_LIST[i]?.name ?? '' : '');
+  engine.unlock();
+  if (!engine.musicOn) { engine.musicOn = true; setStr(K_MUS, '1'); paint(); }
+  engine.setTrack(i);
 }

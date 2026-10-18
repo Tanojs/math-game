@@ -3,11 +3,14 @@ import { getStr, setStr } from '../../core/storage.js';
 import { celebrate } from '../../core/banner.js';
 import type { Mount } from '../../core/types.js';
 import { bestTime, fmtTime } from '../../app/records.js';
+import { sfx } from '../../core/sfx.js';
+import type { SfxKind } from '../../core/audio.js';
 import {
   commit, createCubies, dragToMove, DIRS, faceMove, FACE_KEYS, inLayer, inverse, isSolved, mulMat, resetCubies,
   rotation, scrambleMoves, type Cubie, type FaceKey, type FaceName, type LayerMove, type Mat3,
 } from './model.js';
 
+const SCR = ['rtk1', 'rtk2', 'rtk3'] as const;
 const COLOR: Record<FaceKey, string> = { x: '#D7192D', X: '#FF6B00', y: '#FFFFFF', Y: '#FFD60A', z: '#00A651', Z: '#0057E7' };
 const LETTER: Record<FaceKey, string> = { x: 'M', X: 'O', y: 'P', Y: 'K', z: 'H', Z: 'B' };
 const LETTER_COLOR: Record<FaceKey, string> = { x: '#fff', X: '#000', y: '#000', Y: '#000', z: '#000', Z: '#fff' };
@@ -36,6 +39,7 @@ export const mountRubik: Mount = (_id, el, info) => {
   let moves = 0, t0 = 0;
   let running = false, scrambled = false, busy = false, dead = false;
   let queue: Job[] = [];
+  let scr = 0;
   let rx = -28, ry = -38;
 
   el.innerHTML =
@@ -99,6 +103,8 @@ export const mountRubik: Mount = (_id, el, info) => {
     busy = true;
     animate(job.m, job.ms, () => {
       busy = false;
+      // suara: putaran sendiri = "klak"; saat mengacak = rentetan "tek-tek-tek" bernada bervariasi, ditutup bunyi "nyes" saat berhenti
+      if (job.k === 's') { sfx(SCR[scr++ % 3] as SfxKind); if (!queue.length) sfx('settle'); } else sfx('turn');
       if (job.k === 'u') {
         hist.push(job.m);
         moves++;

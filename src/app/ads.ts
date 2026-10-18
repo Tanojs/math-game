@@ -4,7 +4,7 @@ import { nativePlugin } from './native.js';
 interface ConsentInfo { status: string; isConsentFormAvailable: boolean; canRequestAds: boolean }
 type Info = Record<string, unknown>;
 
-interface AdMobPlugin {
+export interface AdMobPlugin {
   requestConsentInfo(): Promise<ConsentInfo>;
   showConsentForm(): Promise<ConsentInfo>;
   initialize(): Promise<void>;
@@ -24,13 +24,13 @@ const why = (e: unknown): string => String((e as { message?: string })?.message 
  * Banner AdMob native. Aman: tanpa internet / plugin tidak ada / iklan gagal = game tetap jalan seperti biasa.
  * Banner hanya tampil di layar menu (Game, Rekor, Setting) dan disembunyikan saat bermain (cegah klik tak sengaja).
  */
-export function initAds(): void {
+export function initAds(injected?: AdMobPlugin | null): void {
   if (!ADS_ENABLED) { status = 'dimatikan (ADS_ENABLED = false)'; return; }
-  const ad = nativePlugin<AdMobPlugin>('AdMob');
+  const ad = injected ?? nativePlugin<AdMobPlugin>('AdMob');
   if (!ad) { status = 'plugin AdMob tidak ada (bukan APK, atau dibuild dengan with_ads dimatikan)'; return; }
   status = 'plugin ditemukan, memulai…';
 
-  let ready = false, shown = false, inGame = document.body.classList.contains('ig'), height = 60, tries = 0, retryTimer = 0;
+  let ready = false, shown = false, inGame = document.body.classList.contains('ig'), height = 60, tries = 0, retryTimer = 0, loaded = false;
   const navH = (): number => document.getElementById('nv')?.getBoundingClientRect().height ?? 72;
   const pad = (): void => {
     const on = ready && !inGame && height > 0;
@@ -39,16 +39,32 @@ export function initAds(): void {
   };
   const sync = async (): Promise<void> => {
     if (!ready) return;
+    if (inGame) {
+      // Di dalam game: batalkan percobaan ulang, sembunyikan banner yang sudah tampil / buang yang gagal dimuat.
+      clearTimeout(retryTimer);
+      retryTimer = 0;
+      if (shown) {
+        try { await (loaded ? ad.hideBanner() : ad.removeBanner()); } catch { /* sudah tidak ada */ }
+        if (!loaded) shown = false;
+      }
+      pad();
+      return;
+    }
     try {
-      if (inGame) { if (shown) await ad.hideBanner(); }
-      else if (shown) await ad.resumeBanner();
+      if (shown && loaded) await ad.resumeBanner();
       else {
+        if (shown) { try { await ad.removeBanner(); } catch { /* sudah tidak ada */ } }
         status = 'meminta banner…';
         await ad.showBanner({ adId: ADMOB_BANNER_ID, adSize: 'ADAPTIVE_BANNER', position: 'BOTTOM_CENTER', margin: Math.round(navH()), isTesting: ADS_TESTING });
         shown = true;
         if (status === 'meminta banner…') status = 'banner diminta, menunggu iklan dimuat';
       }
-    } catch (e) { status = `banner gagal: ${why(e)}`; }
+    } catch (e) {
+      shown = false;
+      loaded = false;
+      status = `banner gagal: ${why(e)}`;
+      retry();
+    }
     pad();
   };
 
@@ -91,9 +107,10 @@ export function initAds(): void {
       status = 'menginisialisasi AdMob…';
       await ad.initialize();
       void ad.addListener('bannerAdSizeChanged', (s) => { height = typeof s.height === 'number' ? s.height : height; pad(); });
-      void ad.addListener('bannerAdLoaded', () => { tries = 0; status = 'banner tampil'; });
+      void ad.addListener('bannerAdLoaded', () => { tries = 0; loaded = true; status = 'banner tampil'; });
       void ad.addListener('bannerAdFailedToLoad', (er) => {
         height = 0;
+        loaded = false;
         const msg = String(er.message ?? 'tanpa pesan');
         status = `iklan gagal dimuat (kode ${String(er.code ?? '?')}: ${msg}); percobaan ke-${tries + 1}${/JavascriptEngine/i.test(msg) ? ' — biasanya jaringan lambat / tidak ada internet; akan dicoba lagi otomatis' : ''}`;
         pad();

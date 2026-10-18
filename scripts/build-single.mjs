@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
+const FAKE_TRACKS = "({ '../assets/music/01-santai-sore.mp3': 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=', '../assets/music/02-petualangan-ceria.mp3': 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=' })"; // hanya untuk uji e2e (MG_FAKE_TRACKS=1)
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const proj = path.resolve(here, '..');
@@ -20,6 +21,7 @@ const walk = (d) => {
         .replace(/import\.meta\.env\.MODE/g, JSON.stringify(process.env.MG_MODE ?? 'production'))
         .replace(/^import\s+'\.\/styles\/index\.css';?\s*$/m, '')
         .replace(/^import\s*\{[^}]*\}\s*from\s*'@capacitor\/core';?\s*$/gm, 'const Capacitor = { isNativePlatform: () => false, isPluginAvailable: (_n: string) => false }; const registerPlugin = <T,>(_n: string): T => undefined as unknown as T;') // build web biasa: tanpa runtime native
+        .replace(/import\.meta\.glob(<[^>]*>)?\([^)]*\)/g, process.env.MG_FAKE_TRACKS ? FAKE_TRACKS : '{}') // pratinjau satu-file: tanpa lagu bundel
         .replace(/^import\s+'@fontsource\/[^']+';?.*$/gm, ''); // font npm: dibundel Vite; di sini diganti tautan Google Fonts (lihat bawah)
       mods[id] = ts.transpileModule(src, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 } }).outputText;
     }

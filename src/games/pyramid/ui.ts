@@ -30,7 +30,7 @@ export const mountPyramid: Mount = (id, el, info) => {
     el.innerHTML =
       segment('l', ['Mudah', 'Sedang', 'Sulit'], level) +
       `<div class=py>${rowsHtml}</div><div class="pad">` +
-      [1, 2, 3, 4, 5, 6, 7, 8, 9, '⌫', 0, '→'].map((k) => `<button class=b data-k="${k}">${k}</button>`).join('') +
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, '⌫', 0, '→'].map((k) => `<button class=b data-k="${k}">${k === '→' ? 'Enter' : k}</button>`).join('') +
       `</div><div class=msg>${msg}</div>` + (done ? '<button class=cta id=nx>Soal berikutnya</button>' : '');
   };
 
@@ -46,7 +46,6 @@ export const mountPyramid: Mount = (id, el, info) => {
   };
 
   const check = (): void => {
-    if (values.some((v) => v === null)) { bad = []; msg = ''; return; }
     bad = violations(values, puzzle.rows);
     if (!bad.length) { done = true; solved++; best(id + level, solved); msg = 'Benar!'; sel = -1; }
     else msg = 'Salah';
@@ -59,14 +58,15 @@ export const mountPyramid: Mount = (id, el, info) => {
 
   const press = (k: string): void => {
     if (done || sel < 0) return;
-    if (k === '→') {
+    if (k === '→') { // Enter: semua kotak terisi -> periksa jawaban; belum penuh -> pindah ke kotak kosong berikutnya
+      if (values.every((v) => v !== null)) { check(); return; }
       const b = blanks(), at = b.indexOf(sel);
       select(b[(at + 1) % b.length] as number);
       return;
     }
     buf = k === '⌫' ? buf.slice(0, -1) : (buf + k).slice(0, 3);
     values[sel] = buf === '' ? null : Number(buf);
-    check();
+    bad = []; msg = ''; // benar/salah baru terlihat setelah Enter
   };
 
   el.onclick = (e) => {

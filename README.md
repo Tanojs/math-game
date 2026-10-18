@@ -121,3 +121,8 @@ Proyek ini siap dibungkus Capacitor menjadi APK yang memuat semua aset secara lo
 Efek suara + musik latar disintesis lewat Web Audio (tanpa file audio, offline), bisa dimatikan di tab Setting. Membuka game memakai animasi masuk (hormati pengaturan *reduce motion*).
 
 Setting memuat: tema, ikon, suara, Bagikan, Kebijakan privasi, Tentang. Iklan AdMob (banner di menu saja) dan kebijakan privasi dijelaskan di [`docs/ANDROID.md`](docs/ANDROID.md).
+Musik latar bisa diganti lagu asli: taruh `.mp3`/`.ogg` di `src/assets/music/` (lihat `docs/ANDROID.md`).
+
+## Bot catur
+Mesin pencari sendiri (`src/games/chess/search.ts`): papan bilangan bulat dengan make/unmake, alpha-beta (PVS) + iterative deepening, tabel transposisi, null-move, late-move reduction, quiescence, dan evaluasi (materi, tabel posisi, pasangan gajah, pion lolos/ganda). Aturan resmi tetap di `engine.ts`; `tests/chess-search.test.ts` mencocokkan jumlah langkah (perft) dengan angka acuan.
+- **Mudah**: kedalaman 2 + sering salah langkah. **Sedang**: ±0,6 detik, sesekali meleset. **Sulit**: sampai ±1,7 detik, tanpa kesalahan acak. Bot menghindari mengulang posisi bila ada langkah lain (tidak mudah seri).

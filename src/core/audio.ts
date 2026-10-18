@@ -2,7 +2,7 @@
  * Suara sintetis (Web Audio) — TANPA file audio, jadi tetap ringan & offline.
  * Data suara (Voice) dipisah dari pemutarnya supaya mudah dites dan bisa dirender offline.
  */
-export type SfxKind = 'tap' | 'pop' | 'good' | 'bad' | 'win' | 'lose' | 'draw' | 'flip' | 'move' | 'capture' | 'open' | 'back';
+export type SfxKind = 'tap' | 'pop' | 'good' | 'bad' | 'win' | 'lose' | 'draw' | 'flip' | 'move' | 'capture' | 'open' | 'back' | 'turn' | 'rtk1' | 'rtk2' | 'rtk3' | 'settle';
 
 export interface Voice {
   type: OscillatorType;
@@ -44,6 +44,12 @@ export const SFX: Record<SfxKind, Voice[]> = {
   capture: [v('triangle', 260, 0, 0.1, 0.34, { f1: 110 }), v('sawtooth', 200, 0, 0.06, 0.1, { lp: 700 })],
   open: [v('sine', 330, 0, 0.2, 0.15, { f1: 760, attack: 0.04 })],
   back: [v('sine', 700, 0, 0.15, 0.14, { f1: 360 })],
+  // Rubik: putaran satu sisi ("klak"), rentetan acak ("tek" 3 nada), dan bunyi berhenti ("nyes")
+  turn: [v('triangle', 380, 0, 0.065, 0.3, { f1: 230 }), v('sine', 1600, 0, 0.02, 0.1, { f1: 800 }), v('sine', 150, 0, 0.05, 0.2)],
+  rtk1: [v('triangle', 540, 0, 0.04, 0.22, { f1: 340 }), v('sine', 2300, 0, 0.012, 0.09, { f1: 1400 })],
+  rtk2: [v('triangle', 640, 0, 0.04, 0.22, { f1: 400 }), v('sine', 2600, 0, 0.012, 0.09, { f1: 1500 })],
+  rtk3: [v('triangle', 470, 0, 0.04, 0.22, { f1: 300 }), v('sine', 2000, 0, 0.012, 0.09, { f1: 1300 })],
+  settle: [v('sine', 210, 0, 0.15, 0.3, { f1: 90 }), v('triangle', 720, 0, 0.07, 0.16, { f1: 430 }), v('triangle', 960, 0.06, 0.09, 0.1)],
 };
 
 // ---------- musik latar (loop 8 birama, ±20 detik) ----------
@@ -135,11 +141,18 @@ export function playVoices(ctx: BaseAudioContext, dest: AudioNode, voices: reado
 }
 
 const MUSIC_LEVEL = 0.9;
+const TRACK_LEVEL = 1.0; // volume elemen <audio> untuk lagu bawaan
 
 /** Pengelola suara: konteks audio dibuat saat ada sentuhan pertama (aturan autoplay browser/WebView). */
 export class SoundEngine {
   sfxOn = true;
   musicOn = true;
+  /** Lagu bawaan (URL). Jika ada, diputar menggantikan musik sintetis. */
+  tracks: readonly string[] = [];
+  private audio: HTMLAudioElement | null = null;
+  private trackIdx = Math.floor(Math.random() * 1000);
+  /** -1 = semua lagu bergantian; selain itu indeks satu lagu yang diulang. */
+  trackPick = -1;
   private ctx: AudioContext | null = null;
   private sfxBus: GainNode | null = null;
   private musBus: GainNode | null = null;
@@ -202,7 +215,40 @@ export class SoundEngine {
     else { this.syncMusic(); void this.ctx.suspend().catch(() => undefined); }
   }
 
+  private loadTrack(): void {
+    if (!this.audio || !this.tracks.length) return;
+    const i = this.trackPick >= 0 ? this.trackPick : this.trackIdx;
+    this.audio.src = this.tracks[i % this.tracks.length] as string;
+  }
+
+  /** Pilih satu lagu (diulang) atau -1 = semua bergantian. Langsung diputar bila musik menyala. */
+  setTrack(i: number): void {
+    this.trackPick = i;
+    if (i >= 0) this.trackIdx = i;
+    if (!this.audio) { this.syncMusic(); return; }
+    this.loadTrack();
+    if (this.musicOn && this.active) void this.audio.play().catch(() => undefined);
+  }
+
+  private syncTracks(): void {
+    const run = this.musicOn && this.active;
+    if (!run) { this.audio?.pause(); return; }
+    if (!this.audio) {
+      const a = new Audio();
+      a.preload = 'auto';
+      a.volume = TRACK_LEVEL;
+      const next = (): void => { if (this.trackPick < 0) this.trackIdx++; this.loadTrack(); void a.play().catch(() => undefined); };
+      a.addEventListener('ended', next);
+      let bad = 0;
+      a.addEventListener('error', () => { if (++bad < this.tracks.length) next(); }); // lewati berkas rusak
+      this.audio = a;
+      this.loadTrack();
+    }
+    void this.audio.play().catch(() => undefined);
+  }
+
   private syncMusic(): void {
+    if (this.tracks.length) { this.syncTracks(); return; }
     const c = this.ctx;
     if (!c || !this.musBus || !this.musIn) return;
     const run = this.musicOn && this.active && c.state === 'running';
