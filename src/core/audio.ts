@@ -5,8 +5,9 @@
 export type SfxKind = 'tap' | 'pop' | 'good' | 'bad' | 'win' | 'lose' | 'draw' | 'flip' | 'move' | 'capture' | 'open' | 'back' | 'turn' | 'rtk1' | 'rtk2' | 'rtk3' | 'settle';
 
 export interface Voice {
-  type: OscillatorType;
-  /** Frekuensi awal (Hz) dan opsional frekuensi akhir (meluncur). */
+  /** 'noise' = desis/derak (white noise yang disaring band-pass di `f0`) — dasar bunyi plastik, mis. klik kubus Rubik. */
+  type: OscillatorType | 'noise';
+  /** Frekuensi awal (Hz) dan opsional frekuensi akhir (meluncur). Untuk 'noise': frekuensi tengah saringan. */
   f0: number;
   f1?: number;
   /** Waktu mulai (detik, relatif), durasi, dan puncak volume. */
@@ -18,12 +19,16 @@ export interface Voice {
   rel?: number;
   /** Low-pass (Hz) agar nada lebih lembut. */
   lp?: number;
+  /** Hanya 'noise': ketajaman saringan band-pass (makin besar = makin sempit/berdenting). */
+  q?: number;
 }
 
 export const noteFreq = (midi: number): number => 440 * 2 ** ((midi - 69) / 12);
 
 const v = (type: OscillatorType, f0: number, t: number, dur: number, gain: number, extra: Partial<Voice> = {}): Voice => ({ type, f0, t, dur, gain, ...extra });
 const n = noteFreq;
+/** Suara noise band-pass: pusat `f`, mulai `t`, lama `dur`, volume `gain`, ketajaman `q`. */
+const nz = (f: number, t: number, dur: number, gain: number, q: number): Voice => ({ type: 'noise', f0: f, t, dur, gain, q, attack: 0.001 });
 
 export const SFX: Record<SfxKind, Voice[]> = {
   tap: [v('sine', 900, 0, 0.05, 0.2, { f1: 620 })],
@@ -44,12 +49,19 @@ export const SFX: Record<SfxKind, Voice[]> = {
   capture: [v('triangle', 260, 0, 0.1, 0.34, { f1: 110 }), v('sawtooth', 200, 0, 0.06, 0.1, { lp: 700 })],
   open: [v('sine', 330, 0, 0.2, 0.15, { f1: 760, attack: 0.04 })],
   back: [v('sine', 700, 0, 0.15, 0.14, { f1: 360 })],
-  // Rubik: putaran satu sisi ("klak"), rentetan acak ("tek" 3 nada), dan bunyi berhenti ("nyes")
-  turn: [v('triangle', 380, 0, 0.065, 0.3, { f1: 230 }), v('sine', 1600, 0, 0.02, 0.1, { f1: 800 }), v('sine', 150, 0, 0.05, 0.2)],
-  rtk1: [v('triangle', 540, 0, 0.04, 0.22, { f1: 340 }), v('sine', 2300, 0, 0.012, 0.09, { f1: 1400 })],
-  rtk2: [v('triangle', 640, 0, 0.04, 0.22, { f1: 400 }), v('sine', 2600, 0, 0.012, 0.09, { f1: 1500 })],
-  rtk3: [v('triangle', 470, 0, 0.04, 0.22, { f1: 300 }), v('sine', 2000, 0, 0.012, 0.09, { f1: 1300 })],
-  settle: [v('sine', 210, 0, 0.15, 0.3, { f1: 90 }), v('triangle', 720, 0, 0.07, 0.16, { f1: 430 }), v('triangle', 960, 0.06, 0.09, 0.1)],
+  // Rubik (plastik): putaran = "klik-klak" (klik tajam saat lapisan mengunci + sedikit gesekan + bunyi kosong plastik),
+  // mengacak = rentetan "tek" pendek bernada bervariasi, berhenti = "tok" kubus diletakkan.
+  turn: [
+    nz(3400, 0, 0.022, 0.34, 1.4), nz(1500, 0, 0.05, 0.16, 0.9), v('sine', 980, 0, 0.03, 0.12, { f1: 650 }),
+    nz(2600, 0.045, 0.018, 0.2, 1.6), v('sine', 250, 0.045, 0.045, 0.1, { f1: 170 }),
+  ],
+  rtk1: [nz(3000, 0, 0.016, 0.3, 1.4), nz(1300, 0, 0.03, 0.12, 0.9), v('sine', 950, 0, 0.02, 0.1, { f1: 650 })],
+  rtk2: [nz(3600, 0, 0.016, 0.3, 1.4), nz(1600, 0, 0.03, 0.12, 0.9), v('sine', 1100, 0, 0.02, 0.1, { f1: 740 })],
+  rtk3: [nz(2600, 0, 0.016, 0.3, 1.4), nz(1100, 0, 0.03, 0.12, 0.9), v('sine', 800, 0, 0.02, 0.1, { f1: 560 })],
+  settle: [
+    nz(700, 0, 0.06, 0.25, 0.8), v('sine', 190, 0, 0.12, 0.28, { f1: 95 }),
+    nz(2800, 0.03, 0.015, 0.15, 1.3), nz(2200, 0.07, 0.014, 0.1, 1.3),
+  ],
 };
 
 // ---------- musik latar (loop 8 birama, ±20 detik) ----------
@@ -108,16 +120,49 @@ export function planMusic(nextBar: number, now: number, lookahead = 1.2): { star
   return { start, count };
 }
 
+/** Noise band-pass hanya meloloskan sebagian kecil energi, jadi volumenya dikali ini agar `gain` di data tetap berarti. */
+const NOISE_MAKEUP = 3;
+const noiseCache = new WeakMap<BaseAudioContext, AudioBuffer>();
+/** Buffer white noise 0,25 dtk (acak semu bersemai → bunyi selalu sama & bisa dirender ulang persis). */
+function noiseBuffer(ctx: BaseAudioContext): AudioBuffer {
+  let b = noiseCache.get(ctx);
+  if (!b) {
+    b = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * 0.25), ctx.sampleRate);
+    const d = b.getChannelData(0);
+    let seed = 1234567;
+    for (let i = 0; i < d.length; i++) { seed = (seed * 1664525 + 1013904223) >>> 0; d[i] = seed / 2147483648 - 1; }
+    noiseCache.set(ctx, b);
+  }
+  return b;
+}
+
 /** Memainkan sekumpulan suara pada `dest`, mulai di waktu konteks `when`. */
 export function playVoices(ctx: BaseAudioContext, dest: AudioNode, voices: readonly Voice[], when: number): void {
   for (const x of voices) {
     const t0 = when + x.t, a = x.attack ?? 0.005;
-    const o = ctx.createOscillator();
-    o.type = x.type;
-    o.frequency.setValueAtTime(x.f0, t0);
-    if (x.f1) o.frequency.exponentialRampToValueAtTime(x.f1, t0 + x.dur);
+    const isNoise = x.type === 'noise';
+    let src: AudioScheduledSourceNode, tail: AudioNode;
+    if (isNoise) {
+      const bs = ctx.createBufferSource();
+      bs.buffer = noiseBuffer(ctx);
+      const bp = ctx.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.Q.value = x.q ?? 1;
+      bp.frequency.setValueAtTime(x.f0, t0);
+      if (x.f1) bp.frequency.exponentialRampToValueAtTime(x.f1, t0 + x.dur);
+      bs.connect(bp);
+      src = bs;
+      tail = bp;
+    } else {
+      const o = ctx.createOscillator();
+      o.type = x.type as OscillatorType;
+      o.frequency.setValueAtTime(x.f0, t0);
+      if (x.f1) o.frequency.exponentialRampToValueAtTime(x.f1, t0 + x.dur);
+      src = o;
+      tail = o;
+    }
     const g = ctx.createGain();
-    const peak = Math.max(x.gain, 0.0002);
+    const peak = Math.max(x.gain * (isNoise ? NOISE_MAKEUP : 1), 0.0002);
     g.gain.setValueAtTime(0.0001, t0);
     if (x.rel) {
       g.gain.linearRampToValueAtTime(peak, t0 + a);
@@ -131,12 +176,12 @@ export function playVoices(ctx: BaseAudioContext, dest: AudioNode, voices: reado
       const f = ctx.createBiquadFilter();
       f.type = 'lowpass';
       f.frequency.value = x.lp;
-      o.connect(f);
+      tail.connect(f);
       f.connect(g);
-    } else o.connect(g);
+    } else tail.connect(g);
     g.connect(dest);
-    o.start(t0);
-    o.stop(t0 + x.dur + 0.03);
+    src.start(t0);
+    src.stop(t0 + x.dur + 0.03);
   }
 }
 
