@@ -140,8 +140,8 @@ export function playVoices(ctx: BaseAudioContext, dest: AudioNode, voices: reado
   }
 }
 
-const MUSIC_LEVEL = 0.9;
-const TRACK_LEVEL = 1.0; // volume elemen <audio> untuk lagu bawaan
+const MUSIC_LEVEL = 0.75;
+const TRACK_LEVEL = 0.8; // volume elemen <audio> untuk lagu bawaan
 
 /** Pengelola suara: konteks audio dibuat saat ada sentuhan pertama (aturan autoplay browser/WebView). */
 export class SoundEngine {

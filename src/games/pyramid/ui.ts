@@ -31,7 +31,7 @@ export const mountPyramid: Mount = (id, el, info) => {
       segment('l', ['Mudah', 'Sedang', 'Sulit'], level) +
       `<div class=py>${rowsHtml}</div><div class="pad">` +
       [1, 2, 3, 4, 5, 6, 7, 8, 9, '⌫', 0, '→'].map((k) => `<button class=b data-k="${k}">${k === '→' ? 'Enter' : k}</button>`).join('') +
-      `</div><div class=msg>${msg}</div>` + (done ? '<button class=cta id=nx>Soal berikutnya</button>' : '');
+      `</div><div class=msg>${msg}</div>` + `<button class=cta id=nx${done ? '' : ' style="visibility:hidden" tabindex=-1 aria-hidden=true'}>Soal berikutnya</button>`;
   };
 
   const newPuzzle = (): void => {

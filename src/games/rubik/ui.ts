@@ -41,14 +41,21 @@ export const mountRubik: Mount = (_id, el, info) => {
   let queue: Job[] = [];
   let scr = 0;
   let rx = -28, ry = -38;
+  let mode: 'layer' | 'view' = 'layer'; // layer: geser stiker = putar lapisan; view: geser di mana saja = putar seluruh kubus
 
   el.innerHTML =
     '<div class=seg id=rsz>' + [2, 3, 4].map((n) => `<button data-n=${n}>${n}x${n}</button>`).join('') + '</div>' +
+    '<div class=seg id=rmd><button data-m=layer>Putar lapisan</button><button data-m=view>Putar tampilan</button></div>' +
     '<div class="rv"><div class="sc" id="sc"></div></div><div class=msg id=rm></div><div class=rg>' +
     ['', "'"].map((q) => FACES.map((f) => `<button class=b data-f="${f + q}" style="background:${COLOR[BUTTON_COLOR[f]]};color:#000">${f + q}</button>`).join('')).join('') +
     '</div><div class=rc><button class=cta data-a=s>Acak</button><button class="cta alt" data-a=u>Urungkan</button>' +
     '<button class="cta alt" data-a=v>Balikkan semua</button><button class="cta alt" data-a=r>Reset</button>' +
     '<button class="cta alt" data-a=l>Huruf warna</button></div><div class=lgd id=lg></div>';
+
+  const markMode = (): void => {
+    $$('#rmd button').forEach((b) => b.classList.toggle('on', b.dataset.m === mode));
+    $('.rv').classList.toggle('vw', mode === 'view');
+  };
 
   const rakitKubus = (): void => {
     cubies = createCubies(N);
@@ -65,6 +72,7 @@ export const mountRubik: Mount = (_id, el, info) => {
       return e;
     });
     $$('#rsz button').forEach((b) => b.classList.toggle('on', Number(b.dataset.n) === N));
+    markMode();
   };
 
   const place = (i: number, extra?: Mat3): void => {
@@ -164,6 +172,8 @@ export const mountRubik: Mount = (_id, el, info) => {
   };
 
   el.onclick = (e) => {
+    const mb = hit(e, '[data-m]');
+    if (mb) { mode = mb.dataset.m === 'view' ? 'view' : 'layer'; return markMode(); }
     const nb = hit(e, '[data-n]');
     if (nb) return setSize(Number(nb.dataset.n));
     const b = hit(e, 'button');
@@ -173,7 +183,7 @@ export const mountRubik: Mount = (_id, el, info) => {
     else if (b.dataset.a) actions[b.dataset.a]?.();
   };
 
-  // ---- geser: stiker = putar lapisan, luar kubus = putar tampilan ----
+  // ---- geser: stiker = putar lapisan (mode lapisan), luar kubus atau mode tampilan = putar seluruh kubus ----
   const rv = $('.rv');
   let drag: { x: number; y: number; ci: number; face: FaceKey | null } | null = null;
   const legend = (on: boolean): void => { $('#lg').textContent = on ? 'P putih · K kuning · O oranye · M merah · H hijau · B biru' : ''; };
@@ -186,7 +196,7 @@ export const mountRubik: Mount = (_id, el, info) => {
     const cell = f?.parentElement;
     const ci = cell?.dataset.ci !== undefined ? Number(cell.dataset.ci) : -1;
     const face = f?.dataset.k as FaceKey | undefined;
-    const outer = ci >= 0 && face && (cubies[ci] as Cubie).s.includes(face);
+    const outer = mode === 'layer' && ci >= 0 && face && (cubies[ci] as Cubie).s.includes(face);
     drag = { x: e.clientX, y: e.clientY, ci: outer ? ci : -1, face: outer ? (face as FaceKey) : null };
     rv.setPointerCapture(e.pointerId);
   };
