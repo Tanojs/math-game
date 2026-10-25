@@ -22,5 +22,6 @@ export function renderScores(): void {
     row('Tebak Kode', levelChips('cod')) +
     row('Geser Balok', levelChips('blk')) +
     row('Cermin', levelChips('mir')) +
+    row('Ranjau', LEVELS.map((n, i) => `<i>${n} ${getRecord('mns' + i) ? fmtTime(getRecord('mns' + i)) : '-'}</i>`).join('')) +
     '</div>';
 }
