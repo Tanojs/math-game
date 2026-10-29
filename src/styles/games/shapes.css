@@ -1,0 +1,20 @@
+/* Isi Bentuk. Semua kelas berawalan "sb" agar tidak bentrok dengan game lain. */
+.sbk{width:min(100%,460px);margin:0 auto 10px;padding:8px 10px 10px;background:var(--card);border:3px solid var(--ln);border-radius:10px;box-shadow:4px 4px 0 var(--ln);text-align:center}
+.sbk>b{display:block;margin-bottom:8px;font-size:.85rem}
+.sbs{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:14px}
+.sbm{display:grid;gap:2px}
+.sbm>i{background:var(--y);border:2px solid var(--ln);border-radius:3px}
+.sbm[data-s="1"]>i{background:var(--k)}
+.sbm[data-s="2"]>i{background:var(--v)}
+.sbb{position:relative;display:grid;width:min(100%,460px);margin:0 auto;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;container-type:inline-size}
+.sbb>i{display:block}
+.sbc{box-sizing:border-box;background:var(--card);border:1px dashed rgba(0,0,0,.32);transition:background .12s}
+.sbt{border-top:4px solid var(--ln)}
+.sbl{border-left:4px solid var(--ln)}
+.sbr{border-right:4px solid var(--ln)}
+.sbd{border-bottom:4px solid var(--ln)}
+.sbc[data-s="0"]{background:var(--y)}
+.sbc[data-s="1"]{background:var(--k)}
+.sbc[data-s="2"]{background:var(--v)}
+.sbp{background:var(--c)}
+.sbe{background:var(--r)}

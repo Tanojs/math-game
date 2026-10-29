@@ -3,7 +3,7 @@
 Kumpulan 19 game latihan otak:
 
 - **Hitungan:** Hitung Cepat, Benar/Salah, Operator, Ketik Jawaban, Bandingkan, Tabel Kali, Hubungkan, Game 24, Piramida Angka
-- **Puzzle:** Pindahkan Batang, 15 Puzzle (4x4/5x5/6x6), 2048, Sudoku, Rubik 2x2/3x3/4x4, Geser Balok, Cermin (cocokkan bayangan cermin), Ranjau (Minesweeper 8x8/10x10/12x12), Tebak Kode
+- **Puzzle:** Pindahkan Batang, 15 Puzzle (4x4/5x5/6x6), 2048, Sudoku, Rubik 2x2/3x3/4x4, Geser Balok, Cermin (cocokkan bayangan cermin), Ranjau (Minesweeper 8x8/10x10/12x12), Isi Bentuk (bagi papan jadi area sesuai bank bentuk), Tebak Kode
 - **Melawan bot atau teman (satu HP, gantian):** XOX (3x3 sampai 5x5), Catur (aturan resmi), Reversi (piringan dibalik saat terjepit). Keduanya: pilih Bot / Teman, level Mudah-Sedang-Sulit, dan main sebagai Putih atau Hitam (lawan bot). Di mode Teman, bidak catur sisi atas diputar menghadap pemain seberang
 - **Fokus & kecepatan:** Ketuk Berurutan
 
@@ -60,6 +60,7 @@ src/
     <game>/ui.ts          tampilan & interaksi
     mirror/logic.ts       soal & pengecekan game Cermin (kiri = contoh, kanan = bayangan)
     mines/logic.ts        aturan Ranjau: ranjau diletakkan setelah ketukan pertama (aman), buka area, bendera, "chord"
+    shapes/logic.ts       Isi Bentuk: pustaka polyomino, pencocokan bentuk (rotasi/cermin), pembuat soal yang pasti solvable
     reversi/engine.ts     mesin Reversi + bot 3 level (ui.ts: papan & animasi balik piringan)
     chess/engine.ts       mesin catur (rokade, en passant, promosi, seri otomatis)
     rubik/model.ts        model kubus Rubik (rotasi, acak, deteksi selesai)

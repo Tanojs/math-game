@@ -22,6 +22,7 @@ export function renderScores(): void {
     row('Tebak Kode', levelChips('cod')) +
     row('Geser Balok', levelChips('blk')) +
     row('Cermin', levelChips('mir')) +
+    row('Isi Bentuk', LEVELS.map((n, i) => `<i>${n} ${getRecord('shp' + i) ? fmtTime(getRecord('shp' + i)) : '-'}</i>`).join('')) +
     row('Ranjau', LEVELS.map((n, i) => `<i>${n} ${getRecord('mns' + i) ? fmtTime(getRecord('mns' + i)) : '-'}</i>`).join('')) +
     '</div>';
 }

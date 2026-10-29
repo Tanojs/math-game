@@ -16,6 +16,7 @@ import { mountCode } from './code/ui.js';
 import { mountBlocks } from './blocks/ui.js';
 import { mountMirror } from './mirror/ui.js';
 import { mountMines } from './mines/ui.js';
+import { mountShapes } from './shapes/ui.js';
 
 /** Daftar game sesuai urutan di menu. Untuk menambah game: buat modul `mount…` lalu daftarkan di sini (+ ikon di icons/game-icons.ts). */
 export const GAMES: GameDef[] = [
@@ -41,6 +42,7 @@ export const GAMES: GameDef[] = [
   { id: 'blk', name: 'Geser Balok', mount: mountBlocks },
   { id: 'mir', name: 'Cermin', mount: mountMirror },
   { id: 'mns', name: 'Ranjau', mount: mountMines },
+  { id: 'shp', name: 'Isi Bentuk', mount: mountShapes },
 ];
 
 export const MATH_IDS = ['hc', 'tf', 'op', 'ty', 'cmp', 'tb'] as const;
