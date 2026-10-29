@@ -132,5 +132,18 @@ function touches(owner: readonly number[], i: number, rows: number, cols: number
   return (r > 0 && owner[i - cols] !== -1) || (r < rows - 1 && owner[i + cols] !== -1) || (c > 0 && owner[i - 1] !== -1) || (c < cols - 1 && owner[i + 1] !== -1);
 }
 
+/** Jumlah warna area. Tiap area diberi warna berbeda dari area di sampingnya agar tidak membingungkan. */
+export const REGION_COLORS = 7;
+
+/** Pilih warna untuk area baru: hindari warna area yang menempel (`blocked`), lalu pilih yang paling jarang dipakai (`usage`). */
+export function pickColor(blocked: ReadonlySet<number>, usage: readonly number[], n: number = REGION_COLORS): number {
+  let best = -1;
+  for (let k = 0; k < n; k++) {
+    if (blocked.has(k)) continue;
+    if (best < 0 || (usage[k] ?? 0) < (usage[best] ?? 0)) best = k;
+  }
+  return best >= 0 ? best : 0;
+}
+
 /** Selesai = setiap petak papan sudah masuk sebuah area. */
 export const isDone = (cells: readonly boolean[], lock: readonly number[]): boolean => cells.every((on, i) => !on || (lock[i] as number) >= 0);

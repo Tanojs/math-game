@@ -1,4 +1,5 @@
 import { hit } from '../../core/dom.js';
+import { resultBanner } from '../../core/banner.js';
 import { segment, type Level } from '../../core/html.js';
 import type { Mount } from '../../core/types.js';
 import { best } from '../../app/records.js';
@@ -13,6 +14,7 @@ export const mountCode: Mount = (id, el, info) => {
   let secret = '', cur = '';
   let rows: Row[] = [];
   let solved = 0, state: 'play' | 'win' | 'lose' = 'play';
+  const rb = resultBanner();
 
   const boxes = (s: string, len: number): string =>
     Array.from({ length: len }, (_, i) => `<i class="${s[i] ? 'f' : ''}">${s[i] ?? ''}</i>`).join('');
@@ -33,9 +35,11 @@ export const mountCode: Mount = (id, el, info) => {
       `<div class=cdh>${history}${current}</div>` +
       (state === 'play' ? `<div class="pad">${pad}</div>` : '') +
       `<div class=msg>${msg}</div>` + (state === 'play' ? '' : `<button class=cta id=nx>${state === 'win' ? 'Soal berikutnya' : 'Coba lagi'}</button>`);
+    if (state !== 'play') rb.show(el.querySelector<HTMLElement>('.cdh'), state === 'win' ? 'Benar!' : `Kode: ${secret}`, state === 'win' ? 'win' : 'lose', newGame);
   };
 
   const newGame = (): void => {
+    rb.reset();
     cfg = CONFIG[level] as CodeConfig;
     secret = makeSecret(cfg);
     cur = '';

@@ -1,4 +1,5 @@
 import { hit } from '../../core/dom.js';
+import { resultBanner } from '../../core/banner.js';
 import { segment, type Level } from '../../core/html.js';
 import type { Mount } from '../../core/types.js';
 import { best } from '../../app/records.js';
@@ -13,6 +14,7 @@ export const mountBlocks: Mount = (id, el, info) => {
   let pos: Pos = [];
   let moves = 0, solved = 0, msg = '';
   let done = false, lastKey = '';
+  const rb = resultBanner();
   let drag: { i: number; x: number; y: number; start: number; lo: number; hi: number; real: number; cell: number; now: number } | null = null;
 
   const percent = (v: number): string => `${(v / N) * 100}%`;
@@ -38,9 +40,11 @@ export const mountBlocks: Mount = (id, el, info) => {
       segment('l', ['Mudah', 'Sedang', 'Sulit'], level) +
       `<div class=bkb id=bkb><div class=exit></div>${blocks}</div><div class=msg>${msg}</div>` +
       '<div class=rr><button class="cta alt" id=rs>Ulangi</button>' + (done ? '<button class=cta id=nx>Soal berikutnya</button>' : '<button class="cta alt" id=nw>Soal baru</button>') + '</div>';
+    if (done) rb.show(el.querySelector<HTMLElement>('#bkb'), `Selesai! ${moves} langkah`, 'win', newPuzzle, { silent: true });
   };
 
   const newPuzzle = (): void => {
+    rb.reset();
     puzzle = pickPuzzle(level, lastKey);
     lastKey = puzzle.pos.join('') + puzzle.blocks.length;
     pos = [...puzzle.pos];
@@ -66,7 +70,7 @@ export const mountBlocks: Mount = (id, el, info) => {
     const l = hit(e, '[data-l]');
     if (l) { level = Number(l.dataset.l) as Level; solved = 0; return newPuzzle(); }
     if (hit(e, '#nx') || hit(e, '#nw')) return newPuzzle();
-    if (hit(e, '#rs')) { pos = [...puzzle.pos]; moves = 0; msg = ''; done = false; draw(); }
+    if (hit(e, '#rs')) { pos = [...puzzle.pos]; moves = 0; msg = ''; done = false; rb.reset(); draw(); }
   };
 
   el.onpointerdown = (e) => {

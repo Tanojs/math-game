@@ -61,7 +61,7 @@ export const mount2048: Mount = (id, el, info) => {
     info(`Skor ${score} · terbaik ${best(id, score)}`);
     over = !canMove(Array.from({ length: SIZE * SIZE }, (_, i) => tiles.find((t) => t.i === i)?.v ?? 0));
     $('#m48').textContent = over ? 'Game over' : '';
-    if (over) celebrate(bd, 'Game over', 'lose');
+    if (over) celebrate(bd, 'Game over', 'lose', { again: start });
   };
 
   const move = (d: Dir): void => {

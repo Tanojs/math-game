@@ -1,15 +1,15 @@
 import { hit } from '../../core/dom.js';
 import { segment, type Level } from '../../core/html.js';
-import { celebrate } from '../../core/banner.js';
+import { celebrate, clearBanner } from '../../core/banner.js';
 import { sfx } from '../../core/sfx.js';
 import type { Mount } from '../../core/types.js';
 import { bestTime, fmtTime } from '../../app/records.js';
-import { LEVEL_CFG, generate, isDone, matchShape, normalize, type Puzzle, type Shape } from './logic.js';
+import { LEVEL_CFG, REGION_COLORS, generate, isDone, matchShape, normalize, pickColor, type Puzzle, type Shape } from './logic.js';
 
 let level: Level = 0;
-const HINT = 'Seret jari di kotak kosong untuk membuat area. Ketuk area untuk menghapusnya.';
+const HINT = 'Seret jari di kotak kosong untuk membuat area. Ketuk area berwarna untuk menghapusnya.';
 
-interface Region { cells: number[]; shape: number }
+interface Region { cells: number[]; color: number }
 
 export const mountShapes: Mount = (id, el, info) => {
   let pz!: Puzzle; // diisi newGame() di bawah
@@ -68,7 +68,7 @@ export const mountShapes: Mount = (id, el, info) => {
       if (flash.has(i)) cls += ' sbe';
       else if (selSet.has(i)) cls += ' sbp';
       b.className = cls;
-      if (lk >= 0) b.dataset.s = String((regions.get(lk) as Region).shape); else delete b.dataset.s;
+      if (lk >= 0) b.dataset.s = String((regions.get(lk) as Region).color); else delete b.dataset.s;
     }
   };
 
@@ -80,7 +80,7 @@ export const mountShapes: Mount = (id, el, info) => {
     const record = bestTime(id + level, elapsed);
     info('Selesai ' + fmtTime(elapsed));
     say(`Waktu ${fmtTime(elapsed)}${record ? ' · rekor baru!' : ''}`);
-    celebrate(board(), `Selesai! ${fmtTime(elapsed)}`, 'win');
+    celebrate(board(), `Selesai! ${fmtTime(elapsed)}`, 'win', { again: newGame });
   };
 
   const clearAll = (): void => {
@@ -147,7 +147,17 @@ export const mountShapes: Mount = (id, el, info) => {
       flashTimer = window.setTimeout(() => { flash = new Set(); paintAll(); }, 320);
       return;
     }
-    regions.set(nextId, { cells, shape: k });
+    const blocked = new Set<number>(), usage = new Array<number>(REGION_COLORS).fill(0);
+    regions.forEach((r) => { usage[r.color] = (usage[r.color] ?? 0) + 1; });
+    for (const c of cells) {
+      const r = Math.floor(c / pz.cols), col = c % pz.cols;
+      for (const [rr, cc] of [[r - 1, col], [r + 1, col], [r, col - 1], [r, col + 1]] as const) {
+        if (rr < 0 || cc < 0 || rr >= pz.rows || cc >= pz.cols) continue;
+        const lk = lock[rr * pz.cols + cc] as number;
+        if (lk >= 0) blocked.add((regions.get(lk) as Region).color);
+      }
+    }
+    regions.set(nextId, { cells, color: pickColor(blocked, usage) });
     for (const c of cells) lock[c] = nextId;
     nextId++;
     paintAll();
@@ -156,9 +166,20 @@ export const mountShapes: Mount = (id, el, info) => {
     sfx('good');
   };
 
+  /** Batalkan status menang (mis. pemain menghapus area setelah selesai): timer lanjut dari waktu terakhir. */
+  const unwin = (): void => {
+    won = false;
+    clearBanner(board());
+    t0 = performance.now() - elapsed;
+    clearInterval(iv);
+    iv = window.setInterval(hud, 250);
+    say(HINT);
+  };
+
   const erase = (rid: number): void => {
     const r = regions.get(rid);
     if (!r) return;
+    if (won) unwin();
     for (const c of r.cells) lock[c] = -1;
     regions.delete(rid);
     sfx('pop');
@@ -169,13 +190,13 @@ export const mountShapes: Mount = (id, el, info) => {
   el.onclick = (e) => {
     const l = hit(e, '[data-l]');
     if (l) { level = Number(l.dataset.l) as Level; return newGame(); }
-    if (hit(e, '#rs')) { if (!won) clearAll(); return; }
+    if (hit(e, '#rs')) { if (won) unwin(); clearAll(); return; }
     if (hit(e, '#re')) newGame();
   };
 
   // Menggambar lewat pointer (bukan click): jari menyentuh papan lalu diseret melewati kotak-kotak kosong.
   el.onpointerdown = (e) => {
-    if (e.button !== 0 || won) return;
+    if (e.button !== 0 || hit(e, '.bn')) return; // mengetuk spanduk/tombolnya bukan menggambar
     const b = hit(e, '.sbb');
     if (!b) return;
     const i = cellAt(e.clientX, e.clientY);

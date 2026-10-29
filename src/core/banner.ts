@@ -10,13 +10,21 @@ export interface BannerOpts {
   still?: boolean;
   /** Hilang sendiri setelah beberapa detik dan tidak menghalangi sentuhan (mis. kubus Rubik). */
   fade?: boolean;
+  /** Tanpa bunyi (untuk game yang sudah membunyikan kemenangannya sendiri). */
+  silent?: boolean;
+  /** Tombol "Main lagi" di dalam spanduk. Spanduk dihapus lebih dulu, baru fungsi ini dipanggil. */
+  again?: () => void;
+  /** Dipanggil saat pemain mengetuk spanduk untuk menutupnya (bukan lewat tombol Main lagi). */
+  onClose?: () => void;
 }
 
 export function celebrate(host: HTMLElement, text: string, kind: BannerKind, opts: BannerOpts = {}): void {
   host.querySelector(':scope > .bn')?.remove();
-  if (!opts.still) sfx(kind);
+  if (!opts.still && !opts.silent) sfx(kind);
+  if (getComputedStyle(host).position === 'static') host.style.position = 'relative'; // spanduk menutupi host
+  const again = opts.fade ? undefined : opts.again;
   const bn = document.createElement('div');
-  bn.className = `bn ${kind}${opts.still ? ' still' : ''}${opts.fade ? ' fade' : ''}`;
+  bn.className = `bn ${kind}${opts.still ? ' still' : ''}${opts.fade ? ' fade' : ''}${again ? ' ag' : ''}`;
   const label = document.createElement('b');
   label.textContent = text;
   bn.appendChild(label);
@@ -32,8 +40,34 @@ export function celebrate(host: HTMLElement, text: string, kind: BannerKind, opt
       bn.appendChild(c);
     }
   }
-  bn.onclick = () => bn.remove(); // ketuk untuk melihat papan lagi
+  if (again) {
+    const btn = document.createElement('button');
+    btn.className = 'bna';
+    btn.textContent = 'Main lagi';
+    btn.onclick = (e) => { e.stopPropagation(); bn.remove(); again(); };
+    bn.appendChild(btn);
+  }
+  bn.onclick = () => { bn.remove(); opts.onClose?.(); }; // ketuk untuk melihat papan lagi
   host.appendChild(bn);
+}
+
+/**
+ * Spanduk hasil untuk game yang menggambar ulang seluruh layar: panggil `show` setiap selesai menggambar.
+ * Animasi + bunyi hanya sekali; setelah pemain menutupnya, spanduk tidak muncul lagi sampai `reset()` (soal baru).
+ */
+export function resultBanner(): {
+  show: (host: HTMLElement | null, text: string, kind: BannerKind, again: () => void, opts?: BannerOpts) => void;
+  reset: () => void;
+} {
+  let shown = false, dismissed = false;
+  return {
+    show(host, text, kind, again, opts = {}) {
+      if (!host || dismissed) return;
+      celebrate(host, text, kind, { ...opts, still: shown, again, onClose: () => { dismissed = true; } });
+      shown = true;
+    },
+    reset() { shown = dismissed = false; },
+  };
 }
 
 export const clearBanner = (host: HTMLElement | null): void => { host?.querySelector(':scope > .bn')?.remove(); };

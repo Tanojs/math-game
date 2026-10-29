@@ -46,7 +46,7 @@ export const mountXox: Mount = (_id, el, info) => {
     const board = el.querySelector<HTMLElement>('.sq');
     if (board && w) {
       const text = vsFriend ? (w === '-' ? 'Seri!' : `${w} menang!`) : w === 'X' ? 'Kamu menang!' : w === 'O' ? 'Komputer menang' : 'Seri!';
-      celebrate(board, text, w === '-' ? 'draw' : vsFriend || w === 'X' ? 'win' : 'lose', { still: !fresh });
+      celebrate(board, text, w === '-' ? 'draw' : vsFriend || w === 'X' ? 'win' : 'lose', { still: !fresh, again: () => { firstMover ^= 1; newGame(); } });
     }
   };
 

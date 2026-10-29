@@ -187,7 +187,7 @@ export const mountChess: Mount = (_id, el, info) => {
     if (!end) return;
     const kind: BannerKind = /^Seri/.test(end) ? 'draw' : vsFriend || !white === humanWhite ? 'win' : 'lose';
     const text = endLabel();
-    endTimer = window.setTimeout(() => { if (!dead && end) celebrate(cbd, text, kind); }, 380); // tunggu animasi langkah terakhir
+    endTimer = window.setTimeout(() => { if (!dead && end) celebrate(cbd, text, kind, { again: reset }); }, 380); // tunggu animasi langkah terakhir
   };
   const refresh = (): void => { paint(); bars(); status(); };
 

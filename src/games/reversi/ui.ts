@@ -89,7 +89,7 @@ export const mountReversi: Mount = (_id, el, info) => {
     clearBanner(bd);
     if (!over) return;
     const { text, kind } = resultText();
-    endTimer = window.setTimeout(() => { if (!dead && over) celebrate(bd, text, kind); }, 700);
+    endTimer = window.setTimeout(() => { if (!dead && over) celebrate(bd, text, kind, { again: reset }); }, 700);
   };
 
   const animate = (i: number, flipped: number[]): void => {

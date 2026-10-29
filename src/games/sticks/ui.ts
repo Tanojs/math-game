@@ -1,4 +1,5 @@
 import { hit } from '../../core/dom.js';
+import { resultBanner } from '../../core/banner.js';
 import { segment } from '../../core/html.js';
 import { getStr, setStr } from '../../core/storage.js';
 import type { Mount } from '../../core/types.js';
@@ -17,6 +18,7 @@ export const mountSticks: Mount = (id, el, info) => {
   let done = false, busy = false, dead = false;
   let hint: number[] = [];
   let msg = '', hintTimer = 0, refillTimer = 0;
+  const rb = resultBanner();
 
   const label = (): string => `Pindahkan ${K} batang`;
 
@@ -38,12 +40,14 @@ export const mountSticks: Mount = (id, el, info) => {
       `</svg></div><div class=msg>${msg}</div><div class=rr><button class=help id=hp aria-label="Petunjuk">?</button><div class=sw>` +
       PALETTE.map(([n, c]) => `<button data-c="${c}" aria-label="${n}" style="background:${c}" class="${c === color ? 'on' : ''}"></button>`).join('') +
       '</div>' + (done ? '<button class=cta id=nx>Soal berikutnya</button>' : '<button class="cta alt" id=rs>Ulangi</button>') + '</div>';
+    if (done) rb.show(el.querySelector<HTMLElement>('.stk'), 'Benar!', 'win', newPuzzle);
   };
 
   const restart = (): void => { s = [...puzzle.start]; moves = 0; held = -1; hint = []; };
 
   const newPuzzle = (): void => {
     clearTimeout(hintTimer);
+    rb.reset();
     K = level + 1;
     puzzle = nextPuzzle(K);
     path = statesAlongPlan(puzzle);

@@ -1,4 +1,5 @@
 import { hit } from '../../core/dom.js';
+import { resultBanner } from '../../core/banner.js';
 import { segment, type Level } from '../../core/html.js';
 import type { Mount } from '../../core/types.js';
 import { best } from '../../app/records.js';
@@ -12,6 +13,7 @@ export const mountPyramid: Mount = (id, el, info) => {
   let sel = -1, buf = '', bad: number[] = [];
   let solved = 0, msg = '';
   let done = false;
+  const rb = resultBanner();
 
   const blanks = (): number[] => puzzle.given.map((g, i) => (g ? -1 : i)).filter((i) => i >= 0);
 
@@ -32,9 +34,11 @@ export const mountPyramid: Mount = (id, el, info) => {
       `<div class=py>${rowsHtml}</div><div class="pad">` +
       [1, 2, 3, 4, 5, 6, 7, 8, 9, '⌫', 0, '→'].map((k) => `<button class=b data-k="${k}">${k === '→' ? 'Enter' : k}</button>`).join('') +
       `</div><div class=msg>${msg}</div>` + `<button class=cta id=nx${done ? '' : ' style="visibility:hidden" tabindex=-1 aria-hidden=true'}>Soal berikutnya</button>`;
+    if (done) rb.show(el.querySelector<HTMLElement>('.py'), 'Benar!', 'win', newPuzzle);
   };
 
   const newPuzzle = (): void => {
+    rb.reset();
     puzzle = generate(level);
     values = puzzle.solution.map((v, i) => (puzzle.given[i] ? v : null));
     sel = blanks()[0] ?? -1;

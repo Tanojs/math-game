@@ -1,4 +1,5 @@
 import { hit } from '../../core/dom.js';
+import { resultBanner } from '../../core/banner.js';
 import { segment } from '../../core/html.js';
 import type { Mount } from '../../core/types.js';
 import { conflicts, generate, isComplete } from './logic.js';
@@ -9,6 +10,7 @@ export const mountSudoku: Mount = (_id, el, info) => {
   let given: boolean[] = [];
   let sel = -1, t0 = 0, doneTime = '';
   let dead = false, fin = false;
+  const rb = resultBanner();
 
   const clock = (): string => {
     const s = Math.floor((Date.now() - t0) / 1000);
@@ -37,9 +39,11 @@ export const mountSudoku: Mount = (_id, el, info) => {
       '</div><div class="pad sp">' +
       [1, 2, 3, 4, 5, 6, 7, 8, 9, '⌫'].map((x) => `<button class=b data-k="${x}">${x}</button>`).join('') +
       '</div><button class="cta alt" id=nw>Soal baru</button>';
+    if (fin) rb.show(el.querySelector<HTMLElement>('.sd'), `Selesai! ${doneTime}`, 'win', newPuzzle);
   };
 
   const newPuzzle = (): void => {
+    rb.reset();
     ({ grid: g, given } = generate(level));
     sel = -1;
     fin = false;

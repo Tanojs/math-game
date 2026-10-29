@@ -1,4 +1,5 @@
 import { hit } from '../../core/dom.js';
+import { resultBanner } from '../../core/banner.js';
 import { segment, type Level } from '../../core/html.js';
 import type { Mount } from '../../core/types.js';
 import { bestTime, fmtTime } from '../../app/records.js';
@@ -10,6 +11,7 @@ let level: Level = 0;
 export const mountTap: Mount = (id, el, info) => {
   let n = 3, next = 1, penalty = 0, t0 = 0, iv = 0, ended = false, msg = '';
   let board: number[] = [];
+  const rb = resultBanner();
 
   const elapsed = (): number => performance.now() - t0 + penalty;
   const tick = (): void => { if (!ended) info(fmtTime(elapsed())); };
@@ -24,6 +26,7 @@ export const mountTap: Mount = (id, el, info) => {
 
   const start = (): void => {
     clearInterval(iv);
+    rb.reset();
     n = SIZES[level] as number;
     board = makeBoard(n);
     next = 1; penalty = 0; ended = false; msg = '';
@@ -57,6 +60,7 @@ export const mountTap: Mount = (id, el, info) => {
         info('Selesai ' + fmtTime(ms));
         const m = document.querySelector('.msg');
         if (m) m.textContent = `Waktu ${fmtTime(ms)}${record ? ' · rekor baru!' : ''}`;
+        rb.show(el.querySelector<HTMLElement>('.tpg'), `Selesai! ${fmtTime(ms)}`, 'win', start, { silent: true });
       }
     } else {
       penalty += PENALTY_MS;

@@ -25,7 +25,7 @@ export const mountPuzzle15: Mount = (_id, el, info) => {
     const msg = el.querySelector('.msg');
     if (msg) msg.textContent = done ? 'Selesai!' : '';
     const board = el.querySelector<HTMLElement>('.sq');
-    if (board && done && !wasSolved) celebrate(board, `Selesai! ${moves} langkah`, 'win');
+    if (board && done && !wasSolved) celebrate(board, `Selesai! ${moves} langkah`, 'win', { again: newGame });
     else if (board && !done) clearBanner(board);
     wasSolved = done;
   };

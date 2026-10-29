@@ -1,4 +1,5 @@
 import { hit } from '../../core/dom.js';
+import { resultBanner } from '../../core/banner.js';
 import { segment, type Level } from '../../core/html.js';
 import type { Mount } from '../../core/types.js';
 import { best } from '../../app/records.js';
@@ -18,6 +19,7 @@ export const mountGame24: Mount = (id, el, info) => {
   let solved = 0, msg = '', shake = -1;
   let done = false, busy = false, dead = false;
   let timer = 0;
+  const rb = resultBanner();
 
   const left = (): number => cards.filter(Boolean).length;
 
@@ -33,6 +35,7 @@ export const mountGame24: Mount = (id, el, info) => {
       `</div><div class=msg>${msg}</div><div class=rr><button class=help id=hp aria-label="Petunjuk">?</button>` +
       '<button class="cta alt" id=un>Urungkan</button>' +
       (done ? '<button class=cta id=nx>Soal berikutnya</button>' : '<button class="cta alt" id=rs>Ulangi</button>') + '</div>';
+    if (done) rb.show(el.querySelector<HTMLElement>('.g24'), 'Benar!', 'win', newPuzzle);
   };
 
   const restart = (): void => {
@@ -45,6 +48,7 @@ export const mountGame24: Mount = (id, el, info) => {
 
   const newPuzzle = (): void => {
     clearTimeout(timer);
+    rb.reset();
     puzzle = makePuzzle(level);
     restart();
     msg = '';

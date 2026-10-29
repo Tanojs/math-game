@@ -60,7 +60,7 @@ export const mountMines: Mount = (id, el, info) => {
     paintAll();
     hud();
     say('Kena ranjau! Tekan Main lagi.');
-    celebrate(board(), 'Meledak!', 'lose');
+    celebrate(board(), 'Meledak!', 'lose', { again: newGame });
   };
 
   const win = (): void => {
@@ -70,7 +70,7 @@ export const mountMines: Mount = (id, el, info) => {
     const record = bestTime(id + level, elapsed);
     info('Selesai ' + fmtTime(elapsed));
     say(`Waktu ${fmtTime(elapsed)}${record ? ' · rekor baru!' : ''}`);
-    celebrate(board(), `Menang! ${fmtTime(elapsed)}`, 'win');
+    celebrate(board(), `Menang! ${fmtTime(elapsed)}`, 'win', { again: newGame });
   };
 
   const apply = (r: Opened): void => {

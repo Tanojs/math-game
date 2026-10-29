@@ -1,4 +1,5 @@
 import { hit } from '../../core/dom.js';
+import { resultBanner } from '../../core/banner.js';
 import { segment, type Level } from '../../core/html.js';
 import type { Mount } from '../../core/types.js';
 import { best } from '../../app/records.js';
@@ -14,6 +15,7 @@ export const mountMirror: Mount = (id, el, info) => {
   let right: boolean[] = [];
   let moves = 0, solved = 0, done = false, painting: boolean | null = null, lastKey = '';
   let cells: HTMLElement[] = [];
+  const rb = resultBanner();
 
   const buttons = (): string =>
     '<button class="cta alt" id=rs>Ulangi</button>' + (done ? '<button class=cta id=nx>Soal berikutnya</button>' : '<button class="cta alt" id=nw>Soal baru</button>');
@@ -34,6 +36,7 @@ export const mountMirror: Mount = (id, el, info) => {
       const rr = el.querySelector('.rr');
       if (rr) rr.innerHTML = buttons();
     }
+    if (done) rb.show(el.querySelector<HTMLElement>('#mrb'), `Benar! ${moves} langkah`, 'win', () => load(true), { silent: true });
     info(res.solved ? `Benar semua! ${moves} langkah` : 'Langkah ' + moves);
   };
 
@@ -57,6 +60,7 @@ export const mountMirror: Mount = (id, el, info) => {
       pz = p;
       lastKey = p.target.join('');
     }
+    rb.reset();
     right = Array<boolean>(pz.size * pz.size).fill(false);
     moves = 0; done = false; painting = null;
     draw();

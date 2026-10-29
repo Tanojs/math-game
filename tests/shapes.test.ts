@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { LEVEL_CFG, LIB, canon, generate, isDone, matchShape, variants, type Pt } from '../src/games/shapes/logic.js';
+import { LEVEL_CFG, LIB, REGION_COLORS, canon, generate, isDone, matchShape, pickColor, variants, type Pt } from '../src/games/shapes/logic.js';
 
 const seeded = (seed: number) => () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
 
@@ -74,4 +74,20 @@ test('isDone: selesai hanya bila semua petak papan terkunci', () => {
   const cells = [true, true, false, true];
   assert.equal(isDone(cells, [0, -1, -1, 0]), false);
   assert.equal(isDone(cells, [0, 0, -1, 1]), true);
+});
+
+test('pickColor: menghindari warna tetangga, memilih yang paling jarang dipakai, tetap menghasilkan warna bila semua terblokir', () => {
+  assert.equal(pickColor(new Set(), [0, 0, 0, 0, 0, 0, 0]), 0);
+  assert.equal(pickColor(new Set([0]), [0, 0, 0, 0, 0, 0, 0]), 1);
+  assert.equal(pickColor(new Set(), [2, 1, 1, 0, 3, 3, 3]), 3);
+  assert.equal(pickColor(new Set([3]), [2, 1, 1, 0, 3, 3, 3]), 1);
+  assert.equal(pickColor(new Set([0, 1, 2, 3, 4, 5, 6]), new Array(7).fill(0)), 0);
+  // pewarnaan serakah: 8 area berurutan yang saling menempel dengan 7 warna tidak pernah menabrak tetangga langsung
+  const used: number[] = new Array(REGION_COLORS).fill(0), prev: number[] = [];
+  for (let i = 0; i < 8; i++) {
+    const c = pickColor(new Set(prev.slice(-2)), used);
+    assert.ok(!prev.slice(-2).includes(c));
+    used[c] = (used[c] ?? 0) + 1;
+    prev.push(c);
+  }
 });
