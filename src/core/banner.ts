@@ -3,6 +3,9 @@ import { sfx } from './sfx.js';
 
 export type BannerKind = 'win' | 'lose' | 'draw';
 
+/** Setelah spanduk baru muncul, ketukan diabaikan sesaat: di HP, "click" dari jari yang baru diangkat jatuh ke spanduk yang baru muncul dan langsung menutupnya. */
+const GRACE_MS = 600;
+
 const CONFETTI = ['#FFE14D', '#FF6B5E', '#9BE564', '#5CE1E6', '#B8A1FF', '#FFA94D'];
 
 export interface BannerOpts {
@@ -22,7 +25,10 @@ export function celebrate(host: HTMLElement, text: string, kind: BannerKind, opt
   host.querySelector(':scope > .bn')?.remove();
   if (!opts.still && !opts.silent) sfx(kind);
   if (getComputedStyle(host).position === 'static') host.style.position = 'relative'; // spanduk menutupi host
+  if (!opts.fade && host.clientHeight < 150) host.style.minHeight = '200px'; // host terlalu pendek (mis. 1 baris tebakan): beri ruang agar spanduk terbaca
   const again = opts.fade ? undefined : opts.again;
+  const born = performance.now();
+  const early = (): boolean => !opts.still && performance.now() - born < GRACE_MS;
   const bn = document.createElement('div');
   bn.className = `bn ${kind}${opts.still ? ' still' : ''}${opts.fade ? ' fade' : ''}${again ? ' ag' : ''}`;
   const label = document.createElement('b');
@@ -44,10 +50,19 @@ export function celebrate(host: HTMLElement, text: string, kind: BannerKind, opt
     const btn = document.createElement('button');
     btn.className = 'bna';
     btn.textContent = 'Main lagi';
-    btn.onclick = (e) => { e.stopPropagation(); bn.remove(); again(); };
+    btn.onclick = (e) => { e.stopPropagation(); if (early()) return; bn.remove(); again(); };
     bn.appendChild(btn);
+    const see = document.createElement('button');
+    see.className = 'bnv';
+    see.textContent = 'Lihat papan';
+    see.onclick = (e) => { e.stopPropagation(); if (early()) return; bn.remove(); opts.onClose?.(); };
+    bn.appendChild(see);
   }
-  bn.onclick = () => { bn.remove(); opts.onClose?.(); }; // ketuk untuk melihat papan lagi
+  bn.onclick = (e) => {
+    if (early()) { e.stopPropagation(); return; }
+    bn.remove();
+    opts.onClose?.(); // ketuk spanduk = melihat papan lagi
+  };
   host.appendChild(bn);
 }
 
