@@ -12,3 +12,4 @@
 .stk.bad .l,.stk.bad .f{fill:#E57A7A}
 .stk .x{fill:#000;fill-opacity:.13;pointer-events:none}
 .sw{display:flex;gap:10px;align-items:center}.sw button{width:28px;height:28px;border-radius:50%;border:3px solid var(--ln)}.sw .on{box-shadow:0 0 0 3px var(--bg),0 0 0 6px var(--ink)}
+.rrs{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px}.rrs>:first-child{justify-self:start}.rrs>:last-child{justify-self:end}.rrs .cta{padding:10px 12px;white-space:nowrap}

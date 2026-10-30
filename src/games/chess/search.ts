@@ -352,8 +352,32 @@ export interface BotOpts {
   maxDepth?: number;
   /** Langkah yang akan mengulang posisi yang sudah pernah muncul: dihindari bila ada pilihan lain (bot tidak mudah berakhir seri). */
   avoid?: Move[];
+  /** Perkiraan kekuatan bot (ELO 200–2200). Bila diisi, menggantikan `level`. */
+  elo?: number;
 }
-interface Params { depth: number; time: number; noise: number }
+interface Params { depth: number; time: number; noise: number; rand?: number }
+
+/**
+ * Tangga kekuatan bot. `rand` = peluang bot memainkan langkah legal acak (pemula yang asal gerak),
+ * `noise` = acakan penilaian (sentipion) agar sesekali salah pilih, `depth` = kedalaman hitung.
+ * Angka ELO adalah perkiraan kasar, bukan hasil pengukuran resmi.
+ */
+const ELO_TABLE: ReadonlyArray<readonly [number, string, Params]> = [
+  [200, 'Baru belajar', { depth: 1, time: 120, noise: 450, rand: 0.55 }],
+  [400, 'Pemula', { depth: 1, time: 120, noise: 320, rand: 0.3 }],
+  [600, 'Pemula+', { depth: 1, time: 150, noise: 220, rand: 0.12 }],
+  [800, 'Santai', { depth: 1, time: 150, noise: 180, rand: 0.04 }],
+  [1000, 'Menengah', { depth: 2, time: 200, noise: 170 }],
+  [1200, 'Menengah+', { depth: 2, time: 250, noise: 120 }],
+  [1500, 'Mahir', { depth: 3, time: 350, noise: 60 }],
+  [1800, 'Ahli', { depth: 5, time: 600, noise: 22 }],
+  [2200, 'Master', { depth: 14, time: 1700, noise: 0 }],
+];
+export const ELO_STEPS: readonly number[] = ELO_TABLE.map((r) => r[0]);
+const eloRow = (elo: number): (typeof ELO_TABLE)[number] =>
+  ELO_TABLE.reduce((best, r) => (Math.abs(r[0] - elo) < Math.abs(best[0] - elo) ? r : best));
+export const eloParams = (elo: number): Params => eloRow(elo)[2];
+export const eloName = (elo: number): string => eloRow(elo)[1];
 const LEVEL: Params[] = [
   { depth: 2, time: 250, noise: 130 },   // Mudah: pemula, sering salah langkah
   { depth: 5, time: 600, noise: 22 },    // Sedang
@@ -366,14 +390,16 @@ const toMove = (m: number): Move => { const pr = (m >> 12) & 15; return pr ? [m 
 /** Pilih langkah terbaik untuk pihak yang jalan. `level` 0 = Mudah, 1 = Sedang, 2 = Sulit. */
 export function searchBest(p: Position, whiteToMove: boolean, level: number, opts: BotOpts = {}): Move | null {
   setup(p, whiteToMove);
-  const prm = LEVEL[Math.max(0, Math.min(2, level))]!;
+  const prm = opts.elo !== undefined ? eloParams(opts.elo) : LEVEL[Math.max(0, Math.min(2, level))]!;
+  const strong = opts.elo !== undefined ? opts.elo >= 1200 : level >= 1;
   const maxDepth = Math.min(opts.maxDepth ?? 99, prm.depth), budget = opts.timeMs ?? prm.time;
   // langkah legal di akar
   const n0 = gen(0, false), root: number[] = [];
   for (let i = 0; i < n0; i++) { const m = MOVES[0]![i]!; if (make(m)) { unmake(); root.push(m); } }
   if (!root.length) return null;
   if (root.length === 1) return toMove(root[0]!);
-  if (opts.avoid?.length && level >= 1) {
+  if (prm.rand && Math.random() < prm.rand) return toMove(root[Math.floor(Math.random() * root.length)]!); // pemula: asal melangkah
+  if (opts.avoid?.length && strong) {
     const keep = root.filter((m) => !opts.avoid!.some((a) => a[0] === (m & 63) && a[1] === ((m >> 6) & 63) && (a[2] ?? 0) === (letter[(m >> 12) & 15] ?? 0)));
     if (keep.length) { root.length = 0; root.push(...keep); }
   }

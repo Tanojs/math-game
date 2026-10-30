@@ -23,11 +23,35 @@ export interface BannerOpts {
   span?: readonly Element[];
 }
 
+/** Sisi maksimum spanduk (= lebar maksimum papan XOX). */
+const MAX_SIDE = 460;
+
+/**
+ * Semua spanduk berukuran sama: persegi selebar area game (maks. 460px), seperti papan XOX.
+ * Spanduk dipasang di area game (`#st`) dan dipusatkan di atas `span` (papan/elemen yang diselesaikan).
+ */
+function placeSquare(bn: HTMLElement, stage: HTMLElement, span: readonly Element[]): void {
+  const side = Math.min(MAX_SIDE, stage.clientWidth);
+  const S = stage.getBoundingClientRect();
+  let t = Infinity, l = Infinity, r = -Infinity, b = -Infinity;
+  for (const e of span) {
+    const q = e.getBoundingClientRect();
+    t = Math.min(t, q.top); l = Math.min(l, q.left); r = Math.max(r, q.right); b = Math.max(b, q.bottom);
+  }
+  const cx = (l + r) / 2 - S.left - stage.clientLeft + stage.scrollLeft;
+  const cy = (t + b) / 2 - S.top - stage.clientTop + stage.scrollTop;
+  const left = Math.max(0, Math.min(cx - side / 2, stage.scrollWidth - side));
+  const top = Math.max(0, Math.min(cy - side / 2, stage.scrollHeight - side));
+  Object.assign(bn.style, { inset: 'auto', top: `${top}px`, left: `${left}px`, width: `${side}px`, height: `${side}px` });
+}
+
 export function celebrate(host: HTMLElement, text: string, kind: BannerKind, opts: BannerOpts = {}): void {
+  // fade (kubus Rubik) menempel pada host-nya; yang lain di area game supaya ukurannya seragam
+  const stage = opts.fade ? host : (host.closest<HTMLElement>('#st') ?? host);
   host.querySelector(':scope > .bn')?.remove();
+  stage.querySelector(':scope > .bn')?.remove();
   if (!opts.still && !opts.silent) sfx(kind);
-  if (getComputedStyle(host).position === 'static') host.style.position = 'relative'; // spanduk menutupi host
-  if (!opts.fade && !opts.span?.length && host.clientHeight < 150) host.style.minHeight = '200px'; // host terlalu pendek (mis. 1 baris tebakan): beri ruang agar spanduk terbaca
+  if (getComputedStyle(stage).position === 'static') stage.style.position = 'relative'; // spanduk menutupi area
   const again = opts.fade ? undefined : opts.again;
   const born = performance.now();
   const early = (): boolean => !opts.still && performance.now() - born < GRACE_MS;
@@ -55,28 +79,13 @@ export function celebrate(host: HTMLElement, text: string, kind: BannerKind, opt
     btn.onclick = (e) => { e.stopPropagation(); if (early()) return; bn.remove(); again(); };
     bn.appendChild(btn);
   }
-  if (opts.span?.length) {
-    // Letakkan spanduk tepat di atas gabungan elemen yang ditutupi (koordinat relatif terhadap host).
-    const H = host.getBoundingClientRect();
-    let t = Infinity, l = Infinity, r = -Infinity, b = -Infinity;
-    for (const e of opts.span) {
-      const q = e.getBoundingClientRect();
-      t = Math.min(t, q.top); l = Math.min(l, q.left); r = Math.max(r, q.right); b = Math.max(b, q.bottom);
-    }
-    Object.assign(bn.style, {
-      inset: 'auto',
-      top: `${t - H.top - host.clientTop + host.scrollTop}px`,
-      left: `${l - H.left - host.clientLeft + host.scrollLeft}px`,
-      width: `${r - l}px`,
-      height: `${b - t}px`,
-    });
-  }
   bn.onclick = (e) => {
     if (early()) { e.stopPropagation(); return; }
     bn.remove();
     opts.onClose?.(); // ketuk spanduk = melihat papan lagi
   };
-  host.appendChild(bn);
+  if (!opts.fade) placeSquare(bn, stage, opts.span?.length ? opts.span : [host]);
+  stage.appendChild(bn);
 }
 
 /**
@@ -98,7 +107,10 @@ export function resultBanner(): {
   };
 }
 
-export const clearBanner = (host: HTMLElement | null): void => { host?.querySelector(':scope > .bn')?.remove(); };
+export const clearBanner = (host: HTMLElement | null): void => {
+  host?.querySelector(':scope > .bn')?.remove();
+  host?.closest<HTMLElement>('#st')?.querySelector(':scope > .bn')?.remove();
+};
 
 /** Posisi tata letak elemen (tidak terpengaruh transform/animasi yang sedang berjalan). */
 export const layoutPos = (n: HTMLElement): { x: number; y: number } => ({ x: n.offsetLeft, y: n.offsetTop });

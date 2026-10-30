@@ -28,6 +28,6 @@
 @keyframes tlpop{from{transform:scale(.2);opacity:0}to{transform:scale(1);opacity:1}}
 @keyframes tlmg{0%{transform:scale(1)}50%{transform:scale(1.18)}100%{transform:scale(1)}}
 @media (prefers-reduced-motion:reduce){.tl{transition:none}.ti.pop,.ti.mg{animation:none}}
-.bn.ag{align-content:center;justify-items:center;gap:clamp(6px,5cqh,22px)}
-.bna{position:relative;z-index:2;min-width:11em;padding:.5em 1.6em;text-align:center;font:inherit;font-weight:800;font-size:clamp(.85rem,6.5cqh,1.1rem);color:#000;background:var(--g);border:4px solid var(--ln);border-radius:14px;box-shadow:5px 5px 0 var(--ln);cursor:pointer}
+.bn.ag{align-content:center;justify-items:center;gap:clamp(8px,5cqh,24px)}
+.bna{position:relative;z-index:2;min-width:12em;padding:.6em 1.8em;text-align:center;font:inherit;font-weight:800;font-size:clamp(1rem,7cqh,1.25rem);color:#000;background:var(--g);border:4px solid var(--ln);border-radius:14px;box-shadow:5px 5px 0 var(--ln);cursor:pointer}
 .bna:active{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--ln)}

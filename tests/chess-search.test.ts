@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { apply, chooseBotMove, gameStatus, legalMoves, parseFen, perft } from '../src/games/chess/engine.js';
-import { perftFast } from '../src/games/chess/search.js';
+import { apply, chooseBotMove, ELO_STEPS, eloName, gameStatus, legalMoves, parseFen, perft } from '../src/games/chess/engine.js';
+import { eloParams, perftFast } from '../src/games/chess/search.js';
 
 const FEN = {
   awal: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
@@ -80,4 +80,50 @@ test('bot Sulit jauh lebih kuat daripada Mudah (adu cepat 4 permainan)', () => {
     strongPoints += result;
   }
   assert.ok(strongPoints >= 3, `Sulit hanya meraih ${strongPoints}/4 melawan Mudah`);
+});
+
+test('tangga ELO: makin tinggi makin kuat (kedalaman naik; acakan dan langkah asal turun)', () => {
+  assert.deepEqual([...ELO_STEPS], [200, 400, 600, 800, 1000, 1200, 1500, 1800, 2200]);
+  for (let i = 1; i < ELO_STEPS.length; i++) {
+    const lo = eloParams(ELO_STEPS[i - 1] as number), hi = eloParams(ELO_STEPS[i] as number);
+    assert.ok(hi.depth >= lo.depth && hi.noise <= lo.noise && (hi.rand ?? 0) <= (lo.rand ?? 0), `ELO ${ELO_STEPS[i]} tidak lebih kuat dari ${ELO_STEPS[i - 1]}`);
+  }
+  assert.ok(ELO_STEPS.every((e) => eloName(e).length > 0));
+  assert.equal(eloParams(2200).noise, 0);
+  assert.ok((eloParams(200).rand ?? 0) > 0.4, 'ELO 200 harus sering melangkah asal');
+});
+
+test('bot ELO: semua tingkat memilih langkah legal (termasuk posisi rokade/promosi)', () => {
+  for (const fen of [FEN.awal, FEN.kiwipete, FEN.pos4]) {
+    const { pos, white } = parseFen(fen);
+    for (const elo of ELO_STEPS) {
+      const mv = chooseBotMove(pos, 1, white, { elo, timeMs: 30, maxDepth: 3 });
+      assert.ok(mv && legalMoves(pos, white).some((x) => x[0] === mv[0] && x[1] === mv[1] && x[2] === mv[2]), `${fen} ELO ${elo}`);
+    }
+  }
+});
+
+test('bot ELO 1500 jauh lebih kuat daripada ELO 400 (adu cepat 4 permainan)', () => {
+  let strongPoints = 0;
+  for (let g = 0; g < 4; g++) {
+    let { pos, white } = parseFen(FEN.awal);
+    const strongWhite = g % 2 === 0;
+    let result = 0.5;
+    for (let ply = 0; ply < 160; ply++) {
+      const m = chooseBotMove(pos, 1, white, { elo: white === strongWhite ? 1500 : 400, timeMs: 25, maxDepth: 4 });
+      if (!m) break;
+      pos = apply(pos, m); white = !white;
+      const st = gameStatus(pos, white, 1);
+      if (st.end.startsWith('Skakmat')) { result = (!white) === strongWhite ? 1 : 0; break; }
+      if (st.end) break;
+    }
+    strongPoints += result;
+  }
+  assert.ok(strongPoints >= 3, `ELO 1500 hanya meraih ${strongPoints}/4 melawan ELO 400`);
+});
+
+test('bot ELO 2200 menemukan skakmat dalam 1 langkah', () => {
+  const { pos, white } = parseFen('6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1');
+  const mv = chooseBotMove(pos, 1, white, { elo: 2200, timeMs: 150 })!;
+  assert.ok(gameStatus(apply(pos, mv), !white, 1).end.startsWith('Skakmat'));
 });

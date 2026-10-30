@@ -38,3 +38,6 @@
 @keyframes cpop{0%{scale:.3}60%{scale:1.2}100%{scale:1}}
 @keyframes cchk{0%,100%{opacity:1}50%{opacity:.55}}
 @media (prefers-reduced-motion:reduce){.cpcw{transition:none}.cpcw.pop,.cgrid .chk::before{animation:none}}
+.elt{margin:2px 0 6px;font-size:.85rem;font-weight:700}
+.elg{display:grid;grid-template-columns:repeat(3,1fr)}
+.elg button{padding:6px 4px}

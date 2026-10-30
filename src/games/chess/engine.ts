@@ -148,6 +148,8 @@ export function perft(p: Position, white: boolean, depth: number): number {
 
 // ---------- bot ----------
 /** Langkah bot (hitam secara bawaan, putih jika `botWhite`). Level 0 = Mudah, 1 = Sedang, 2 = Sulit (lihat search.ts). */
+export { ELO_STEPS, eloName } from './search.js';
+
 export function chooseBotMove(p: Position, level: number, botWhite = false, opts?: BotOpts): Move | null {
   return searchBest(p, botWhite, level, opts);
 }

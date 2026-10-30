@@ -37,9 +37,9 @@ export const mountSticks: Mount = (id, el, info) => {
       slots +
       FIXED_POINTS.map((p) => `<polygon points="${p}" class="f"/>`).join('') +
       (s[PLUS_BAR] ? '<rect class="x" x="189" y="129" width="22" height="22"/>' : '') +
-      `</svg></div><div class=msg>${msg}</div><div class=rr><button class=help id=hp aria-label="Petunjuk">?</button><div class=sw>` +
+      `</svg></div><div class=msg>${msg}</div><div class="rr rrs"><button class=help id=hp aria-label="Petunjuk">?</button><div class=sw>` +
       PALETTE.map(([n, c]) => `<button data-c="${c}" aria-label="${n}" style="background:${c}" class="${c === color ? 'on' : ''}"></button>`).join('') +
-      '</div>' + (done ? '<button class=cta id=nx>Soal berikutnya</button>' : '<button class="cta alt" id=rs>Ulangi</button>') + '</div>';
+      '</div>' + (done ? '<button class=cta id=nx>Lanjut</button>' : '<button class="cta alt" id=rs>Ulangi</button>') + '</div>';
     if (done) rb.show(el.querySelector<HTMLElement>('.stk'), 'Benar!', 'win', newPuzzle);
   };
 

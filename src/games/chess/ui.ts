@@ -1,9 +1,9 @@
 import { hit } from '../../core/dom.js';
-import { segment, LEVELS } from '../../core/html.js';
+import { segment } from '../../core/html.js';
 import { celebrate, clearBanner, type BannerKind } from '../../core/banner.js';
 import type { Mount } from '../../core/types.js';
 import {
-  apply, chooseBotMove, gameStatus, initialPosition, isWhitePiece, legalMoves, parseFen, positionKey,
+  apply, chooseBotMove, ELO_STEPS, eloName, gameStatus, initialPosition, isWhitePiece, legalMoves, parseFen, positionKey,
   type Move, type Position,
 } from './engine.js';
 import { pieceHtml, pieceSvg } from './pieces.js';
@@ -15,7 +15,7 @@ const ORDER = ['q', 'r', 'b', 'n', 'p'] as const;
 const BOT_DELAY = 420;
 const DRAG_PX = 7;
 
-let level = 1, vsFriend = 0, humanWhite = true; // bertahan selama sesi (humanWhite: sisi pemain saat lawan bot)
+let elo = 600, vsFriend = 0, humanWhite = true; // bertahan selama sesi (humanWhite: sisi pemain saat lawan bot)
 
 interface Snap { pos: Position; white: boolean; last: number[]; end: string; check: boolean }
 
@@ -147,7 +147,7 @@ export const mountChess: Mount = (_id, el, info) => {
   };
   const material = (side: boolean): number =>
     pos.sq.reduce((s, x) => (x && x.toLowerCase() !== 'k' ? s + (isWhitePiece(x) === side ? 1 : -1) * (VAL[x.toLowerCase()] as number) : s), 0);
-  const name = (side: boolean): string => (vsFriend ? (side ? 'Putih' : 'Hitam') : side === humanWhite ? 'Kamu' : `Bot · ${LEVELS[level]}`);
+  const name = (side: boolean): string => (vsFriend ? (side ? 'Putih' : 'Hitam') : side === humanWhite ? 'Kamu' : `Bot · ELO ${elo}`);
   const bars = (): void => {
     [q('#cb0'), q('#cb1')].forEach((bar, k) => {
       const side = flipped ? k === 0 : k === 1; // atas = hitam (putih jika papan diputar)
@@ -179,7 +179,7 @@ export const mountChess: Mount = (_id, el, info) => {
   };
   const controls = (): void => {
     q('#cctl').innerHTML = segment('o', ['Lawan Bot', 'Main Bareng Teman'], vsFriend) +
-      (vsFriend ? '' : segment('l', LEVELS, level) + segment('s', ['Main Putih', 'Main Hitam'], humanWhite ? 0 : 1));
+      (vsFriend ? '' : `<div class=elt>Lawan bot (perkiraan ELO) · ${eloName(elo)}</div><div class="seg elg">${ELO_STEPS.map((v) => `<button data-e=${v}${v === elo ? ' class=on' : ''}>${v}</button>`).join('')}</div>` + segment('s', ['Main Putih', 'Main Hitam'], humanWhite ? 0 : 1));
   };
   const showEnd = (): void => {
     clearTimeout(endTimer);
@@ -222,7 +222,7 @@ export const mountChess: Mount = (_id, el, info) => {
       if (dead || !thinking) return;
       // jangan mengulang posisi yang sudah pernah muncul bila ada langkah lain (supaya tidak mudah seri)
       const avoid = legalMoves(pos, !humanWhite).filter((x) => (seen.get(positionKey(apply(pos, x), humanWhite)) ?? 0) >= 1);
-      const m = chooseBotMove(pos, level, !humanWhite, { avoid });
+      const m = chooseBotMove(pos, 1, !humanWhite, { avoid, elo });
       thinking = false;
       if (m) play(m); else refresh();
     }, BOT_DELAY);
@@ -314,9 +314,9 @@ export const mountChess: Mount = (_id, el, info) => {
   cbd.addEventListener('pointercancel', (e) => finish(e, true));
 
   const onClick = (e: MouseEvent): void => {
-    const o = hit(e, '[data-o]'), l = hit(e, '[data-l]'), sd = hit(e, '[data-s]'), p = hit(e, '[data-p]');
+    const o = hit(e, '[data-o]'), l = hit(e, '[data-e]'), sd = hit(e, '[data-s]'), p = hit(e, '[data-p]');
     if (o) { vsFriend = Number(o.dataset.o); return reset(); }
-    if (l) { level = Number(l.dataset.l); return reset(); }
+    if (l) { elo = Number(l.dataset.e); return reset(); }
     if (sd) { humanWhite = sd.dataset.s === '0'; return reset(); }
     if (p && promoPend) { const m = promoPend.find((x) => x[2] === p.dataset.p); if (m) play(m); return; }
     // Lewati "click" susulan dari ketukan yang BARU membuka pilihan promosi (jari masih menekan area papan yang kini tertutup panel).
