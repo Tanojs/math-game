@@ -1,10 +1,10 @@
 /* Spanduk hasil + animasi gerak bersama */
 .sq,.rv{position:relative}.sq.g4>button{will-change:transform}
-.sq>.bn,.rv>.bn,.cbd>.bn,.rsb>.bn,.mnb>.bn,.sbb>.bn,.bn{position:absolute;inset:0;z-index:20;display:grid;place-items:center;border:0;border-radius:0;background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);overflow:hidden;cursor:pointer;container-type:size;animation:bnbg .25s ease-out}
+.sq>.bn,.rv>.bn,.cbd>.bn,.rsb>.bn,.mnb>.bn,.sbb>.bn,.bn{position:absolute;inset:0;z-index:20;display:grid;place-items:center;border:0;border-radius:0;background:rgba(0,0,0,.28);overflow:hidden;cursor:pointer;container-type:size;animation:bnbg .25s ease-out}
 .bn b{position:relative;z-index:1;max-width:88%;padding:.5em .9em;text-align:center;font-size:clamp(1.15rem,min(8cqw,15cqh),2.4rem);line-height:1.15;color:#000;border:4px solid var(--ln);box-shadow:6px 6px 0 var(--ln);transform:rotate(-3deg);animation:bnpop .55s cubic-bezier(.2,1.6,.4,1) both}
 .bn.win b{background:var(--y)}.bn.lose b{background:var(--r)}.bn.draw b{background:var(--c)}
 .bn.still,.bn.still b{animation:none}
-.bn.fade{pointer-events:none;background:none;-webkit-backdrop-filter:none;backdrop-filter:none;animation:bnfade 3.2s ease-out forwards}
+.bn.fade{pointer-events:none;background:none;animation:bnfade 3.2s ease-out forwards}
 .bn i{position:absolute;left:50%;top:50%;width:10px;height:14px;background:var(--c);border:2px solid #000;opacity:0;animation:bnconf 1.2s ease-out forwards}
 @keyframes bnpop{0%{transform:scale(.2) rotate(-12deg);opacity:0}100%{transform:scale(1) rotate(-3deg);opacity:1}}
 @keyframes bnbg{from{background:rgba(0,0,0,0)}}
@@ -28,7 +28,6 @@
 @keyframes tlpop{from{transform:scale(.2);opacity:0}to{transform:scale(1);opacity:1}}
 @keyframes tlmg{0%{transform:scale(1)}50%{transform:scale(1.18)}100%{transform:scale(1)}}
 @media (prefers-reduced-motion:reduce){.tl{transition:none}.ti.pop,.ti.mg{animation:none}}
-.bn.ag{align-content:center;justify-items:center;gap:clamp(6px,5cqh,26px)}
+.bn.ag{align-content:center;justify-items:center;gap:clamp(6px,5cqh,22px)}
 .bna{position:relative;z-index:2;min-width:11em;padding:.5em 1.6em;text-align:center;font:inherit;font-weight:800;font-size:clamp(.85rem,6.5cqh,1.1rem);color:#000;background:var(--g);border:4px solid var(--ln);border-radius:14px;box-shadow:5px 5px 0 var(--ln);cursor:pointer}
 .bna:active{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--ln)}
-.bnv{position:relative;z-index:2;padding:.2em .9em;font:inherit;font-weight:700;font-size:clamp(.75rem,5cqh,.95rem);color:#fff;background:none;border:0;text-decoration:underline;text-underline-offset:4px;cursor:pointer}

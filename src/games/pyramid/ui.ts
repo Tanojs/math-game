@@ -34,7 +34,7 @@ export const mountPyramid: Mount = (id, el, info) => {
       `<div class=py>${rowsHtml}</div><div class="pad">` +
       [1, 2, 3, 4, 5, 6, 7, 8, 9, '⌫', 0, '→'].map((k) => `<button class=b data-k="${k}">${k === '→' ? 'Enter' : k}</button>`).join('') +
       `</div><div class=msg>${msg}</div>` + `<button class=cta id=nx${done ? '' : ' style="visibility:hidden" tabindex=-1 aria-hidden=true'}>Soal berikutnya</button>`;
-    if (done) rb.show(el.querySelector<HTMLElement>('.py'), 'Benar!', 'win', newPuzzle);
+    if (done) rb.show(el, 'Benar!', 'win', newPuzzle, { span: ['.py', '.pad'].map((s) => el.querySelector<HTMLElement>(s)).filter((x): x is HTMLElement => x !== null) });
   };
 
   const newPuzzle = (): void => {
@@ -51,7 +51,7 @@ export const mountPyramid: Mount = (id, el, info) => {
 
   const check = (): void => {
     bad = violations(values, puzzle.rows);
-    if (!bad.length) { done = true; solved++; best(id + level, solved); msg = 'Benar!'; sel = -1; }
+    if (!bad.length) { done = true; solved++; best(id + level, solved); msg = ''; sel = -1; }
     else msg = 'Salah';
   };
 

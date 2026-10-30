@@ -35,7 +35,7 @@ export const mountGame24: Mount = (id, el, info) => {
       `</div><div class=msg>${msg}</div><div class=rr><button class=help id=hp aria-label="Petunjuk">?</button>` +
       '<button class="cta alt" id=un>Urungkan</button>' +
       (done ? '<button class=cta id=nx>Soal berikutnya</button>' : '<button class="cta alt" id=rs>Ulangi</button>') + '</div>';
-    if (done) rb.show(el.querySelector<HTMLElement>('.g24'), 'Benar!', 'win', newPuzzle);
+    if (done) rb.show(el, 'Benar!', 'win', newPuzzle, { span: ['.g24', '.ops'].map((s) => el.querySelector<HTMLElement>(s)).filter((x): x is HTMLElement => x !== null) });
   };
 
   const restart = (): void => {
@@ -63,7 +63,7 @@ export const mountGame24: Mount = (id, el, info) => {
       done = true;
       solved++;
       best(id + level, solved);
-      msg = 'Benar!';
+      msg = '';
     } else {
       busy = true;
       msg = 'Salah';

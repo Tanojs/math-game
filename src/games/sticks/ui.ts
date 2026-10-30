@@ -104,7 +104,7 @@ export const mountSticks: Mount = (id, el, info) => {
     if (i === from) msg = label();
     else {
       moves++;
-      if (isEquation(s)) { done = true; solved++; best(id + level, solved); msg = 'Benar!'; }
+      if (isEquation(s)) { done = true; solved++; best(id + level, solved); msg = ''; }
       else if (moves >= K) {
         busy = true;
         msg = 'Salah';

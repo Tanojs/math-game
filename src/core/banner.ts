@@ -19,13 +19,15 @@ export interface BannerOpts {
   again?: () => void;
   /** Dipanggil saat pemain mengetuk spanduk untuk menutupnya (bukan lewat tombol Main lagi). */
   onClose?: () => void;
+  /** Spanduk menutupi gabungan elemen-elemen ini (mis. papan + tombol di bawahnya) alih-alih seluruh `host`. */
+  span?: readonly Element[];
 }
 
 export function celebrate(host: HTMLElement, text: string, kind: BannerKind, opts: BannerOpts = {}): void {
   host.querySelector(':scope > .bn')?.remove();
   if (!opts.still && !opts.silent) sfx(kind);
   if (getComputedStyle(host).position === 'static') host.style.position = 'relative'; // spanduk menutupi host
-  if (!opts.fade && host.clientHeight < 150) host.style.minHeight = '200px'; // host terlalu pendek (mis. 1 baris tebakan): beri ruang agar spanduk terbaca
+  if (!opts.fade && !opts.span?.length && host.clientHeight < 150) host.style.minHeight = '200px'; // host terlalu pendek (mis. 1 baris tebakan): beri ruang agar spanduk terbaca
   const again = opts.fade ? undefined : opts.again;
   const born = performance.now();
   const early = (): boolean => !opts.still && performance.now() - born < GRACE_MS;
@@ -52,11 +54,22 @@ export function celebrate(host: HTMLElement, text: string, kind: BannerKind, opt
     btn.textContent = 'Main lagi';
     btn.onclick = (e) => { e.stopPropagation(); if (early()) return; bn.remove(); again(); };
     bn.appendChild(btn);
-    const see = document.createElement('button');
-    see.className = 'bnv';
-    see.textContent = 'Lihat papan';
-    see.onclick = (e) => { e.stopPropagation(); if (early()) return; bn.remove(); opts.onClose?.(); };
-    bn.appendChild(see);
+  }
+  if (opts.span?.length) {
+    // Letakkan spanduk tepat di atas gabungan elemen yang ditutupi (koordinat relatif terhadap host).
+    const H = host.getBoundingClientRect();
+    let t = Infinity, l = Infinity, r = -Infinity, b = -Infinity;
+    for (const e of opts.span) {
+      const q = e.getBoundingClientRect();
+      t = Math.min(t, q.top); l = Math.min(l, q.left); r = Math.max(r, q.right); b = Math.max(b, q.bottom);
+    }
+    Object.assign(bn.style, {
+      inset: 'auto',
+      top: `${t - H.top - host.clientTop + host.scrollTop}px`,
+      left: `${l - H.left - host.clientLeft + host.scrollLeft}px`,
+      width: `${r - l}px`,
+      height: `${b - t}px`,
+    });
   }
   bn.onclick = (e) => {
     if (early()) { e.stopPropagation(); return; }

@@ -29,7 +29,7 @@ export const mountCode: Mount = (id, el, info) => {
       const off = (k !== '⌫' && k !== '✓' && cur.includes(k)) || (k === '✓' && cur.length !== cfg.len);
       return `<button class=b data-k="${k}"${off ? ' disabled' : ''}>${k}</button>`;
     }).join('');
-    const msg = state === 'win' ? 'Benar!' : state === 'lose' ? `Kode: ${secret}` : '<b class=fx></b> tepat <b class=fn></b> geser';
+    const msg = state === 'play' ? '<b class=fx></b> tepat <b class=fn></b> geser' : ''; // hasil akhir sudah tampil di spanduk
     el.innerHTML =
       segment('l', ['Mudah', 'Sedang', 'Sulit'], level) +
       `<div class=cdh>${history}${current}</div>` +
