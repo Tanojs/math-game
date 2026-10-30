@@ -38,6 +38,11 @@
 @keyframes cpop{0%{scale:.3}60%{scale:1.2}100%{scale:1}}
 @keyframes cchk{0%,100%{opacity:1}50%{opacity:.55}}
 @media (prefers-reduced-motion:reduce){.cpcw{transition:none}.cpcw.pop,.cgrid .chk::before{animation:none}}
-.elt{margin:2px 0 6px;font-size:.85rem;font-weight:700}
-.elg{display:grid;grid-template-columns:repeat(3,1fr)}
-.elg button{padding:6px 4px}
+/* Pilihan ELO: satu tombol seperti kotak dropdown; ketuk untuk membuka daftar */
+.eld{margin:0 0 12px}
+.eldb{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;font-size:.95rem;text-align:left;white-space:nowrap;overflow:hidden}
+.eldb span:first-child{overflow:hidden;text-overflow:ellipsis}
+.eldc{font-size:1rem;flex:none}
+.eldl{margin-top:6px;max-height:240px;overflow-y:auto;background:var(--card);color:var(--ink);border:3px solid var(--ln);border-radius:12px;box-shadow:4px 4px 0 var(--ln);padding:4px}
+.eldl button{display:block;width:100%;padding:9px 12px;background:none;border:0;border-radius:8px;color:inherit;font-size:.95rem;font-weight:700;text-align:left}
+.eldl button.on,.eldl button:hover{background:var(--y);color:#000}

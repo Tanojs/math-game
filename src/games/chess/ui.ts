@@ -15,7 +15,7 @@ const ORDER = ['q', 'r', 'b', 'n', 'p'] as const;
 const BOT_DELAY = 420;
 const DRAG_PX = 7;
 
-let elo = 600, vsFriend = 0, humanWhite = true; // bertahan selama sesi (humanWhite: sisi pemain saat lawan bot)
+let elo = 400, eloOpen = false, vsFriend = 0, humanWhite = true; // bertahan selama sesi (humanWhite: sisi pemain saat lawan bot)
 
 interface Snap { pos: Position; white: boolean; last: number[]; end: string; check: boolean }
 
@@ -179,7 +179,9 @@ export const mountChess: Mount = (_id, el, info) => {
   };
   const controls = (): void => {
     q('#cctl').innerHTML = segment('o', ['Lawan Bot', 'Main Bareng Teman'], vsFriend) +
-      (vsFriend ? '' : `<div class=elt>Lawan bot (perkiraan ELO) · ${eloName(elo)}</div><div class="seg elg">${ELO_STEPS.map((v) => `<button data-e=${v}${v === elo ? ' class=on' : ''}>${v}</button>`).join('')}</div>` + segment('s', ['Main Putih', 'Main Hitam'], humanWhite ? 0 : 1));
+      (vsFriend ? '' : `<div class=eld><button class="b eldb" data-eo aria-expanded="${eloOpen}"><span>Lawan bot · ELO ${elo} (${eloName(elo)})</span><span class=eldc>${eloOpen ? '▴' : '▾'}</span></button>` +
+        (eloOpen ? `<div class=eldl>${ELO_STEPS.map((v) => `<button data-e=${v}${v === elo ? ' class=on' : ''}>ELO ${v} · ${eloName(v)}</button>`).join('')}</div>` : '') +
+        '</div>' + segment('s', ['Main Putih', 'Main Hitam'], humanWhite ? 0 : 1));
   };
   const showEnd = (): void => {
     clearTimeout(endTimer);
@@ -314,9 +316,10 @@ export const mountChess: Mount = (_id, el, info) => {
   cbd.addEventListener('pointercancel', (e) => finish(e, true));
 
   const onClick = (e: MouseEvent): void => {
-    const o = hit(e, '[data-o]'), l = hit(e, '[data-e]'), sd = hit(e, '[data-s]'), p = hit(e, '[data-p]');
+    const o = hit(e, '[data-o]'), l = hit(e, '[data-e]'), sd = hit(e, '[data-s]'), p = hit(e, '[data-p]'), eo = hit(e, '[data-eo]');
     if (o) { vsFriend = Number(o.dataset.o); return reset(); }
-    if (l) { elo = Number(l.dataset.e); return reset(); }
+    if (eo) { eloOpen = !eloOpen; return controls(); }
+    if (l) { elo = Number(l.dataset.e); eloOpen = false; return reset(); }
     if (sd) { humanWhite = sd.dataset.s === '0'; return reset(); }
     if (p && promoPend) { const m = promoPend.find((x) => x[2] === p.dataset.p); if (m) play(m); return; }
     // Lewati "click" susulan dari ketukan yang BARU membuka pilihan promosi (jari masih menekan area papan yang kini tertutup panel).

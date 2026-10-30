@@ -45,7 +45,8 @@ export const mountRubik: Mount = (_id, el, info) => {
   el.innerHTML =
     '<div class=seg id=rsz>' + [2, 3, 4].map((n) => `<button data-n=${n}>${n}x${n}</button>`).join('') + '</div>' +
     '<div class="rv"><div class="sc" id="sc"></div></div><div class=msg id=rm></div><div class=rg>' +
-    ['', "'"].map((q) => FACES.map((f) => `<button class=b data-f="${f + q}" style="background:${COLOR[BUTTON_COLOR[f]]};color:#000">${f + q}</button>`).join('')).join('') +
+    // data-nosnd: tombol putar sisi tidak membunyikan "tik" ganda; bunyi putaran datang dari animasi (sfx 'turn')
+    ['', "'"].map((q) => FACES.map((f) => `<button class=b data-nosnd data-f="${f + q}" style="background:${COLOR[BUTTON_COLOR[f]]};color:#000">${f + q}</button>`).join('')).join('') +
     '</div><div class=rc><button class=cta data-a=s>Acak</button><button class="cta alt" data-a=u>Urungkan</button>' +
     '<button class="cta alt" data-a=v>Balikkan semua</button><button class="cta alt" data-a=r>Reset</button>' +
     '<button class="cta alt" data-a=l>Huruf warna</button></div><div class=lgd id=lg></div>';
