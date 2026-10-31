@@ -8,7 +8,6 @@ import { bestTime, fmtTime } from '../../app/records.js';
 import { LEVEL_CFG, REGION_COLORS, generate, isDone, matchShape, normalize, pickColor, type Puzzle, type Shape } from './logic.js';
 
 let level: Level = 0;
-const HINT = 'Seret jari di kotak kosong untuk membuat area. Ketuk area berwarna untuk menghapusnya.';
 
 interface Region { cells: number[]; color: number }
 
@@ -44,7 +43,7 @@ export const mountShapes: Mount = (id, el, info) => {
       segment('l', ['Mudah', 'Sedang', 'Sulit'], level) +
       `<div class=sbk><b>Semua area harus salah satu bentuk ini:</b><div class=sbs>${pz.bank.map(mini).join('')}</div></div>` +
       `<div class=sbb data-nosnd style="aspect-ratio:${cols}/${rows};grid-template:repeat(${rows},1fr)/repeat(${cols},1fr)">${cells}</div>` +
-      '<div class=msg id=sbm></div><div class=seg><button id=rs>Ulangi</button><button id=re>Soal baru</button>' + HELP_BTN + '</div>';
+      '<div class=msg id=sbm></div><div class=arow><button class="cta alt" id=rs>Ulangi</button><button class="cta alt" id=re>Soal baru</button>' + HELP_BTN + '</div>';
     cellEls = [];
     el.querySelectorAll<HTMLElement>('.sbc').forEach((c) => { cellEls[Number(c.dataset.i)] = c; });
     const b = board();
@@ -104,7 +103,7 @@ export const mountShapes: Mount = (id, el, info) => {
     tapAt = last = -1;
     draw();
     clearAll();
-    say(HINT);
+    say('');
   };
 
   const cellAt = (x: number, y: number): number => {
@@ -174,7 +173,7 @@ export const mountShapes: Mount = (id, el, info) => {
     t0 = performance.now() - elapsed;
     clearInterval(iv);
     iv = window.setInterval(hud, 250);
-    say(HINT);
+    say('');
   };
 
   const erase = (rid: number): void => {
