@@ -41,8 +41,9 @@ export function layoutFor(n: 1 | 2): Layout {
   } else {
     // A = dua digit kiri-atas, B = dua digit kanan-atas, "=" di tengah, C = dua digit kanan-bawah
     blocks = [[4, 40], [96, 40], [220, 40], [312, 40], [220, 262], [312, 262]];
-    w = 84; h = 142; t = 18; cx = 200; cy = 111; len = 30;
-    eq = [bar(200, 208, 30, false, t), bar(200, 236, 30, false, t)];
+    // "+" dan "−" 40px (muat di celah antar angka); "=" sepanjang segmen angka (56px) karena letaknya di celah antar baris
+    w = 84; h = 142; t = 18; cx = 200; cy = 111; len = 40;
+    eq = [bar(200, 206, 56, false, t), bar(200, 238, 56, false, t)];
   }
   const opH = bar(cx, cy, len, false, t), opV = bar(cx, cy, len, true, t);
   const slots = blocks.flatMap(([x, y]) => digit(x, y, w, h, t));

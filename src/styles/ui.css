@@ -4,16 +4,15 @@
 .ic:active,.b:active,.cta:active,.bk:active,.help:active{box-shadow:1px 1px 0 var(--ln);filter:brightness(.93)}
 .bar{display:flex;align-items:center;gap:10px;margin-bottom:16px}
 .bk{width:44px;height:44px;font-size:1.4rem;font-weight:700;background:var(--y);color:#000;border:3px solid var(--ln);border-radius:10px;box-shadow:3px 3px 0 var(--ln)}
-.bar h2{margin:0;flex:1;font-size:1.25rem;font-weight:700}
-.inf{padding:3px 9px;background:var(--c);color:#000;border:3px solid var(--ln);font-weight:700;font-size:.85rem}.inf:empty{display:none}
+.bar h2{margin:0;flex:1;min-width:0;font-size:1.1rem;line-height:1.1;font-weight:700;overflow-wrap:anywhere}
+.inf{max-width:96px;padding:3px 7px;background:var(--c);color:#000;border:3px solid var(--ln);font-weight:700;font-size:.8rem;line-height:1.15;text-align:center}.inf:empty{display:none}
+/* Tombol "Cara main" sejajar dengan tombol kembali (tinggi & gaya sama) di semua game */
+.bar .hw{width:auto;min-width:58px;height:44px;padding:2px 6px;font-size:.72rem;line-height:1.1;font-weight:700;flex:none}
 .b{padding:16px 6px;background:var(--c);color:#000;border:3px solid var(--ln);border-radius:12px;box-shadow:4px 4px 0 var(--ln);font-size:1.5rem;font-weight:700}
 .res{text-align:center;padding-top:20px}.res h1{font-size:4.5rem;margin:6px 0}.res p{font-weight:700}
 .msg{text-align:center;font-weight:700;margin:14px 0;min-height:1.4em}
 .cta{display:block;margin:14px auto 0;padding:12px 24px;background:var(--k);color:#000;border:3px solid var(--ln);border-radius:12px;box-shadow:5px 5px 0 var(--ln);font-weight:700}
 .cta.alt{background:var(--card);color:var(--ink)}
-/* Tombol "i" di pojok kanan bawah area game. Sticky: selalu tampil tepat di atas bar navigasi (--nav-h, diukur di router.ts) walau isi game lebih tinggi dari layar, sehingga tidak pernah menimpa tombol nav. */
-.hw{position:sticky;bottom:calc(var(--nav-h,76px) + 12px);align-self:flex-end;flex:none;margin:8px 16px 0 0;z-index:40;width:52px;height:52px;border-radius:50%;background:var(--y);color:#000;border:3px solid var(--ln);box-shadow:3px 3px 0 var(--ln);font:700 1.6rem/1 "Space Grotesk",system-ui,sans-serif}
-.hw:active{box-shadow:1px 1px 0 var(--ln);filter:brightness(.93)}
 .help{display:block;margin:16px 4px 0 auto;width:48px;height:48px;border-radius:50%;background:var(--y);color:#000;border:3px solid var(--ln);box-shadow:3px 3px 0 var(--ln);font-size:1.6rem;font-weight:700}
 .seg{display:flex;gap:8px;margin-bottom:12px}.seg button{flex:1;padding:8px;background:var(--card);color:var(--ink);border:3px solid var(--ln);border-radius:10px;font-weight:700}.seg .on{background:var(--y);color:#000;box-shadow:3px 3px 0 var(--ln)}
 .seg button{white-space:nowrap;padding-left:4px;padding-right:4px}
