@@ -3,7 +3,7 @@ import type { Cleanup } from '../core/types.js';
 import { GAMES } from '../games/registry.js';
 import { renderScores } from './scores.js';
 import { sfx } from '../core/sfx.js';
-import { HOWTO } from './howto.js';
+import { howtoFor } from './howto.js';
 import { openSheet } from './sheet.js';
 
 /** Putar ulang animasi masuk pada sebuah layar. */
@@ -98,7 +98,7 @@ export function initRouter(): void {
   $('#gm').addEventListener('click', (e) => {
     if (!(e.target as Element).closest('[data-hw]') || !curGame) return;
     e.stopPropagation();
-    openSheet(curGame.name, HOWTO[curGame.id] ?? '<p>Belum ada penjelasan untuk game ini.</p>');
+    openSheet(curGame.name, howtoFor(curGame.id));
   }, true);
   try { history.replaceState(null, '', location.pathname + location.search); } catch { /* diabaikan */ }
 }

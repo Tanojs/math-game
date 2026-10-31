@@ -1,10 +1,11 @@
-import { $, hit } from '../core/dom.js';
+import { $, $$, hit } from '../core/dom.js';
 import { GAME_ICONS } from '../icons/game-icons.js';
 import { UI_ICONS } from '../icons/ui-icons.js';
 import { GAMES } from '../games/registry.js';
 import { clearRecords } from './records.js';
 import { applyIconStyle, setIconStyle, type IconStyle } from './iconStyle.js';
 import { applyTheme, cycleTheme, setTheme, type Theme } from './theme.js';
+import { getLang, initLang, setLang, type Lang } from '../core/i18n.js';
 import { gotoTab, initRouter, play, showTab, type Tab } from './router.js';
 import { initSound } from './sound.js';
 import { initAds } from './ads.js';
@@ -18,6 +19,7 @@ const SETTINGS_HTML = `<div id="scr" class="hide"></div>
 <div class="sg"><h3 class="sh">Tampilan</h3><div class="sl">
 <div class="sr col"><span>Tema</span><div class="seg" id="thm"><button data-th="system">Sistem</button><button data-th="light">Terang</button><button data-th="dark">Gelap</button></div></div>
 <div class="sr col"><span>Ikon</span><div class="seg" id="ics"><button data-is="solid">Solid</button><button data-is="line">Garis</button><button data-is="white">Putih</button></div></div>
+<div class="sr col"><span>Bahasa</span><div class="seg" id="lng"><button data-lg="id">Indonesia</button><button data-lg="en">English</button></div></div>
 </div></div>
 <div class="sg"><h3 class="sh">Suara</h3><div class="sl">
 <div class="sr"><span>Efek suara</span><button class="tgl" id="snd-fx" role="switch" aria-label="Efek suara"><i></i></button></div>
@@ -56,6 +58,14 @@ function buildNav(): void {
 }
 
 function wireSettings(): void {
+  const markLang = (): void => { $$('#lng button').forEach((b) => b.classList.toggle('on', b.dataset.lg === getLang())); };
+  markLang();
+  $('#lng').onclick = (e) => {
+    const b = hit(e, '[data-lg]');
+    if (!b) return;
+    setLang(b.dataset.lg as Lang);
+    markLang();
+  };
   $('#thm').onclick = (e) => {
     const b = hit(e, '[data-th]');
     if (b) setTheme(b.dataset.th as Theme);
@@ -117,4 +127,5 @@ export function initApp(): void {
   applyIconStyle();
   showTab('home');
   initRouter();
+  initLang();
 }

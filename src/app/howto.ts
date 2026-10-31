@@ -1,3 +1,4 @@
+import { getLang } from '../core/i18n.js';
 /** Cara bermain per game (kunci = id di registry.ts). Ditampilkan lewat tombol "i" di pojok kanan bawah setiap game. */
 const p = (s: string): string => `<p>${s}</p>`;
 
@@ -48,4 +49,56 @@ export const HOWTO: Readonly<Record<string, string>> = {
     p('Tahan lama (atau pakai mode bendera) untuk memasang atau melepas bendera di kotak yang kamu curigai ranjau. Ketukan pertama selalu aman.'),
   shp: p('Bagi papan menjadi area-area yang bentuknya sama dengan bentuk di bank (boleh diputar atau dicerminkan).') +
     p('Seret jari di petak kosong untuk membuat area. Ketuk area berwarna untuk menghapusnya.'),
+};
+
+/** Cara bermain dalam bahasa Inggris (kunci sama dengan HOWTO). */
+export const HOWTO_EN: Readonly<Record<string, string>> = {
+  hc: p('Answer the math questions as fast as you can by choosing the correct answer. Consecutive correct answers give more points.') +
+    p('There is a 60-second time limit. Get the highest score you can.'),
+  tf: p('Look at the equation on the screen, then choose <b>True</b> or <b>False</b>.') + p('There is a 60-second time limit. Consecutive correct answers give more points.'),
+  op: p('Look at two numbers and the result, then choose the operator (+, −, ×, ÷) that makes the equation correct.') + p('There is a 60-second time limit.'),
+  ty: p('Solve the question and type the answer on the keypad.') + p('There is a 60-second time limit. Consecutive correct answers give more points.'),
+  cmp: p('Compare two calculations, then choose <b>&lt;</b>, <b>=</b>, or <b>&gt;</b> according to the results.') + p('There is a 60-second time limit.'),
+  tb: p('Multiply and type the result on the keypad.') + p('There is a 60-second time limit.'),
+  mtc: p('Match each question in the left column with its answer in the right column. Drag a line from one item to another.') +
+    p('A red line means the pair is wrong. Finish all pairs before time runs out.'),
+  g24: p('From four numbers, combine two numbers with an operator (+, −, ×, ÷) until one number is left that equals <b>24</b>.') +
+    p('Pick a number, pick an operator, then pick the second number. <b>Undo</b> cancels the last step; the <b>?</b> button shows the answer.'),
+  pyr: p('Each box equals the sum of the two boxes below it (left + right).') +
+    p('Fill in all empty boxes. Press <b>→</b> to check the answers; wrong boxes will be marked.'),
+  stk: p('The sticks form an equation that is still wrong. Move sticks so the equation becomes correct.') +
+    p('Tap a stick to pick it up, then tap an empty spot to place it. The number of sticks to move is written below the question.') +
+    p('<b>Easy</b>: 1 digit, move 1 stick. <b>Medium</b>: tens digits, move 1 stick. <b>Hard</b>: tens digits, move 2 sticks.') +
+    p('The "=" sign and the horizontal stick of the operator cannot be moved. The vertical stick of the operator decides "+" (present) or "−" (absent).'),
+  ttt: p('X and O take turns filling empty squares. The winner is the one who makes a straight line (horizontal, vertical, or diagonal) first.') +
+    p('Play against the bot, or with a friend on the same phone.'),
+  g15: p('Arrange the numbers from small to large by sliding tiles into the empty space.') +
+    p('Tap a tile next to the empty space to slide it. The bigger the board, the harder it is.'),
+  g2048: p('Swipe up, down, left, or right. All tiles move together.') +
+    p('Two tiles with the same number that collide merge into double. Reach the <b>2048</b> tile. The game ends when the board is full and there are no moves left.'),
+  sdk: p('Fill every row, column, and 3×3 box with the numbers 1 to 9 without repeating any number.') +
+    p('Pick an empty cell, then pick a number. Numbers given at the start cannot be changed.'),
+  chs: p('Play chess against the bot (choose the ELO level above the board) or with a friend on the same phone.') +
+    p('Tap a piece then tap the target square, or drag the piece to its destination. <b>Undo</b> cancels a move. Win by checkmate.'),
+  rev: p("The goal is to have the most discs when the board is full. Place a disc on an empty square that surrounds the opponent's disc in a straight line.") +
+    p('Opponent discs that are surrounded are flipped to yours. If you have no move, your turn is skipped.'),
+  rbk: p("Turn the cube faces with the buttons U, D, L, R, F, B. The <b>'</b> mark means turn counter-clockwise.") +
+    p('You can also swipe directly on the stickers. Swipe the empty area around the cube to rotate the whole cube. <b>Scramble</b> to shuffle, then solve until each face is one color.'),
+  tap: p('Tap the numbers 1, 2, 3, and so on up to the last number as fast as you can.') + p('Wrong taps add time. Pick the board size above.'),
+  cod: p('Guess the secret code. Fill the boxes with numbers, then press <b>✓</b>.') +
+    p('Each guess gives a hint: <b>exact</b> = right number in the right place; <b>shift</b> = right number in the wrong place. Numbers in the code do not repeat. Guess attempts are limited.'),
+  blk: p('Get the red block out through the door on the right side of the board.') +
+    p('Slide other blocks (horizontally or vertically) to open the way. Finish with as few moves as possible.'),
+  mir: p('The left side is the example. The right side must be its mirror image.') +
+    p('Tap a square on the right side to place a color, and tap again to remove it. Pick a color above the board. You win when all squares are correct.'),
+  mns: p('Open all squares that do not contain a mine. Tap a square to open it. The number shows how many mines are around that square.') +
+    p('Long-press (or use flag mode) to place or remove a flag on a square you suspect has a mine. The first tap is always safe.'),
+  shp: p('Divide the board into areas that have the same shape as the shapes in the bank (rotation and mirror allowed).') +
+    p('Drag your finger across empty squares to make an area. Tap a colored area to delete it.'),
+};
+
+/** Penjelasan game sesuai bahasa yang aktif. */
+export const howtoFor = (id: string): string => {
+  if (getLang() === 'en') return HOWTO_EN[id] ?? '<p>No instructions for this game yet.</p>';
+  return HOWTO[id] ?? '<p>Belum ada penjelasan untuk game ini.</p>';
 };
