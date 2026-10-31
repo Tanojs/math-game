@@ -86,7 +86,7 @@ export function celebrate(host: HTMLElement, text: string, kind: BannerKind, opt
     bn.remove();
     opts.onClose?.(); // ketuk spanduk = melihat papan lagi
   };
-  if (!opts.fade) placeSquare(bn, stage, opts.span?.length ? opts.span : [host], opts.inset ?? 0);
+  if (!opts.fade) placeSquare(bn, stage, opts.span?.length ? opts.span : [host], opts.inset ?? 20);
   stage.appendChild(bn);
 }
 

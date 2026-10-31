@@ -3,6 +3,8 @@ import type { Cleanup } from '../core/types.js';
 import { GAMES } from '../games/registry.js';
 import { renderScores } from './scores.js';
 import { sfx } from '../core/sfx.js';
+import { HOWTO } from './howto.js';
+import { openSheet } from './sheet.js';
 
 /** Putar ulang animasi masuk pada sebuah layar. */
 const enter = (id: string): void => {
@@ -55,6 +57,8 @@ export function play(id: string): void {
   fitGame();
   $('#gt').textContent = game.name;
   $('#inf').textContent = '';
+  // Tombol "i" di pojok kanan bawah: cara bermain game ini
+  $('#hw').onclick = () => openSheet(game.name, HOWTO[id] ?? '<p>Belum ada penjelasan untuk game ini.</p>');
   const stage = $('#st');
   stage.innerHTML = '';
   // Bersihkan SEMUA pengendali dari game sebelumnya (area game dipakai ulang oleh tiap game).
