@@ -21,6 +21,8 @@ export interface BannerOpts {
   onClose?: () => void;
   /** Spanduk menutupi gabungan elemen-elemen ini (mis. papan + tombol di bawahnya) alih-alih seluruh `host`. */
   span?: readonly Element[];
+  /** Jarak (px) dari tepi kiri-kanan area game, supaya spanduk tidak menempel ke tepi layar. */
+  inset?: number;
 }
 
 /** Sisi maksimum spanduk (= lebar maksimum papan XOX). */
@@ -30,8 +32,8 @@ const MAX_SIDE = 460;
  * Semua spanduk berukuran sama: persegi selebar area game (maks. 460px), seperti papan XOX.
  * Spanduk dipasang di area game (`#st`) dan dipusatkan di atas `span` (papan/elemen yang diselesaikan).
  */
-function placeSquare(bn: HTMLElement, stage: HTMLElement, span: readonly Element[]): void {
-  const side = Math.min(MAX_SIDE, stage.clientWidth);
+function placeSquare(bn: HTMLElement, stage: HTMLElement, span: readonly Element[], inset: number): void {
+  const side = Math.min(MAX_SIDE, stage.clientWidth - 2 * inset);
   const S = stage.getBoundingClientRect();
   let t = Infinity, l = Infinity, r = -Infinity, b = -Infinity;
   for (const e of span) {
@@ -84,7 +86,7 @@ export function celebrate(host: HTMLElement, text: string, kind: BannerKind, opt
     bn.remove();
     opts.onClose?.(); // ketuk spanduk = melihat papan lagi
   };
-  if (!opts.fade) placeSquare(bn, stage, opts.span?.length ? opts.span : [host]);
+  if (!opts.fade) placeSquare(bn, stage, opts.span?.length ? opts.span : [host], opts.inset ?? 0);
   stage.appendChild(bn);
 }
 

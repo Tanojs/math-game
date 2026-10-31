@@ -1,4 +1,3 @@
-import { $ } from '../core/dom.js';
 import { APP_NAME, APP_VERSION, CONTACT_EMAIL, DEVELOPER, MUSIC_CREDIT, PRIVACY_DATE } from './brand.js';
 import { GAMES } from '../games/registry.js';
 import { ADS_ENABLED, ADS_TESTING } from './ads-config.js';
@@ -14,18 +13,7 @@ export function toast(text: string): void {
   toastTimer = window.setTimeout(() => t?.classList.remove('on'), 2200);
 }
 
-/** Lembar isi (bottom sheet) untuk Tentang / Kebijakan Privasi. */
-export function openSheet(title: string, html: string, onClick?: (e: MouseEvent, root: HTMLElement) => void): void {
-  closeSheet();
-  const s = document.createElement('div');
-  s.className = 'sheet';
-  s.id = 'sheet';
-  s.innerHTML = `<div class="sheet-in" role="dialog" aria-label="${title}"><h2>${title}</h2>${html}<button class="cta" id="sheet-x">Tutup</button></div>`;
-  s.addEventListener('click', (e) => { if (e.target === s || (e.target as Element).id === 'sheet-x') closeSheet(); else onClick?.(e, s); });
-  document.body.appendChild(s);
-  $('#sheet-x').focus({ preventScroll: true });
-}
-export const closeSheet = (): void => { document.getElementById('sheet')?.remove(); };
+export { openSheet, closeSheet } from './sheet.js';
 
 export const aboutHtml = (): string =>
   `<p><b>${APP_NAME}</b> · versi ${APP_VERSION}</p>` +

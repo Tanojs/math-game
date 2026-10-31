@@ -40,9 +40,9 @@ export function layoutFor(n: 1 | 2): Layout {
     eq = [bar(190, 360, 80, false, t), bar(190, 420, 80, false, t)];
   } else {
     // A = dua digit kiri-atas, B = dua digit kanan-atas, "=" di tengah, C = dua digit kanan-bawah
-    blocks = [[23, 40], [101, 40], [229, 40], [307, 40], [229, 260], [307, 260]];
-    w = 70; h = 150; t = 16; cx = 200; cy = 115; len = 40;
-    eq = [bar(200, 215, 40, false, t), bar(200, 245, 40, false, t)];
+    blocks = [[6, 30], [92, 30], [230, 30], [316, 30], [230, 290], [316, 290]];
+    w = 78; h = 170; t = 16; cx = 200; cy = 115; len = 40;
+    eq = [bar(200, 232, 40, false, t), bar(200, 262, 40, false, t)];
   }
   const opH = bar(cx, cy, len, false, t), opV = bar(cx, cy, len, true, t);
   const slots = blocks.flatMap(([x, y]) => digit(x, y, w, h, t));
