@@ -43,7 +43,7 @@ export const mountShapes: Mount = (id, el, info) => {
       segment('l', ['Mudah', 'Sedang', 'Sulit'], level) +
       `<div class=sbk><b>Semua area harus salah satu bentuk ini:</b><div class=sbs>${pz.bank.map(mini).join('')}</div></div>` +
       `<div class=sbb data-nosnd style="aspect-ratio:${cols}/${rows};grid-template:repeat(${rows},1fr)/repeat(${cols},1fr)">${cells}</div>` +
-      '<div class=msg id=sbm></div><div class="rr sb3"><button class="cta alt" id=rs>Ulangi</button><button class="cta alt" id=re>Soal baru</button>' + HELP_BTN + '</div>';
+      '<div class=msg id=sbm></div><div class=rr><button class="cta alt" id=rs>Ulangi</button><button class="cta alt" id=re>Soal baru</button>' + HELP_BTN + '</div>';
     cellEls = [];
     el.querySelectorAll<HTMLElement>('.sbc').forEach((c) => { cellEls[Number(c.dataset.i)] = c; });
     const b = board();
