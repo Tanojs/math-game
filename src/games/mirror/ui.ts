@@ -3,12 +3,13 @@ import { resultBanner } from '../../core/banner.js';
 import { segment, type Level } from '../../core/html.js';
 import type { Mount } from '../../core/types.js';
 import { best } from '../../app/records.js';
+import { SHARED_PALETTE } from '../../app/palette.js';
 import { check, makePuzzle, type MirrorPuzzle } from './logic.js';
 import { sfx } from '../../core/sfx.js';
 
 let level: Level = 0, pick = 0; // bertahan selama sesi
-/** Warna blok yang bisa dipilih (hijau dicadangkan untuk "semua benar", merah untuk "salah"). */
-const PALETTE = ['--c', '--o', '--v', '--k', '--y', '--bl'];
+/** Warna blok yang bisa dipilih: palet bersama (sama dengan Pindahkan Batang). */
+const PALETTE = SHARED_PALETTE;
 
 export const mountMirror: Mount = (id, el, info) => {
   let pz: MirrorPuzzle;
@@ -25,7 +26,7 @@ export const mountMirror: Mount = (id, el, info) => {
     cells.forEach((c, i) => {
       const on = right[i] as boolean, bad = res.wrong.includes(i);
       c.className = 'mrc' + (on ? (res.solved ? ' ok' : bad ? ' bad' : ' on') : '');
-      c.style.setProperty('--bc', on && !bad && !res.solved ? `var(${PALETTE[pick]})` : '');
+      c.style.setProperty('--bc', on && !bad && !res.solved ? (PALETTE[pick] as readonly [string, string])[1] : '');
       c.textContent = on && bad ? '✕' : '';
     });
     if (res.solved && !done) {
@@ -46,7 +47,7 @@ export const mountMirror: Mount = (id, el, info) => {
     const rt = right.map((_, i) => `<b class=mrc data-i=${i}></b>`).join('');
     el.innerHTML =
       '<div class=mrw><div>' + segment('l', ['Mudah', 'Sedang', 'Sulit'], level) +
-      '<div class=mpal id=pal>' + PALETTE.map((c, i) => `<button class="msw${i === pick ? ' on' : ''}" data-p=${i} style="--bc:var(${c})" aria-label="Warna ${i + 1}"></button>`).join('') + '</div></div>' +
+      '<div class=mpal id=pal>' + PALETTE.map(([n, c], i) => `<button class="msw${i === pick ? ' on' : ''}" data-p=${i} style="--bc:${c}" aria-label="Warna ${n}"></button>`).join('') + '</div></div>' +
       `<div class=mrm><div class=mrb id=mrb style="--n:${s}"><div class="mrh l">${left}</div><div class="mrh r">${rt}</div></div></div>` +
       `<div class=rr>${buttons()}</div></div>`;
     cells = [...el.querySelectorAll<HTMLElement>('.mrh.r .mrc')];

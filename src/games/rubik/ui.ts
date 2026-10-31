@@ -75,7 +75,10 @@ export const mountRubik: Mount = (_id, el, info) => {
   };
   const placeAll = (): void => cubies.forEach((_, i) => place(i));
   const view = (): void => {
-    $('#sc').style.transform = `scale(${Math.min(1.6, el.clientWidth / (N * 110))}) rotateX(${rx}deg) rotateY(${ry}deg)`;
+    // skala dibatasi juga oleh tinggi area putar (dikurangi ruang geser di bawah) supaya kubus tidak keluar ke tombol di atas
+    const areaH = el.clientHeight - parseFloat(getComputedStyle(el).paddingBottom || '0');
+    const s = Math.min(1.6, el.clientWidth / (N * 110), areaH / (N * 105));
+    $('#sc').style.transform = `scale(${s}) rotateX(${rx}deg) rotateY(${ry}deg)`;
   };
 
   const recordKey = (): string => (N === 3 ? 'rbk' : 'rbk' + N);

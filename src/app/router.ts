@@ -68,7 +68,27 @@ export function play(id: string): void {
   stage.onpointerup = null;
   stage.onpointercancel = null;
   stop = game.mount(id, stage, (text) => { $('#inf').textContent = text; }) ?? null;
+  placeInfo();
 }
+
+/**
+ * Tombol "i" (cara bermain) ditaruh di baris tombol paling bawah setiap game, sejajar dengan tombol ? dan Lanjut.
+ * Game yang tidak punya baris tombol mendapat satu baris sendiri di bawah isi game.
+ */
+const INFO_ROWS = '.rr, .rc, .cact, .rrs';
+let infoRow: HTMLElement | null = null;
+const placeInfo = (): void => {
+  const hw = document.getElementById('hw'), st = document.getElementById('st');
+  if (!hw || !st) return;
+  const rows = st.querySelectorAll<HTMLElement>(INFO_ROWS);
+  let row = rows[rows.length - 1] ?? null;
+  if (!row) {
+    if (!infoRow) { infoRow = document.createElement('div'); infoRow.className = 'rr hwr'; }
+    if (infoRow.parentElement !== st) st.appendChild(infoRow);
+    row = infoRow;
+  }
+  if (hw.parentElement !== row) row.appendChild(hw);
+};
 
 export function goHome(): void {
   stopCurrent();
@@ -87,6 +107,8 @@ export function gotoTab(t: Tab): void {
 }
 
 export function initRouter(): void {
+  // Game yang menggambar ulang layarnya (innerHTML) membuat tombol "i" lepas dari barisnya: pasang lagi
+  new MutationObserver(() => placeInfo()).observe($('#st'), { childList: true, subtree: true });
   $('#bk').onclick = () => {
     try { if (location.hash) { history.back(); return; } } catch { /* diabaikan */ }
     goHome();

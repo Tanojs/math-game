@@ -4,10 +4,12 @@ import { segment } from '../../core/html.js';
 import { getStr, setStr } from '../../core/storage.js';
 import type { Mount } from '../../core/types.js';
 import { best } from '../../app/records.js';
+import { SHARED_PALETTE } from '../../app/palette.js';
 import { layoutFor } from './geometry.js';
 import { digitCount, fixedBar, isEquation, LEVELS, type Level, nextPuzzle, plusBar, refillPool, statesAlongPlan, type Puzzle, type Slots } from './logic.js';
 
-const PALETTE: ReadonlyArray<readonly [string, string]> = [['Pink', '#FF7AB6'], ['Biru', '#5A7BA0'], ['Ungu', '#9C86F2'], ['Teal', '#3FB6C0']];
+/** Palet warna: sama dengan game Cermin. */
+const PALETTE = SHARED_PALETTE;
 let level = 0; // indeks ke LEVELS: 0 = Mudah (1 digit, 1 batang), 1 = Sedang (puluhan, 1 batang), 2 = Sulit (puluhan, 2 batang)
 let color = getStr('mgs') ?? '#FF7AB6';
 const movesOf = (): number => (LEVELS[level] as Level).moves;
@@ -42,8 +44,8 @@ export const mountSticks: Mount = (id, el, info) => {
       (s[plusBar(s)] ? `<rect class="x" x="${L.cx - L.t / 2}" y="${L.cy - L.t / 2}" width="${L.t}" height="${L.t}"/>` : '') +
       // baris bawah: petunjuk (kiri), ulangi/lanjut (tengah); tombol cara bermain ada di bingkai game (pojok kanan bawah)
       `</svg></div><div class=msg>${msg}</div><div class="rr rrs"><button class=help id=hp aria-label="Petunjuk">?</button>` +
-      (done ? '<button class=cta id=nx>Lanjut</button>' : '<button class="cta alt" id=rs>Ulangi</button>') + '<span></span></div>';
-    if (done) rb.show(el.querySelector<HTMLElement>('.stk'), 'Benar!', 'win', newPuzzle, { inset: 48 });
+      (done ? '<button class=cta id=nx>Lanjut</button>' : '<button class="cta alt" id=rs>Ulangi</button>') + '</div>';
+    if (done) rb.show(el.querySelector<HTMLElement>('.stk'), 'Benar!', 'win', newPuzzle);
   };
 
   const restart = (): void => { s = [...puzzle.start]; moves = 0; held = -1; hint = []; };
