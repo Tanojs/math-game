@@ -20,3 +20,6 @@
 .sbc[data-s="6"]{background:#7FB5FF}
 .sbp{background:repeating-linear-gradient(45deg,rgba(0,0,0,.14) 0 5px,transparent 5px 10px),var(--card);box-shadow:inset 0 0 0 3px var(--bl)}
 .sbe{background:var(--r)}
+
+/* Tiga tombol di bawah Isi Bentuk: lebar penuh dan muat satu baris */
+.sb3 .cta{padding:12px 10px;font-size:.9rem;white-space:nowrap}
