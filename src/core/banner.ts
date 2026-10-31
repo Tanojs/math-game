@@ -45,6 +45,16 @@ function placeSquare(bn: HTMLElement, stage: HTMLElement, span: readonly Element
   const left = Math.max(0, Math.min(cx - side / 2, stage.scrollWidth - side));
   const top = Math.max(0, Math.min(cy - side / 2, stage.scrollHeight - side));
   Object.assign(bn.style, { inset: 'auto', top: `${top}px`, left: `${left}px`, width: `${side}px`, height: `${side}px` });
+  fullBleed(bn, stage);
+}
+
+/**
+ * Spanduk dibentangkan dari tepi kiri sampai tepi kanan LAYAR (bukan hanya lebar area game),
+ * sehingga warna latarnya menyentuh kedua sisi layar. Posisi kiri dihitung dari posisi area game.
+ */
+function fullBleed(bn: HTMLElement, box: HTMLElement): void {
+  const B = box.getBoundingClientRect();
+  Object.assign(bn.style, { left: `${-(B.left + box.clientLeft)}px`, width: `${document.documentElement.clientWidth}px` });
 }
 
 export function celebrate(host: HTMLElement, text: string, kind: BannerKind, opts: BannerOpts = {}): void {
@@ -87,6 +97,7 @@ export function celebrate(host: HTMLElement, text: string, kind: BannerKind, opt
     opts.onClose?.(); // ketuk spanduk = melihat papan lagi
   };
   if (!opts.fade) placeSquare(bn, stage, opts.span?.length ? opts.span : [host], opts.inset ?? 20);
+  else fullBleed(bn, host);
   stage.appendChild(bn);
 }
 

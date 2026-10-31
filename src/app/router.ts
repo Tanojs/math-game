@@ -26,10 +26,13 @@ const stopCurrent = (): void => { stop?.(); stop = null; };
 /** Tinggi area game = sisa layar (di atas bar navigasi) supaya isi game bisa diletakkan di tengah / dekat jempol. */
 const fitGame = (): void => {
   const gm = $('#gm');
-  if (gm.classList.contains('hide')) return;
   const nav = document.getElementById('nv');
+  const navH = nav ? nav.getBoundingClientRect().height : 72;
+  // tinggi bar navigasi dipakai CSS (.hw) supaya tombol "i" tetap di atasnya
+  document.documentElement.style.setProperty('--nav-h', `${navH}px`);
+  if (gm.classList.contains('hide')) return;
   const top = gm.getBoundingClientRect().top + window.scrollY;
-  gm.style.minHeight = `${Math.max(0, window.innerHeight - top - (nav ? nav.getBoundingClientRect().height : 72) - 32)}px`;
+  gm.style.minHeight = `${Math.max(0, window.innerHeight - top - navH - 32)}px`;
 };
 addEventListener('resize', fitGame);
 
