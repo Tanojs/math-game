@@ -21,7 +21,9 @@ let cur: Tab = 'home';
 /** Layar yang sedang tampil ('gm' = sedang di dalam sebuah game). */
 export const currentTab = (): Tab => cur;
 
-const stopCurrent = (): void => { stop?.(); stop = null; };
+/** Id game yang sedang berjalan (null = tidak ada game). */
+let curId: string | null = null;
+const stopCurrent = (): void => { stop?.(); stop = null; curId = null; };
 
 /** Tinggi area game = sisa layar (di atas bar navigasi) supaya isi game bisa diletakkan di tengah / dekat jempol. */
 const fitGame = (): void => {
@@ -46,7 +48,9 @@ export function showTab(t: Tab): void {
 export function play(id: string): void {
   const game = GAMES.find((g) => g.id === id);
   if (!game) return;
+  stopCurrent(); // hentikan game yang masih berjalan sebelum game baru dibuka, supaya tidak ada game lama yang ikut menggambar
   cur = 'gm';
+  curId = id;
   document.body.classList.add('ig');
   document.dispatchEvent(new CustomEvent('mg-screen', { detail: 'game' }));
   try { location.hash = id; } catch { /* diabaikan */ }
@@ -92,6 +96,7 @@ const placeInfo = (): void => {
 
 export function goHome(): void {
   stopCurrent();
+  try { if (location.hash) history.replaceState(null, '', location.pathname + location.search); } catch { /* diabaikan */ }
   $('#inf').textContent = '';
   showTab('home');
   enter('#home');
@@ -109,10 +114,17 @@ export function gotoTab(t: Tab): void {
 export function initRouter(): void {
   // Game yang menggambar ulang layarnya (innerHTML) membuat tombol "i" lepas dari barisnya: pasang lagi
   new MutationObserver(() => placeInfo()).observe($('#st'), { childList: true, subtree: true });
-  $('#bk').onclick = () => {
-    try { if (location.hash) { history.back(); return; } } catch { /* diabaikan */ }
-    goHome();
-  };
-  addEventListener('hashchange', () => { if (!location.hash) goHome(); });
+  // Tombol "i" tidak boleh ikut memicu klik game di bawahnya (stage punya penangan klik sendiri)
+  const hw = $('#hw');
+  hw.addEventListener('click', (e) => e.stopPropagation());
+  hw.addEventListener('pointerdown', (e) => e.stopPropagation());
+  // ← langsung kembali ke menu (tidak bergantung pada riwayat browser yang bisa salah sasaran)
+  $('#bk').onclick = () => goHome();
+  // Tombol Back browser/HP: hash kosong = menu; hash game lain = buka game itu
+  addEventListener('hashchange', () => {
+    const h = location.hash.slice(1);
+    if (!h) { goHome(); return; }
+    if (h !== curId && GAMES.some((g) => g.id === h)) play(h);
+  });
   try { history.replaceState(null, '', location.pathname + location.search); } catch { /* diabaikan */ }
 }
