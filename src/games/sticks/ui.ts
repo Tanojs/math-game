@@ -4,17 +4,18 @@ import { segment } from '../../core/html.js';
 import { getStr, setStr } from '../../core/storage.js';
 import type { Mount } from '../../core/types.js';
 import { best } from '../../app/records.js';
-import { FIXED_POINTS, SLOT_POINTS } from './geometry.js';
-import { FIXED_BAR, isEquation, nextPuzzle, PLUS_BAR, refillPool, statesAlongPlan, type Puzzle, type Slots } from './logic.js';
+import { layoutFor } from './geometry.js';
+import { digitCount, fixedBar, isEquation, LEVELS, type Level, nextPuzzle, plusBar, refillPool, statesAlongPlan, type Puzzle, type Slots } from './logic.js';
 
 const PALETTE: ReadonlyArray<readonly [string, string]> = [['Pink', '#FF7AB6'], ['Biru', '#5A7BA0'], ['Ungu', '#9C86F2'], ['Teal', '#3FB6C0']];
 
-let level = 0; // 0 = 1 batang, 1 = 2 batang, 2 = 3 batang
+let level = 0; // indeks ke LEVELS: 0 = Mudah (1 digit, 1 batang), 1 = Sedang (puluhan, 1 batang), 2 = Sulit (puluhan, 2 batang)
 let color = getStr('mgs') ?? '#FF7AB6';
+const movesOf = (): number => (LEVELS[level] as Level).moves;
 
 export const mountSticks: Mount = (id, el, info) => {
   let s: Slots = [], puzzle!: Puzzle, path: Slots[] = [];
-  let moves = 0, K = level + 1, held = -1, solved = 0;
+  let moves = 0, K = movesOf(), held = -1, solved = 0;
   let done = false, busy = false, dead = false;
   let hint: number[] = [];
   let msg = '', hintTimer = 0, refillTimer = 0;
@@ -25,8 +26,9 @@ export const mountSticks: Mount = (id, el, info) => {
   const draw = (): void => {
     if (dead) return;
     info('Benar ' + solved);
-    const slots = SLOT_POINTS.map((p, i) => [i, p] as const)
-      .filter(([i]) => i !== FIXED_BAR)
+    const L = layoutFor(digitCount(s) === 1 ? 1 : 2), F = fixedBar(s);
+    const slots = L.slots.map((p, i) => [i, p] as const)
+      .filter(([i]) => i !== F)
       // batang kosong digambar di bawah batang terisi
       .sort((a, b) => (s[a[0]] ? 1 : 0) - (s[b[0]] ? 1 : 0))
       .map(([i, p]) => `<polygon data-i="${i}" points="${p}" class="${s[i] ? 'l' : i === held ? 'e o' : 'e'}${hint.includes(i) ? ' h' : ''}"/>`)
@@ -35,8 +37,8 @@ export const mountSticks: Mount = (id, el, info) => {
       segment('l', ['Mudah', 'Sedang', 'Sulit'], level) +
       `<div class="stk${done ? ' ok' : busy ? ' bad' : ''}" style="--sk:${color}"><svg viewBox="0 0 400 520">` +
       slots +
-      FIXED_POINTS.map((p) => `<polygon points="${p}" class="f"/>`).join('') +
-      (s[PLUS_BAR] ? '<rect class="x" x="189" y="129" width="22" height="22"/>' : '') +
+      L.fixed.map((p) => `<polygon points="${p}" class="f"/>`).join('') +
+      (s[plusBar(s)] ? `<rect class="x" x="${L.cx - L.t / 2}" y="${L.cy - L.t / 2}" width="${L.t}" height="${L.t}"/>` : '') +
       `</svg></div><div class=msg>${msg}</div><div class="rr rrs"><button class=help id=hp aria-label="Petunjuk">?</button><div class=sw>` +
       PALETTE.map(([n, c]) => `<button data-c="${c}" aria-label="${n}" style="background:${c}" class="${c === color ? 'on' : ''}"></button>`).join('') +
       '</div>' + (done ? '<button class=cta id=nx>Lanjut</button>' : '<button class="cta alt" id=rs>Ulangi</button>') + '</div>';
@@ -48,8 +50,8 @@ export const mountSticks: Mount = (id, el, info) => {
   const newPuzzle = (): void => {
     clearTimeout(hintTimer);
     rb.reset();
-    K = level + 1;
-    puzzle = nextPuzzle(K);
+    K = movesOf();
+    puzzle = nextPuzzle(level);
     path = statesAlongPlan(puzzle);
     restart();
     done = false;
