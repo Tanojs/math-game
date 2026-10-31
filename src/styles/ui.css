@@ -7,8 +7,10 @@
 .bar h2{margin:0;flex:1;font-size:1.25rem;font-weight:700}
 .inf{padding:3px 9px;background:var(--c);color:#000;border:3px solid var(--ln);font-weight:700;font-size:.85rem;white-space:nowrap}.inf:empty{display:none}
 /* Tombol "Cara main": diletakkan sejajar di kanan baris tombol paling bawah game (lihat placeHelp di router.ts) */
-.hw{position:absolute;z-index:40;margin:0;width:auto;padding:0 10px;background:var(--y);color:#000;border:3px solid var(--ln);border-radius:12px;box-shadow:4px 4px 0 var(--ln);font:700 .9rem/1.1 "Space Grotesk",system-ui,sans-serif;white-space:nowrap}
-.hw:active{box-shadow:1px 1px 0 var(--ln);filter:brightness(.93)}
+/* Baris tombol untuk game yang tidak punya baris bawah sendiri (tombol "Cara main" ikut di dalamnya) */
+.arow{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:10px;margin-top:14px}.arow .cta{margin:0}
+.hw{margin:0;white-space:nowrap}
+.rr{flex-wrap:wrap;gap:8px}
 .b{padding:16px 6px;background:var(--c);color:#000;border:3px solid var(--ln);border-radius:12px;box-shadow:4px 4px 0 var(--ln);font-size:1.5rem;font-weight:700}
 .res{text-align:center;padding-top:20px}.res h1{font-size:4.5rem;margin:6px 0}.res p{font-weight:700}
 .msg{text-align:center;font-weight:700;margin:14px 0;min-height:1.4em}

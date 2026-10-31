@@ -1,3 +1,4 @@
+import { HELP_BTN } from '../../app/howto.js';
 import { hit } from '../../core/dom.js';
 import { resultBanner } from '../../core/banner.js';
 import { segment, type Level } from '../../core/html.js';
@@ -21,7 +22,7 @@ export const mountTap: Mount = (id, el, info) => {
       segment('l', ['Mudah', 'Sedang', 'Sulit'], level) +
       `<div class="sq tpg" data-nosnd style="--n:${n};grid-template:repeat(${n},minmax(0,1fr))/repeat(${n},minmax(0,1fr))">` +
       board.map((v) => `<button data-v=${v}>${v}</button>`).join('') +
-      `</div><div class=msg>${msg}</div><button class=cta id=re>Main lagi</button>`;
+      `</div><div class=msg>${msg}</div><div class=arow><button class=cta id=re>Main lagi</button>${HELP_BTN}</div>`;
   };
 
   const start = (): void => {

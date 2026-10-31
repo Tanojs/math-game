@@ -1,3 +1,4 @@
+import { HELP_BTN } from '../../app/howto.js';
 import { hit } from '../../core/dom.js';
 import { resultBanner } from '../../core/banner.js';
 import { segment, type Level } from '../../core/html.js';
@@ -33,7 +34,7 @@ export const mountPyramid: Mount = (id, el, info) => {
       segment('l', ['Mudah', 'Sedang', 'Sulit'], level) +
       `<div class=py>${rowsHtml}</div><div class="pad">` +
       [1, 2, 3, 4, 5, 6, 7, 8, 9, '⌫', 0, '→'].map((k) => `<button class=b data-k="${k}">${k === '→' ? 'Enter' : k}</button>`).join('') +
-      `</div><div class=msg>${msg}</div>` + `<button class=cta id=nx${done ? '' : ' style="visibility:hidden" tabindex=-1 aria-hidden=true'}>Soal berikutnya</button>`;
+      `</div><div class=msg>${msg}</div>` + `<div class=arow><button class=cta id=nx${done ? '' : ' style="visibility:hidden" tabindex=-1 aria-hidden=true'}>Soal berikutnya</button>${HELP_BTN}</div>`;
     if (done) rb.show(el, 'Benar!', 'win', newPuzzle, { span: ['.py', '.pad'].map((s) => el.querySelector<HTMLElement>(s)).filter((x): x is HTMLElement => x !== null) });
   };
 

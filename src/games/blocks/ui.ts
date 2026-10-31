@@ -1,3 +1,4 @@
+import { HELP_BTN } from '../../app/howto.js';
 import { hit } from '../../core/dom.js';
 import { resultBanner } from '../../core/banner.js';
 import { segment, type Level } from '../../core/html.js';
@@ -39,7 +40,7 @@ export const mountBlocks: Mount = (id, el, info) => {
     el.innerHTML =
       segment('l', ['Mudah', 'Sedang', 'Sulit'], level) +
       `<div class=bkb id=bkb><div class=exit></div>${blocks}</div><div class=msg>${msg}</div>` +
-      '<div class=rr><button class="cta alt" id=rs>Ulangi</button>' + (done ? '<button class=cta id=nx>Soal berikutnya</button>' : '<button class="cta alt" id=nw>Soal baru</button>') + '</div>';
+      '<div class=rr><button class="cta alt" id=rs>Ulangi</button>' + (done ? '<button class=cta id=nx>Soal berikutnya</button>' : '<button class="cta alt" id=nw>Soal baru</button>') + HELP_BTN + '</div>';
     if (done) rb.show(el.querySelector<HTMLElement>('#bkb'), `Selesai! ${moves} langkah`, 'win', newPuzzle, { silent: true });
   };
 

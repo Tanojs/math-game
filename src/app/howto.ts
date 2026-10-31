@@ -1,6 +1,9 @@
 /** Cara bermain per game (kunci = id di registry.ts). Ditampilkan lewat tombol "i" di pojok kanan bawah setiap game. */
 const p = (s: string): string => `<p>${s}</p>`;
 
+/** Tombol "Cara main" yang ditaruh di baris tombol bawah setiap game (gaya sama dengan tombol lain). */
+export const HELP_BTN = '<button class="cta alt hw" data-hw aria-label="Cara bermain">Cara main</button>';
+
 export const HOWTO: Readonly<Record<string, string>> = {
   hc: p('Jawab soal hitungan secepat mungkin dengan memilih jawaban yang benar. Jawaban benar beruntun memberi poin lebih banyak.') +
     p('Ada batas waktu 60 detik. Kumpulkan skor setinggi mungkin.'),

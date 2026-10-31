@@ -1,3 +1,4 @@
+import { HELP_BTN } from '../../app/howto.js';
 import { hit } from '../../core/dom.js';
 import { segment } from '../../core/html.js';
 import { celebrate, clearBanner, layoutPos, slideFrom } from '../../core/banner.js';
@@ -16,7 +17,7 @@ export const mountPuzzle15: Mount = (_id, el, info) => {
       segment('l', ['Mudah', 'Sedang', 'Sulit'], level) +
       `<div class="sq g4" style="--n:${n};grid-template:repeat(${n},minmax(0,1fr))/repeat(${n},minmax(0,1fr))">` +
       b.map((v, i) => (v ? `<button data-i=${i}>${v}</button>` : '<div class=em></div>')).join('') +
-      `</div><div class=msg>${isSolved(b) ? 'Selesai!' : ''}</div><button class=cta id=re>Acak</button>`;
+      `</div><div class=msg>${isSolved(b) ? 'Selesai!' : ''}</div><div class=arow><button class=cta id=re>Acak</button>${HELP_BTN}</div>`;
   };
 
   const status = (): void => {

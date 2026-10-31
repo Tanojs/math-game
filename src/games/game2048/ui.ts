@@ -1,3 +1,4 @@
+import { HELP_BTN } from '../../app/howto.js';
 import { $ } from '../../core/dom.js';
 import { celebrate, clearBanner } from '../../core/banner.js';
 import { R } from '../../core/rand.js';
@@ -18,7 +19,7 @@ export const mount2048: Mount = (id, el, info) => {
 
   el.innerHTML =
     '<div class="sq g4" id="bd">' + '<div></div>'.repeat(SIZE * SIZE) + '<div class="tls"></div></div>' +
-    '<div class=msg id=m48></div><button class=cta id=re>Main lagi</button>';
+    '<div class=msg id=m48></div><div class=arow><button class=cta id=re>Main lagi</button>' + HELP_BTN + '</div>';
   const bd = $('#bd'), layer = bd.querySelector('.tls') as HTMLElement;
 
   const paint = (n: HTMLElement, v: number): void => {

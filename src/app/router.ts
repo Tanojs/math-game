@@ -33,47 +33,6 @@ const fitGame = (): void => {
 };
 addEventListener('resize', fitGame);
 
-/**
- * Tombol "Cara main" diletakkan sejajar di kanan baris tombol paling bawah game (mis. "?  Ulangi  [Cara main]").
- * Jika baris itu tidak punya tempat kosong di kanan, tombol turun ke bawah baris tersebut.
- */
-const placeHelp = (): void => {
-  helpQueued = 0;
-  const hw = $('#hw'), gm = $('#gm'), st = $('#st');
-  if (gm.classList.contains('hide')) return;
-  const G = gm.getBoundingClientRect(), S = st.getBoundingClientRect();
-  const btns = [...st.querySelectorAll<HTMLElement>('button')].filter((b) => {
-    const r = b.getBoundingClientRect();
-    return r.width > 0 && r.height > 0 && getComputedStyle(b).visibility !== 'hidden';
-  });
-  hw.style.visibility = 'hidden';
-  hw.style.width = 'auto';
-  const w = hw.offsetWidth;
-  // batas bawah: tidak boleh masuk ke bar navigasi (layar yang terlihat), juga tidak melewati area game
-  const nav = document.getElementById('nv');
-  const limit = Math.min(S.bottom, innerHeight - (nav ? nav.getBoundingClientRect().height : 72));
-  let h = 48, top = limit - 48 - 8, bottom = S.top;
-  let last: DOMRect | null = null;
-  for (const b of btns) {
-    const r = b.getBoundingClientRect();
-    if (r.bottom > bottom) bottom = r.bottom;
-    if (!last || r.bottom > last.bottom) last = r;
-  }
-  if (last) { h = last.height; top = last.top; }
-  // sejajar di tepi kanan area game; hanya turun ke bawah baris bila benar-benar bertabrakan
-  const left = S.right - w;
-  const clash = (t: number): boolean => btns.some((b) => {
-    const r = b.getBoundingClientRect();
-    return left < r.right + 6 && left + w > r.left - 6 && t < r.bottom + 4 && t + h > r.top - 4;
-  });
-  // pilih posisi pertama yang tidak menabrak tombol/papan lain: baris terakhir, lalu di bawahnya, lalu di dasar layar
-  const cands = [top, Math.min(bottom + 10, limit - h), limit - h];
-  const ok = cands.find((t) => t + h <= limit + 0.5 && t >= S.top - 0.5 && !clash(t));
-  top = ok ?? Math.min(top, limit - h);
-  Object.assign(hw.style, { left: `${left - G.left}px`, top: `${top - G.top}px`, height: `${h}px`, width: `${w}px`, visibility: '' });
-};
-let helpQueued = 0;
-const schedulePlace = (): void => { if (!helpQueued) helpQueued = requestAnimationFrame(placeHelp); };
 
 export function showTab(t: Tab): void {
   cur = t;
@@ -84,6 +43,8 @@ export function showTab(t: Tab): void {
   if (t === 'scr') renderScores();
   window.scrollTo(0, 0);
 }
+
+let curGame: { name: string; id: string } | null = null;
 
 export function play(id: string): void {
   const game = GAMES.find((g) => g.id === id);
@@ -99,8 +60,7 @@ export function play(id: string): void {
   fitGame();
   $('#gt').textContent = game.name;
   $('#inf').textContent = '';
-  // Tombol "Cara main": penjelasan game ini
-  $('#hw').onclick = () => openSheet(game.name, HOWTO[id] ?? '<p>Belum ada penjelasan untuk game ini.</p>');
+  curGame = { name: game.name, id };
   const stage = $('#st');
   stage.innerHTML = '';
   // Bersihkan SEMUA pengendali dari game sebelumnya (area game dipakai ulang oleh tiap game).
@@ -110,7 +70,6 @@ export function play(id: string): void {
   stage.onpointerup = null;
   stage.onpointercancel = null;
   stop = game.mount(id, stage, (text) => { $('#inf').textContent = text; }) ?? null;
-  schedulePlace();
 }
 
 export function goHome(): void {
@@ -135,9 +94,11 @@ export function initRouter(): void {
     goHome();
   };
   addEventListener('hashchange', () => { if (!location.hash) goHome(); });
-  // posisi "Cara main" dihitung ulang setiap isi game berubah (digambar ulang, muncul/hilang tombol, ukuran layar)
-  new MutationObserver(schedulePlace).observe($('#st'), { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style', 'hidden', 'disabled'] });
-  $('#gm').addEventListener('animationend', schedulePlace);
-  addEventListener('resize', schedulePlace);
+  // tombol "Cara main" (kelas hw) di dalam game: buka penjelasan game yang sedang aktif
+  $('#gm').addEventListener('click', (e) => {
+    if (!(e.target as Element).closest('[data-hw]') || !curGame) return;
+    e.stopPropagation();
+    openSheet(curGame.name, HOWTO[curGame.id] ?? '<p>Belum ada penjelasan untuk game ini.</p>');
+  }, true);
   try { history.replaceState(null, '', location.pathname + location.search); } catch { /* diabaikan */ }
 }

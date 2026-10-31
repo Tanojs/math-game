@@ -1,3 +1,4 @@
+import { HELP_BTN } from '../../app/howto.js';
 import { hit } from '../../core/dom.js';
 import { segment, LEVELS } from '../../core/html.js';
 import { celebrate, clearBanner, type BannerKind } from '../../core/banner.js';
@@ -22,7 +23,7 @@ export const mountReversi: Mount = (_id, el, info) => {
   el.innerHTML =
     '<div class=cwrap><div id=rctl></div><div class=rsbar id=rb0></div>' +
     '<div class=rsb id=rsb></div><div class=rsbar id=rb1></div><div class=cst id=rst></div>' +
-    '<div class=cact><button class=b id=run>Urungkan</button><button class=b id=rre>Main lagi</button></div></div>';
+    '<div class=cact><button class=b id=run>Urungkan</button><button class=b id=rre>Main lagi</button>' + HELP_BTN + '</div></div>';
   const q = <T extends HTMLElement>(s: string): T => el.querySelector(s) as T;
   const bd = q('#rsb');
   const cells: HTMLElement[] = [];

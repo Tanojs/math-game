@@ -1,3 +1,4 @@
+import { HELP_BTN } from '../../app/howto.js';
 import { hit } from '../../core/dom.js';
 import { resultBanner } from '../../core/banner.js';
 import { segment } from '../../core/html.js';
@@ -42,7 +43,7 @@ export const mountSticks: Mount = (id, el, info) => {
       (s[plusBar(s)] ? `<rect class="x" x="${L.cx - L.t / 2}" y="${L.cy - L.t / 2}" width="${L.t}" height="${L.t}"/>` : '') +
       // baris bawah: petunjuk (kiri), ulangi/lanjut (tengah); tombol cara bermain ada di bingkai game (pojok kanan bawah)
       `</svg></div><div class=msg>${msg}</div><div class="rr rrs"><button class=help id=hp aria-label="Petunjuk">?</button>` +
-      (done ? '<button class=cta id=nx>Lanjut</button>' : '<button class="cta alt" id=rs>Ulangi</button>') + '<span></span></div>';
+      (done ? '<button class=cta id=nx>Lanjut</button>' : '<button class="cta alt" id=rs>Ulangi</button>') + HELP_BTN + '</div>';
     if (done) rb.show(el.querySelector<HTMLElement>('.stk'), 'Benar!', 'win', newPuzzle, { inset: 48 });
   };
 

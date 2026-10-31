@@ -1,3 +1,4 @@
+import { HELP_BTN } from '../../app/howto.js';
 import { $, hit } from '../../core/dom.js';
 import { LEVELS, type Level } from '../../core/html.js';
 import type { Cleanup, Mount } from '../../core/types.js';
@@ -17,7 +18,7 @@ export const mountConnect: Mount = (id, el, info) => {
     off?.();
     off = null;
     info('');
-    el.innerHTML = '<div class=modes>' + LEVELS.map((n, i) => `<button class="b mode" data-m=${i}>${n}</button>`).join('') + '</div>';
+    el.innerHTML = '<div class=modes>' + LEVELS.map((n, i) => `<button class="b mode" data-m=${i}>${n}</button>`).join('') + '</div><div class=arow>' + HELP_BTN + '</div>';
     el.onclick = (e) => {
       const b = hit(e, '[data-m]');
       if (b) { lastLevel = Number(b.dataset.m) as Level; off = run(lastLevel); }
@@ -32,7 +33,7 @@ export const mountConnect: Mount = (id, el, info) => {
     let drag: Drag | null = null;
     let sel: Sel | null = null;
 
-    el.innerHTML = '<div class=tm><i id=mb></i></div><div class=mt id=mt><svg id=ml></svg><div class=col id=lc></div><div class=col id=rc></div></div>';
+    el.innerHTML = '<div class=tm><i id=mb></i></div><div class=mt id=mt><svg id=ml></svg><div class=col id=lc></div><div class=col id=rc></div></div><div class=arow>' + HELP_BTN + '</div>';
     const mt = $('#mt');
     const isOk = (side: 'l' | 'r', k: number): boolean => conn.some((c) => c.ok && (side === 'l' ? c.i === k : c.j === k));
 
@@ -73,7 +74,7 @@ export const mountConnect: Mount = (id, el, info) => {
       clearInterval(iv);
       clearTimeout(ct);
       const bs = best(id + d, s);
-      el.innerHTML = `<div class=res><p>Waktu habis</p><h1>${s}</h1><p>terbaik ${bs}</p><button class=cta id=re>Main lagi</button><button class="cta alt" id=lv>Ganti level</button></div>`;
+      el.innerHTML = `<div class=res><p>Waktu habis</p><h1>${s}</h1><p>terbaik ${bs}</p><button class=cta id=re>Main lagi</button><button class="cta alt" id=lv>Ganti level</button><div class=arow>${HELP_BTN}</div></div>`;
     };
 
     const connect = (i: number, j: number): void => {

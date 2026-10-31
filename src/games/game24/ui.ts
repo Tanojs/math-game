@@ -1,3 +1,4 @@
+import { HELP_BTN } from '../../app/howto.js';
 import { hit } from '../../core/dom.js';
 import { resultBanner } from '../../core/banner.js';
 import { segment, type Level } from '../../core/html.js';
@@ -34,7 +35,7 @@ export const mountGame24: Mount = (id, el, info) => {
       OPS.map((o) => `<button data-o="${o}" class="${o === op ? 'on' : ''}">${o}</button>`).join('') +
       `</div><div class=msg>${msg}</div><div class=rr><button class=help id=hp aria-label="Petunjuk">?</button>` +
       '<button class="cta alt" id=un>Urungkan</button>' +
-      (done ? '<button class=cta id=nx>Soal berikutnya</button>' : '<button class="cta alt" id=rs>Ulangi</button>') + '</div>';
+      (done ? '<button class=cta id=nx>Soal berikutnya</button>' : '<button class="cta alt" id=rs>Ulangi</button>') + HELP_BTN + '</div>';
     if (done) rb.show(el, 'Benar!', 'win', newPuzzle, { span: ['.g24', '.ops'].map((s) => el.querySelector<HTMLElement>(s)).filter((x): x is HTMLElement => x !== null) });
   };
 

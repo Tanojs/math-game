@@ -1,3 +1,4 @@
+import { HELP_BTN } from '../../app/howto.js';
 import { hit } from '../../core/dom.js';
 import { segment, type Level } from '../../core/html.js';
 import { celebrate, clearBanner } from '../../core/banner.js';
@@ -43,7 +44,7 @@ export const mountShapes: Mount = (id, el, info) => {
       segment('l', ['Mudah', 'Sedang', 'Sulit'], level) +
       `<div class=sbk><b>Semua area harus salah satu bentuk ini:</b><div class=sbs>${pz.bank.map(mini).join('')}</div></div>` +
       `<div class=sbb data-nosnd style="aspect-ratio:${cols}/${rows};grid-template:repeat(${rows},1fr)/repeat(${cols},1fr)">${cells}</div>` +
-      '<div class=msg id=sbm></div><div class=seg><button id=rs>Ulangi</button><button id=re>Soal baru</button></div>';
+      '<div class=msg id=sbm></div><div class=seg><button id=rs>Ulangi</button><button id=re>Soal baru</button>' + HELP_BTN + '</div>';
     cellEls = [];
     el.querySelectorAll<HTMLElement>('.sbc').forEach((c) => { cellEls[Number(c.dataset.i)] = c; });
     const b = board();

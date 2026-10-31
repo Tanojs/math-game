@@ -1,3 +1,4 @@
+import { HELP_BTN } from '../../app/howto.js';
 import { $, $$, hit } from '../../core/dom.js';
 import { getStr, setStr } from '../../core/storage.js';
 import { celebrate } from '../../core/banner.js';
@@ -49,7 +50,7 @@ export const mountRubik: Mount = (_id, el, info) => {
     ['', "'"].map((q) => FACES.map((f) => `<button class=b data-nosnd data-f="${f + q}" style="background:${COLOR[BUTTON_COLOR[f]]};color:#000">${f + q}</button>`).join('')).join('') +
     '</div><div class=rc><button class=cta data-a=s>Acak</button><button class="cta alt" data-a=u>Urungkan</button>' +
     '<button class="cta alt" data-a=v>Balikkan semua</button><button class="cta alt" data-a=r>Reset</button>' +
-    '<button class="cta alt" data-a=l>Huruf warna</button></div><div class=lgd id=lg></div>';
+    '<button class="cta alt" data-a=l>Huruf warna</button>' + HELP_BTN + '</div><div class=lgd id=lg></div>';
 
   const rakitKubus = (): void => {
     cubies = createCubies(N);

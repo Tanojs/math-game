@@ -1,3 +1,4 @@
+import { HELP_BTN } from '../../app/howto.js';
 import { hit } from '../../core/dom.js';
 import { resultBanner } from '../../core/banner.js';
 import { segment, type Level } from '../../core/html.js';
@@ -18,7 +19,7 @@ export const mountMirror: Mount = (id, el, info) => {
   const rb = resultBanner();
 
   const buttons = (): string =>
-    '<button class="cta alt" id=rs>Ulangi</button>' + (done ? '<button class=cta id=nx>Soal berikutnya</button>' : '<button class="cta alt" id=nw>Soal baru</button>');
+    '<button class="cta alt" id=rs>Ulangi</button>' + (done ? '<button class=cta id=nx>Soal berikutnya</button>' : '<button class="cta alt" id=nw>Soal baru</button>') + HELP_BTN;
 
   const sync = (): void => {
     const res = check(pz, right);

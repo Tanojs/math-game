@@ -1,3 +1,4 @@
+import { HELP_BTN } from '../../app/howto.js';
 import { hit } from '../../core/dom.js';
 import { resultBanner } from '../../core/banner.js';
 import { segment, type Level } from '../../core/html.js';
@@ -34,7 +35,7 @@ export const mountCode: Mount = (id, el, info) => {
       segment('l', ['Mudah', 'Sedang', 'Sulit'], level) +
       `<div class=cdh>${history}${current}</div>` +
       (state === 'play' ? `<div class="pad">${pad}</div>` : '') +
-      `<div class=msg>${msg}</div>` + (state === 'play' ? '' : `<button class=cta id=nx>${state === 'win' ? 'Soal berikutnya' : 'Coba lagi'}</button>`);
+      `<div class=msg>${msg}</div><div class=arow>` + (state === 'play' ? '' : `<button class=cta id=nx>${state === 'win' ? 'Soal berikutnya' : 'Coba lagi'}</button>`) + HELP_BTN + '</div>';
     if (state !== 'play') rb.show(el.querySelector<HTMLElement>('.cdh'), state === 'win' ? 'Benar!' : `Kode: ${secret}`, state === 'win' ? 'win' : 'lose', newGame);
   };
 

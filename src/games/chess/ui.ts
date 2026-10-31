@@ -1,3 +1,4 @@
+import { HELP_BTN } from '../../app/howto.js';
 import { hit } from '../../core/dom.js';
 import { segment } from '../../core/html.js';
 import { celebrate, clearBanner, type BannerKind } from '../../core/banner.js';
@@ -44,7 +45,7 @@ export const mountChess: Mount = (_id, el, info) => {
     '<div class=cbd id=cbd><div class=cgrid></div><div class=clayer></div><div class=cpromo></div></div>' +
     '<div class=cbar id=cb1></div>' +
     '<div class=cst id=cst></div>' +
-    '<div class=cact><button class=b id=cun>Urungkan</button><button class=b id=cfl>Putar</button><button class=b id=cre>Main lagi</button></div></div>';
+    '<div class=cact><button class=b id=cun>Urungkan</button><button class=b id=cfl>Putar</button><button class=b id=cre>Main lagi</button>' + HELP_BTN + '</div></div>';
   const q = <T extends HTMLElement>(s: string): T => el.querySelector(s) as T;
   const cbd = q('#cbd'), grid = q('.cgrid'), layer = q('.clayer'), promoEl = q('.cpromo');
   const sqEls: HTMLElement[] = [];

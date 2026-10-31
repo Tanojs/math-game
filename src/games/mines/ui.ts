@@ -1,3 +1,4 @@
+import { HELP_BTN } from '../../app/howto.js';
 import { hit } from '../../core/dom.js';
 import { segment, type Level } from '../../core/html.js';
 import { celebrate } from '../../core/banner.js';
@@ -30,7 +31,7 @@ export const mountMines: Mount = (id, el, info) => {
       segment('m', ['Buka', 'Bendera'], flagMode ? 1 : 0) +
       `<div class="mnb" data-nosnd style="--n:${n};grid-template:repeat(${n},minmax(0,1fr))/repeat(${n},minmax(0,1fr))">` +
       cells.map((_, i) => `<button class=mnc data-i=${i}></button>`).join('') +
-      '</div><div class=msg id=mnm></div><button class=cta id=re>Main lagi</button>';
+      '</div><div class=msg id=mnm></div><div class=arow><button class=cta id=re>Main lagi</button>' + HELP_BTN + '</div>';
     cellEls = [...el.querySelectorAll<HTMLElement>('.mnc')];
     const b = board();
     b.oncontextmenu = (e) => e.preventDefault();

@@ -1,3 +1,4 @@
+import { HELP_BTN } from '../../app/howto.js';
 import { hit } from '../../core/dom.js';
 import { resultBanner } from '../../core/banner.js';
 import { segment } from '../../core/html.js';
@@ -38,7 +39,7 @@ export const mountSudoku: Mount = (_id, el, info) => {
         .join('') +
       '</div><div class="pad sp">' +
       [1, 2, 3, 4, 5, 6, 7, 8, 9, '⌫'].map((x) => `<button class=b data-k="${x}">${x}</button>`).join('') +
-      '</div><button class="cta alt" id=nw>Soal baru</button>';
+      '</div><div class=arow><button class="cta alt" id=nw>Soal baru</button>' + HELP_BTN + '</div>';
     if (fin) rb.show(el.querySelector<HTMLElement>('.sd'), `Selesai! ${doneTime}`, 'win', newPuzzle);
   };
 

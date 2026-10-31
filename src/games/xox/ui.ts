@@ -1,3 +1,4 @@
+import { HELP_BTN } from '../../app/howto.js';
 import { hit } from '../../core/dom.js';
 import { segment } from '../../core/html.js';
 import { celebrate } from '../../core/banner.js';
@@ -42,7 +43,7 @@ export const mountXox: Mount = (_id, el, info) => {
       (vsFriend ? '' : segment('l', ['Mudah', 'Sedang', 'Sulit'], level)) +
       `<div class="sq t3x3" style="--n:${size};grid-template:repeat(${size},minmax(0,1fr))/repeat(${size},minmax(0,1fr))">` +
       b.map((v, i) => `<button data-i=${i} class="${v}${winCells.includes(i) ? ' win' : ''}${i === lastI && v ? ' nw' : ''}">${v}</button>`).join('') +
-      `</div><div class=msg>${msg}</div><button class=cta id=re>Main lagi</button>`;
+      `</div><div class=msg>${msg}</div><div class=arow><button class=cta id=re>Main lagi</button>${HELP_BTN}</div>`;
     const board = el.querySelector<HTMLElement>('.sq');
     if (board && w) {
       const text = vsFriend ? (w === '-' ? 'Seri!' : `${w} menang!`) : w === 'X' ? 'Kamu menang!' : w === 'O' ? 'Komputer menang' : 'Seri!';

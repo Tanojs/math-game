@@ -1,3 +1,4 @@
+import { HELP_BTN } from '../../app/howto.js';
 import { $, hit } from '../../core/dom.js';
 import { LEVELS, type Level } from '../../core/html.js';
 import type { Cleanup, Mount } from '../../core/types.js';
@@ -15,7 +16,7 @@ export const mountMath: Mount = (id, el, info) => {
     off = null;
     info('');
     el.innerHTML =
-      '<div class=modes>' + LEVELS.map((n, i) => `<button class="b mode" data-m=${i}>${n}</button>`).join('') + '</div>';
+      '<div class=modes>' + LEVELS.map((n, i) => `<button class="b mode" data-m=${i}>${n}</button>`).join('') + '</div><div class=arow>' + HELP_BTN + '</div>';
     el.onclick = (e) => {
       const b = hit(e, '[data-m]');
       if (b) {
@@ -33,7 +34,7 @@ export const mountMath: Mount = (id, el, info) => {
 
     el.innerHTML =
       '<div class="tm"><i id=mb></i></div><div id=mq class=box></div><div id=ma class=ans></div>' +
-      '<div id=mt class=hide><div id=md class=disp></div><div id=mp class=pad></div></div>';
+      '<div id=mt class=hide><div id=md class=disp></div><div id=mp class=pad></div></div><div class=arow>' + HELP_BTN + '</div>';
     $('#mp').innerHTML = [1, 2, 3, 4, 5, 6, 7, 8, 9, '⌫', 0, '✓'].map((x) => `<button class=b data-k="${x}">${x}</button>`).join('');
 
     const draw = (): void => {
@@ -63,7 +64,7 @@ export const mountMath: Mount = (id, el, info) => {
       clearInterval(iv);
       clearTimeout(ft);
       const bs = best(id + d, s);
-      el.innerHTML = `<div class=res><p>Waktu habis</p><h1>${s}</h1><p>${ok}/${n} benar · terbaik ${bs}</p><button class=cta id=re>Main lagi</button><button class="cta alt" id=lv>Ganti level</button></div>`;
+      el.innerHTML = `<div class=res><p>Waktu habis</p><h1>${s}</h1><p>${ok}/${n} benar · terbaik ${bs}</p><button class=cta id=re>Main lagi</button><button class="cta alt" id=lv>Ganti level</button><div class=arow>${HELP_BTN}</div></div>`;
     };
 
     const answer = (correct: boolean): void => {
