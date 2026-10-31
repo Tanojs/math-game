@@ -1,6 +1,6 @@
 /* Rubik 2x2 / 3x3 / 4x4 (kubus 3D dengan CSS transform) */
 .rv{width:100%;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;/* Area geser = kubus + ruang kosong di bawahnya (padding-bottom 86px), sehingga kubus tetap di tempatnya tapi ruang itu juga bisa dipakai untuk memutar */
-height:calc(min(88vw,370px) + 86px);box-sizing:border-box;padding-bottom:86px;overflow:hidden;position:relative;z-index:0;perspective:900px;display:grid;place-items:center;touch-action:none;cursor:grab;margin:0 auto}
+height:calc(min(88vw,370px) + 86px);box-sizing:border-box;padding-bottom:86px;perspective:900px;display:grid;place-items:center;touch-action:none;cursor:grab;margin:0 auto}
 .sc{position:relative;width:0;height:0;transform-style:preserve-3d}
 .cb{position:absolute;left:-29px;top:-29px;width:58px;height:58px;transform-style:preserve-3d}
 .cb i{position:absolute;inset:0;border:3px solid #000;border-radius:7px;backface-visibility:hidden}

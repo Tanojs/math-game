@@ -21,28 +21,30 @@ export interface BannerOpts {
   onClose?: () => void;
   /** Spanduk menutupi gabungan elemen-elemen ini (mis. papan + tombol di bawahnya) alih-alih seluruh `host`. */
   span?: readonly Element[];
+  /** Jarak (px) dari tepi kiri-kanan area game, supaya spanduk tidak menempel ke tepi layar. */
+  inset?: number;
 }
 
-/** Tinggi maksimum spanduk. */
+/** Sisi maksimum spanduk (= lebar maksimum papan XOX). */
 const MAX_SIDE = 460;
 
 /**
- * Spanduk membentang dari tepi kiri ke tepi kanan layar (penuh selebar HP), tingginya sama dengan lebarnya (maks. 460px),
- * dipusatkan di atas `span` (papan/elemen yang diselesaikan) di dalam area game (`#st`).
+ * Semua spanduk berukuran sama: persegi selebar area game (maks. 460px), seperti papan XOX.
+ * Spanduk dipasang di area game (`#st`) dan dipusatkan di atas `span` (papan/elemen yang diselesaikan).
  */
-function placeSquare(bn: HTMLElement, stage: HTMLElement, span: readonly Element[]): void {
-  const vw = document.documentElement.clientWidth;
-  const side = Math.min(MAX_SIDE, vw);
+function placeSquare(bn: HTMLElement, stage: HTMLElement, span: readonly Element[], inset: number): void {
+  const side = Math.min(MAX_SIDE, stage.clientWidth - 2 * inset);
   const S = stage.getBoundingClientRect();
   let t = Infinity, l = Infinity, r = -Infinity, b = -Infinity;
   for (const e of span) {
     const q = e.getBoundingClientRect();
     t = Math.min(t, q.top); l = Math.min(l, q.left); r = Math.max(r, q.right); b = Math.max(b, q.bottom);
   }
+  const cx = (l + r) / 2 - S.left - stage.clientLeft + stage.scrollLeft;
   const cy = (t + b) / 2 - S.top - stage.clientTop + stage.scrollTop;
-  const left = -(S.left + stage.clientLeft); // tepi kiri layar (koordinat relatif terhadap area game)
+  const left = Math.max(0, Math.min(cx - side / 2, stage.scrollWidth - side));
   const top = Math.max(0, Math.min(cy - side / 2, stage.scrollHeight - side));
-  Object.assign(bn.style, { inset: 'auto', top: `${top}px`, left: `${left}px`, width: `${vw}px`, height: `${side}px` });
+  Object.assign(bn.style, { inset: 'auto', top: `${top}px`, left: `${left}px`, width: `${side}px`, height: `${side}px` });
 }
 
 export function celebrate(host: HTMLElement, text: string, kind: BannerKind, opts: BannerOpts = {}): void {
@@ -84,7 +86,7 @@ export function celebrate(host: HTMLElement, text: string, kind: BannerKind, opt
     bn.remove();
     opts.onClose?.(); // ketuk spanduk = melihat papan lagi
   };
-  if (!opts.fade) placeSquare(bn, stage, opts.span?.length ? opts.span : [host]);
+  if (!opts.fade) placeSquare(bn, stage, opts.span?.length ? opts.span : [host], opts.inset ?? 20);
   stage.appendChild(bn);
 }
 
