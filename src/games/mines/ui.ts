@@ -20,7 +20,7 @@ export const mountMines: Mount = (id, el, info) => {
   let hold: { i: number; x: number; y: number; timer: number; long: boolean } | null = null;
 
   const over = (): boolean => lost || won;
-  const hud = (): void => info(`Ranjau ${mines - flagsUsed(cells)} · ${fmtTime(planted && !over() ? performance.now() - t0 : elapsed)}`);
+  const hud = (): void => info(`Minesweeper ${mines - flagsUsed(cells)} · ${fmtTime(planted && !over() ? performance.now() - t0 : elapsed)}`);
   const hint = (): string => `Ketuk = ${flagMode ? 'bendera' : 'buka'} · tahan = ${flagMode ? 'buka' : 'bendera'}`;
   const say = (t: string): void => { const m = el.querySelector('#mnm'); if (m) m.textContent = t; };
   const board = (): HTMLElement => el.querySelector('.mnb') as HTMLElement;

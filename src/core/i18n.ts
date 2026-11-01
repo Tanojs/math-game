@@ -12,7 +12,7 @@ const PAIRS: ReadonlyArray<readonly [string, string]> = [
   // navigasi & pengaturan
   ['Game', 'Games'], ['Rekor', 'Records'], ['Setting', 'Settings'], ['Ganti tema', 'Change theme'], ['Kembali', 'Back'],
   ['Tampilan', 'Display'], ['Tema', 'Theme'], ['Sistem', 'System'], ['Terang', 'Light'], ['Gelap', 'Dark'],
-  ['Ikon', 'Icons'], ['Solid', 'Solid'], ['Garis', 'Outline'], ['Putih', 'White'],
+  ['Ikon', 'Icons'], ['Isi', 'Filled'], ['Garis', 'Outline'],
   ['Bahasa', 'Language'],
   ['Suara', 'Sound'], ['Efek suara', 'Sound effects'], ['Musik', 'Music'], ['Pilihan lagu', 'Song choice'],
   ['Semua bergantian', 'All in turn'], ['Lainnya', 'More'], ['Bagikan game ini', 'Share this game'],
@@ -25,7 +25,7 @@ const PAIRS: ReadonlyArray<readonly [string, string]> = [
   ['Piramida Angka', 'Number Pyramid'], ['Pindahkan Batang', 'Move Sticks'], ['XOX', 'XOX'], ['15 Puzzle', '15 Puzzle'],
   ['2048', '2048'], ['Sudoku', 'Sudoku'], ['Catur', 'Chess'], ['Reversi', 'Reversi'], ['Rubik', 'Rubik'],
   ['Ketuk Berurutan', 'Tap in Order'], ['Tebak Kode', 'Code Guess'], ['Geser Balok', 'Slide Blocks'], ['Cermin', 'Mirror'],
-  ['Ranjau', 'Mines'], ['Isi Bentuk', 'Fill Shapes'],
+  ['Isi Bentuk', 'Fill Shapes'],
   // tombol & status umum
   ['Ulangi', 'Retry'], ['Soal baru', 'New puzzle'], ['Soal berikutnya', 'Next puzzle'], ['Main lagi', 'Play again'],
   ['Ganti level', 'Change level'], ['Acak', 'Scramble'], ['Urungkan', 'Undo'], ['Balikkan semua', 'Flip all'],

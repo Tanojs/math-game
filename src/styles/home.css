@@ -8,9 +8,6 @@
 .tq:active{box-shadow:1px 1px 0 var(--ln);filter:brightness(.93)}
 #hg.is-line .ic span svg *{fill:none!important;stroke:#000;stroke-width:2.4px;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-linecap:round}
 #hg.is-line .ic span svg text{stroke-width:1.1px}
-#hg.is-white .ic span svg{color:#fff;filter:drop-shadow(1.7px 0 0 #000) drop-shadow(-1.7px 0 0 #000) drop-shadow(0 1.7px 0 #000) drop-shadow(0 -1.7px 0 #000)}
-#hg.is-white .ic span svg text{fill:#000}
-#hg.is-white .ic[data-k=sdk] span svg path,#hg.is-white .ic span svg [fill-opacity=".2"]{display:none}
 
 /* Logo judul game (layar utama): ubin huruf seperti balok game + pita "GAMES", bukan label biasa */
 .logo{position:relative;display:inline-flex;flex-direction:column;align-items:flex-start;margin:6px 0 26px 6px;transform:rotate(-2deg);font-family:"Space Grotesk",system-ui,sans-serif;font-weight:700;color:#000}

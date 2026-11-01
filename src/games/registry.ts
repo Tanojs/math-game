@@ -41,7 +41,7 @@ export const GAMES: GameDef[] = [
   { id: 'cod', name: 'Tebak Kode', mount: mountCode },
   { id: 'blk', name: 'Geser Balok', mount: mountBlocks },
   { id: 'mir', name: 'Cermin', mount: mountMirror },
-  { id: 'mns', name: 'Ranjau', mount: mountMines },
+  { id: 'mns', name: 'Minesweeper', mount: mountMines },
   { id: 'shp', name: 'Isi Bentuk', mount: mountShapes },
 ];
 

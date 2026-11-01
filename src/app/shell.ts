@@ -18,7 +18,7 @@ const SETTINGS_HTML = `<div id="scr" class="hide"></div>
 <div id="set" class="hide"><h1 class="ttl">Setting</h1>
 <div class="sg"><h3 class="sh">Tampilan</h3><div class="sl">
 <div class="sr col"><span>Tema</span><div class="seg" id="thm"><button data-th="system">Sistem</button><button data-th="light">Terang</button><button data-th="dark">Gelap</button></div></div>
-<div class="sr col"><span>Ikon</span><div class="seg" id="ics"><button data-is="solid">Solid</button><button data-is="line">Garis</button><button data-is="white">Putih</button></div></div>
+<div class="sr col"><span>Ikon</span><div class="seg" id="ics"><button data-is="solid">Isi</button><button data-is="line">Garis</button></div></div>
 <div class="sr col"><span>Bahasa</span><div class="seg" id="lng"><button data-lg="id">Indonesia</button><button data-lg="en">English</button></div></div>
 </div></div>
 <div class="sg"><h3 class="sh">Suara</h3><div class="sl">

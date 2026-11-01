@@ -1,10 +1,10 @@
 import { $, $$ } from '../core/dom.js';
 import { getStr, setStr } from '../core/storage.js';
 
-export type IconStyle = 'solid' | 'line' | 'white';
+export type IconStyle = 'solid' | 'line';
 const KEY = 'mgi';
 const saved = getStr(KEY);
-let style: IconStyle = saved === 'line' || saved === 'white' ? saved : 'solid';
+let style: IconStyle = saved === 'line' ? 'line' : 'solid';
 
 export function applyIconStyle(): void {
   $('#hg').className = 'is-' + style;
