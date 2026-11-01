@@ -5,6 +5,7 @@ import { renderScores } from './scores.js';
 import { sfx } from '../core/sfx.js';
 import { howtoFor } from './howto.js';
 import { openSheet } from './sheet.js';
+import { countGame, leaveGame } from './ads.js';
 
 /** Putar ulang animasi masuk pada sebuah layar. */
 const enter = (id: string): void => {
@@ -29,7 +30,8 @@ const fitGame = (): void => {
   if (gm.classList.contains('hide')) return;
   const nav = document.getElementById('nv');
   const top = gm.getBoundingClientRect().top + window.scrollY;
-  gm.style.minHeight = `${Math.max(0, window.innerHeight - top - (nav ? nav.getBoundingClientRect().height : 72) - 32)}px`;
+  const ad = parseFloat(document.documentElement.style.getPropertyValue('--adh')) || 0; // ruang banner iklan
+  gm.style.minHeight = `${Math.max(0, window.innerHeight - top - (nav ? nav.getBoundingClientRect().height : 72) - ad - 32)}px`;
 };
 addEventListener('resize', fitGame);
 
@@ -61,6 +63,7 @@ export function play(id: string): void {
   $('#gt').textContent = game.name;
   $('#inf').textContent = '';
   curGame = { name: game.name, id };
+  countGame();
   const stage = $('#st');
   stage.innerHTML = '';
   // Bersihkan SEMUA pengendali dari game sebelumnya (area game dipakai ulang oleh tiap game).
@@ -73,6 +76,7 @@ export function play(id: string): void {
 }
 
 export function goHome(): void {
+  if (cur === 'gm') leaveGame();
   stopCurrent();
   $('#inf').textContent = '';
   showTab('home');
@@ -82,6 +86,7 @@ export function goHome(): void {
 
 /** Pindah tab dari navigasi bawah (menghentikan game yang sedang berjalan). */
 export function gotoTab(t: Tab): void {
+  if (cur === 'gm') leaveGame();
   stopCurrent();
   try { if (location.hash) history.replaceState(null, '', location.pathname + location.search); } catch { /* diabaikan */ }
   $('#inf').textContent = '';

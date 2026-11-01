@@ -19,4 +19,4 @@
 .modes{width:100%;max-width:420px;margin:0 auto}
 .mode{justify-content:center;text-align:center;font-size:1.4rem}
 /* Ruang untuk banner iklan di layar menu */
-body.has-ad:not(.ig) #app{padding-bottom:calc(104px + var(--adh,0px) + env(safe-area-inset-bottom,0px))}
+body.has-ad #app{padding-bottom:calc(104px + var(--adh,0px) + env(safe-area-inset-bottom,0px))}
