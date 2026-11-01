@@ -24,7 +24,9 @@ const INTERSTITIAL_EVERY = 3;
 
 let status = 'belum dimulai';
 /** Status iklan terakhir (ditampilkan di Setting → Tentang → Info teknis, untuk membantu mencari masalah). */
-export const adsStatus = (): string => status;
+/** Status interstitial & hadiah, dipisah supaya kelihatan penyebab masing-masing iklan gagal. */
+const sub = { int: 'belum disiapkan', rew: 'belum disiapkan' };
+export const adsStatus = (): string => `${status} · interstitial: ${sub.int} · hadiah: ${sub.rew}`;
 const why = (e: unknown): string => String((e as { message?: string })?.message ?? e).slice(0, 120);
 
 let ad: AdMobPlugin | null = null;
@@ -36,13 +38,15 @@ let rewardGranted = false;
 
 const prepareInterstitial = async (): Promise<void> => {
   if (!ad || !sdkReady) return;
-  try { await ad.prepareInterstitial({ adId: ADMOB_INTERSTITIAL_ID, isTesting: ADS_TESTING }); intReady = true; }
-  catch (e) { intReady = false; status = `interstitial gagal: ${why(e)}`; }
+  sub.int = 'memuat…';
+  try { await ad.prepareInterstitial({ adId: ADMOB_INTERSTITIAL_ID, isTesting: ADS_TESTING }); intReady = true; sub.int = 'siap'; }
+  catch (e) { intReady = false; sub.int = `gagal (${why(e)})`; }
 };
 const prepareReward = async (): Promise<void> => {
   if (!ad || !sdkReady) return;
-  try { await ad.prepareRewardVideoAd({ adId: ADMOB_REWARDED_ID, isTesting: ADS_TESTING }); rewReady = true; }
-  catch (e) { rewReady = false; status = `iklan hadiah gagal: ${why(e)}`; }
+  sub.rew = 'memuat…';
+  try { await ad.prepareRewardVideoAd({ adId: ADMOB_REWARDED_ID, isTesting: ADS_TESTING }); rewReady = true; sub.rew = 'siap'; }
+  catch (e) { rewReady = false; sub.rew = `gagal (${why(e)})`; }
 };
 
 /** Dipanggil saat sebuah game dibuka. */
@@ -53,7 +57,7 @@ export function leaveGame(): void {
   if (!ad || !intReady || games === 0 || games % INTERSTITIAL_EVERY !== 0) return;
   intReady = false;
   void (async () => {
-    try { await ad!.showInterstitial(); } catch (e) { status = `interstitial gagal tampil: ${why(e)}`; }
+    try { await ad!.showInterstitial(); } catch (e) { sub.int = `gagal tampil (${why(e)})`; }
     void prepareInterstitial();
   })();
 }
@@ -68,7 +72,7 @@ export function requestReward(onReward: () => void): boolean {
   rewardGranted = false;
   rewReady = false;
   void (async () => {
-    try { await ad!.showRewardVideoAd(); } catch (e) { status = `iklan hadiah gagal tampil: ${why(e)}`; rewardCb = null; void prepareReward(); }
+    try { await ad!.showRewardVideoAd(); } catch (e) { sub.rew = `gagal tampil (${why(e)})`; rewardCb = null; void prepareReward(); }
   })();
   return true;
 }

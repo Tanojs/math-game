@@ -59,7 +59,7 @@ test('iklan sudah tampil: tetap tampil saat masuk game dan saat kembali ke menu 
   const h = setup();
   await tick();
   h.emit('bannerAdLoaded');
-  assert.equal(adsStatus(), 'banner tampil');
+  assert.match(adsStatus(), /^banner tampil/);
   h.screen('game');
   await tick();
   assert.ok(!h.calls.includes('hide') && !h.calls.includes('remove'), 'banner tetap tampil saat bermain');
