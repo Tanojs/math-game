@@ -28,6 +28,10 @@ function setup(): { calls: string[]; emit: (ev: string, p?: Record<string, unkno
     hideBanner: async () => { calls.push('hide'); },
     removeBanner: async () => { calls.push('remove'); },
     resumeBanner: async () => { calls.push('resume'); },
+    prepareInterstitial: async () => { calls.push('prepareInterstitial'); },
+    showInterstitial: async () => { calls.push('showInterstitial'); },
+    prepareRewardVideoAd: async () => { calls.push('prepareReward'); return {}; },
+    showRewardVideoAd: async () => { calls.push('showReward'); return {}; },
     addListener: async (ev, fn) => { listeners.set(ev, fn); return {}; },
   };
   initAds(fake);
@@ -38,33 +42,35 @@ function setup(): { calls: string[]; emit: (ev: string, p?: Record<string, unkno
   };
 }
 
-test('iklan gagal dimuat lalu masuk game: banner dibuang (bukan di-hide) dan tidak muncul galat "never shown"', async () => {
+test('iklan gagal dimuat: masuk game tidak mengubah banner (tetap dicoba ulang, tanpa galat "never shown")', async () => {
   const h = setup();
   await tick();
-  assert.deepEqual(h.calls, ['initialize', 'show']);
+  assert.deepEqual(h.calls.filter((c) => c === 'initialize' || c === 'show'), ['initialize', 'show']);
   h.emit('bannerAdFailedToLoad', { code: 0, message: 'Unable to obtain a JavascriptEngine.' });
   assert.match(adsStatus(), /kode 0/);
   assert.match(adsStatus(), /percobaan ke-1/);
   h.screen('game');
   await tick();
-  assert.ok(!h.calls.includes('hide'), 'tidak boleh menyembunyikan banner yang tidak pernah tampil');
-  assert.ok(h.calls.includes('remove'));
+  assert.ok(!h.calls.includes('hide') && !h.calls.includes('remove'), 'banner tidak disembunyikan di dalam game');
   assert.doesNotMatch(adsStatus(), /never shown|banner gagal/);
-  h.screen('menu');
-  await tick();
-  assert.equal(h.calls.filter((c) => c === 'show').length, 2, 'kembali ke menu: minta banner lagi');
 });
 
-test('iklan sudah tampil: masuk game = sembunyikan, kembali = lanjutkan (tanpa minta ulang)', async () => {
+test('iklan sudah tampil: tetap tampil saat masuk game dan saat kembali ke menu (tanpa minta ulang)', async () => {
   const h = setup();
   await tick();
   h.emit('bannerAdLoaded');
   assert.equal(adsStatus(), 'banner tampil');
   h.screen('game');
   await tick();
-  assert.ok(h.calls.includes('hide') && !h.calls.includes('remove'));
+  assert.ok(!h.calls.includes('hide') && !h.calls.includes('remove'), 'banner tetap tampil saat bermain');
   h.screen('menu');
   await tick();
-  assert.ok(h.calls.includes('resume'));
   assert.equal(h.calls.filter((c) => c === 'show').length, 1);
+});
+
+test('interstitial dan hadiah disiapkan setelah AdMob siap', async () => {
+  const h = setup();
+  await tick();
+  assert.ok(h.calls.includes('prepareInterstitial'));
+  assert.ok(h.calls.includes('prepareReward'));
 });
