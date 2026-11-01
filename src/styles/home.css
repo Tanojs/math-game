@@ -11,3 +11,15 @@
 #hg.is-white .ic span svg{color:#fff;filter:drop-shadow(1.7px 0 0 #000) drop-shadow(-1.7px 0 0 #000) drop-shadow(0 1.7px 0 #000) drop-shadow(0 -1.7px 0 #000)}
 #hg.is-white .ic span svg text{fill:#000}
 #hg.is-white .ic[data-k=sdk] span svg path,#hg.is-white .ic span svg [fill-opacity=".2"]{display:none}
+
+/* Logo judul game (layar utama): ubin huruf seperti balok game + pita "GAMES", bukan label biasa */
+.logo{position:relative;display:inline-flex;flex-direction:column;align-items:flex-start;margin:6px 0 26px 6px;transform:rotate(-2deg);font-family:"Space Grotesk",system-ui,sans-serif;font-weight:700;color:#000}
+.lg-tiles{position:relative;display:inline-flex;gap:8px;padding:6px 4px}
+.lt{display:grid;place-items:center;width:58px;height:62px;font-size:2.7rem;line-height:1;background:var(--t);color:#000;border:4px solid var(--ln);border-radius:14px;box-shadow:5px 5px 0 var(--ln);transform:rotate(var(--r));animation:lgBob 2.4s ease-in-out var(--d,0s) infinite}
+.lo{position:absolute;display:grid;place-items:center;width:40px;height:40px;font-size:1.7rem;line-height:1;color:#000;background:var(--card);border:3px solid var(--ln);border-radius:50%;box-shadow:3px 3px 0 var(--ln)}
+.lo-plus{top:-16px;right:-14px;background:var(--y);transform:rotate(12deg)}
+.lo-times{bottom:-16px;left:-14px;background:var(--v);transform:rotate(-10deg)}
+.lg-ribbon{margin:12px 0 0 14px;padding:4px 16px 3px;background:#000;color:var(--y);font-size:1.25rem;letter-spacing:.32em;text-indent:.32em;box-shadow:4px 4px 0 var(--k);transform:skew(-8deg)}
+@keyframes lgBob{0%,100%{translate:0 0}50%{translate:0 -5px}}
+@media (prefers-reduced-motion:reduce){.lt{animation:none}}
+@media (max-width:359px){.lt{width:50px;height:54px;font-size:2.3rem}}
