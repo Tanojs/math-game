@@ -30,6 +30,7 @@ export const adsStatus = (): string => `${status} · interstitial: ${sub.int} ·
 const why = (e: unknown): string => String((e as { message?: string })?.message ?? e).slice(0, 120);
 
 let ad: AdMobPlugin | null = null;
+let bannerShown = false, bannerLoaded = false, held = false;
 let sdkReady = false;
 let intReady = false, rewReady = false;
 let games = 0;
@@ -48,6 +49,18 @@ const prepareReward = async (): Promise<void> => {
   try { await ad.prepareRewardVideoAd({ adId: ADMOB_REWARDED_ID, isTesting: ADS_TESTING }); rewReady = true; sub.rew = 'siap'; }
   catch (e) { rewReady = false; sub.rew = `gagal (${why(e)})`; }
 };
+
+/** Sembunyikan banner selagi lembar web (Tentang, Cara main, dll.) tampil: banner native selalu di atas WebView. */
+export function adsHold(on: boolean): void {
+  if (!ad || !sdkReady || held === on) return;
+  held = on;
+  void (async () => {
+    try {
+      if (on) await ad!.hideBanner();
+      else if (bannerShown && bannerLoaded) await ad!.resumeBanner();
+    } catch { /* banner belum ada: tidak apa-apa */ }
+  })();
+}
 
 /** Dipanggil saat sebuah game dibuka. */
 export function countGame(): void { games++; }
@@ -86,10 +99,10 @@ export function initAds(injected?: AdMobPlugin | null): void {
   const plugin = injected ?? nativePlugin<AdMobPlugin>('AdMob');
   if (!plugin) { status = 'plugin AdMob tidak ada (bukan APK, atau dibuild dengan with_ads dimatikan)'; return; }
   ad = plugin;
+  bannerShown = bannerLoaded = held = false;
   status = 'plugin ditemukan, memulai…';
 
-  let shown = false, height = 60, tries = 0, retryTimer = 0, loaded = false;
-  const navH = (): number => document.getElementById('nv')?.getBoundingClientRect().height ?? 72;
+  let height = 60, tries = 0, retryTimer = 0;
   const pad = (): void => {
     const on = sdkReady && height > 0;
     document.body.classList.toggle('has-ad', on);
@@ -98,17 +111,17 @@ export function initAds(injected?: AdMobPlugin | null): void {
   const sync = async (): Promise<void> => {
     if (!sdkReady) return;
     try {
-      if (shown && loaded) await ad!.resumeBanner();
+      if (bannerShown && bannerLoaded) await ad!.resumeBanner();
       else {
-        if (shown) { try { await ad!.removeBanner(); } catch { /* sudah tidak ada */ } }
+        if (bannerShown) { try { await ad!.removeBanner(); } catch { /* sudah tidak ada */ } }
         status = 'meminta banner…';
-        await ad!.showBanner({ adId: ADMOB_BANNER_ID, adSize: 'ADAPTIVE_BANNER', position: 'BOTTOM_CENTER', margin: Math.round(navH()), isTesting: ADS_TESTING });
-        shown = true;
+        await ad!.showBanner({ adId: ADMOB_BANNER_ID, adSize: 'ADAPTIVE_BANNER', position: 'TOP_CENTER', margin: 0, isTesting: ADS_TESTING });
+        bannerShown = true;
         if (status === 'meminta banner…') status = 'banner diminta, menunggu iklan dimuat';
       }
     } catch (e) {
-      shown = false;
-      loaded = false;
+      bannerShown = false;
+      bannerLoaded = false;
       status = `banner gagal: ${why(e)}`;
       retry();
     }
@@ -123,7 +136,7 @@ export function initAds(injected?: AdMobPlugin | null): void {
       retryTimer = 0;
       void (async () => {
         try { await ad!.removeBanner(); } catch { /* belum ada banner */ }
-        shown = false;
+        bannerShown = false;
         await sync();
       })();
     }, delay);
@@ -148,10 +161,10 @@ export function initAds(injected?: AdMobPlugin | null): void {
       status = 'menginisialisasi AdMob…';
       await ad!.initialize();
       void ad!.addListener('bannerAdSizeChanged', (s) => { height = typeof s.height === 'number' ? s.height : height; pad(); });
-      void ad!.addListener('bannerAdLoaded', () => { tries = 0; loaded = true; status = 'banner tampil'; });
+      void ad!.addListener('bannerAdLoaded', () => { tries = 0; bannerLoaded = true; status = 'banner tampil'; });
       void ad!.addListener('bannerAdFailedToLoad', (er) => {
         height = 0;
-        loaded = false;
+        bannerLoaded = false;
         const msg = String(er.message ?? 'tanpa pesan');
         status = `iklan gagal dimuat (kode ${String(er.code ?? '?')}: ${msg}); percobaan ke-${tries + 1}${/JavascriptEngine/i.test(msg) ? ' — biasanya jaringan lambat / tidak ada internet; akan dicoba lagi otomatis' : ''}`;
         pad();

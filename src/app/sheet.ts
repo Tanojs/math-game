@@ -1,8 +1,10 @@
 import { $ } from '../core/dom.js';
+import { adsHold } from './ads.js';
 
 /** Lembar isi (bottom sheet) untuk Tentang / Kebijakan Privasi / Cara bermain. */
 export function openSheet(title: string, html: string, onClick?: (e: MouseEvent, root: HTMLElement) => void): void {
   closeSheet();
+  adsHold(true);
   const s = document.createElement('div');
   s.className = 'sheet';
   s.id = 'sheet';
@@ -11,4 +13,4 @@ export function openSheet(title: string, html: string, onClick?: (e: MouseEvent,
   document.body.appendChild(s);
   $('#sheet-x').focus({ preventScroll: true });
 }
-export const closeSheet = (): void => { document.getElementById('sheet')?.remove(); };
+export const closeSheet = (): void => { if (document.getElementById('sheet')) adsHold(false); document.getElementById('sheet')?.remove(); };

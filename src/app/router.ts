@@ -30,8 +30,7 @@ const fitGame = (): void => {
   if (gm.classList.contains('hide')) return;
   const nav = document.getElementById('nv');
   const top = gm.getBoundingClientRect().top + window.scrollY;
-  const ad = parseFloat(document.documentElement.style.getPropertyValue('--adh')) || 0; // ruang banner iklan
-  gm.style.minHeight = `${Math.max(0, window.innerHeight - top - (nav ? nav.getBoundingClientRect().height : 72) - ad - 32)}px`;
+  gm.style.minHeight = `${Math.max(0, window.innerHeight - top - (nav ? nav.getBoundingClientRect().height : 72) - 32)}px`;
 };
 addEventListener('resize', fitGame);
 
