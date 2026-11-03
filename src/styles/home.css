@@ -1,5 +1,10 @@
 /* Menu utama (grid ikon) + gaya ikon Solid/Garis/Putih */
-#hg{display:grid;grid-template-columns:repeat(3,1fr);gap:18px 14px}
+/* Jumlah kolom menu naik seiring lebar layar (HP 3, tablet 4-5, desktop 6). Baris terakhir yang kurang diletakkan di tengah. */
+#hg{--cols:3;display:flex;flex-wrap:wrap;justify-content:center;gap:18px 14px}
+#hg .ic{flex:0 0 calc((100% - (var(--cols) - 1) * 14px) / var(--cols))}
+@media (min-width:600px){body:not(.ig) #app{max-width:680px}#hg{--cols:4}}
+@media (min-width:900px){body:not(.ig) #app{max-width:900px}#hg{--cols:5}#hg .ic{font-size:.9rem}}
+@media (min-width:1200px){body:not(.ig) #app{max-width:1080px}#hg{--cols:6}}
 .ic{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;aspect-ratio:1;padding:6px;background:var(--y);color:#000;border:3px solid var(--ln);border-radius:14px;box-shadow:5px 5px 0 var(--ln);font-size:.78rem;font-weight:700;line-height:1.1;text-align:center}
 .ic:nth-child(7n+2){background:var(--k)}.ic:nth-child(7n+3){background:var(--c)}.ic:nth-child(7n+4){background:var(--g)}.ic:nth-child(7n+5){background:var(--o)}.ic:nth-child(7n+6){background:var(--v)}.ic:nth-child(7n){background:var(--r)}
 .ic span{display:block;width:58%;aspect-ratio:1}.ic span>svg{width:100%;height:100%;display:block}
