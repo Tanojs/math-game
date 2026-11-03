@@ -13,7 +13,7 @@ export const HOWTO: Readonly<Record<string, string>> = {
   ty: p('Hitung soal lalu ketik jawabannya di keypad.') + p('Ada batas waktu 60 detik. Jawaban benar beruntun memberi poin lebih banyak.'),
   cmp: p('Bandingkan dua hitungan, lalu pilih <b>&lt;</b>, <b>=</b>, atau <b>&gt;</b> sesuai hasilnya.') + p('Ada batas waktu 60 detik.'),
   tb: p('Hitung perkalian dan ketik hasilnya di keypad.') + p('Ada batas waktu 60 detik.'),
-  mtc: p('Hubungkan setiap soal di kolom kiri dengan jawabannya di kolom kanan. Tarik garis dari satu item ke item lain.') +
+  mtc: p('Hubungkan setiap soal di kolom kiri dengan jawabannya di kolom kanan. Ketuk satu item di kiri, lalu ketuk pasangannya di kanan.') +
     p('Garis merah berarti pasangannya salah. Selesaikan semua pasangan sebelum waktu habis.'),
   g24: p('Dari empat angka, gabungkan dua angka dengan operator (+, −, ×, ÷) sampai tersisa satu angka yang bernilai <b>24</b>.') +
     p('Pilih angka, pilih operator, lalu pilih angka kedua. <b>Urungkan</b> membatalkan langkah terakhir; tombol <b>?</b> menampilkan jawabannya.'),

@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { adsStatus, initAds, type AdMobPlugin } from '../src/app/ads.js';
+import { ADS_ENABLED } from '../src/app/ads-config.js';
+
+/** Tes iklan hanya jalan saat ADS_ENABLED = true. */
+const t = ADS_ENABLED ? test : test.skip;
 
 type Handler = (e: unknown) => void;
 const tick = async (n = 6): Promise<void> => { for (let i = 0; i < n; i++) await new Promise((r) => setTimeout(r, 0)); };
@@ -42,7 +46,7 @@ function setup(): { calls: string[]; emit: (ev: string, p?: Record<string, unkno
   };
 }
 
-test('iklan gagal dimuat: masuk game tidak mengubah banner (tetap dicoba ulang, tanpa galat "never shown")', async () => {
+t('iklan gagal dimuat: masuk game tidak mengubah banner (tetap dicoba ulang, tanpa galat "never shown")', async () => {
   const h = setup();
   await tick();
   assert.deepEqual(h.calls.filter((c) => c === 'initialize' || c === 'show'), ['initialize', 'show']);
@@ -55,7 +59,7 @@ test('iklan gagal dimuat: masuk game tidak mengubah banner (tetap dicoba ulang, 
   assert.doesNotMatch(adsStatus(), /never shown|banner gagal/);
 });
 
-test('iklan sudah tampil: tetap tampil saat masuk game dan saat kembali ke menu (tanpa minta ulang)', async () => {
+t('iklan sudah tampil: tetap tampil saat masuk game dan saat kembali ke menu (tanpa minta ulang)', async () => {
   const h = setup();
   await tick();
   h.emit('bannerAdLoaded');
@@ -68,7 +72,7 @@ test('iklan sudah tampil: tetap tampil saat masuk game dan saat kembali ke menu 
   assert.equal(h.calls.filter((c) => c === 'show').length, 1);
 });
 
-test('interstitial dan hadiah disiapkan setelah AdMob siap', async () => {
+t('interstitial dan hadiah disiapkan setelah AdMob siap', async () => {
   const h = setup();
   await tick();
   assert.ok(h.calls.includes('prepareInterstitial'));

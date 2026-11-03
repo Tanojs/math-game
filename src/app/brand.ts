@@ -12,4 +12,4 @@ export const SHARE_URL = 'https://github.com/Tanojs/math-game';
 export const CONTACT_EMAIL = '';
 /** Kredit lagu bawaan bila lisensinya mewajibkan (mis. CC BY). Contoh: 'Musik: Judul oleh Nama (CC BY 4.0)'. Kosong = tidak ditampilkan. */
 export const MUSIC_CREDIT = 'Musik latar: tiga komposisi orisinal untuk aplikasi ini (Santai Sore, Petualangan Ceria, Fokus Tenang).';
-export const PRIVACY_DATE = '16 Oktober 2026';
+export const PRIVACY_DATE = '4 November 2026';

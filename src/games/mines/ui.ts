@@ -2,8 +2,6 @@ import { HELP_BTN } from '../../app/howto.js';
 import { hit } from '../../core/dom.js';
 import { segment, type Level } from '../../core/html.js';
 import { celebrate } from '../../core/banner.js';
-import { requestReward } from '../../app/ads.js';
-import { toast } from '../../app/pages.js';
 import { sfx } from '../../core/sfx.js';
 import type { Mount } from '../../core/types.js';
 import { bestTime, fmtTime } from '../../app/records.js';
@@ -33,7 +31,7 @@ export const mountMines: Mount = (id, el, info) => {
       segment('m', ['Buka', 'Bendera'], flagMode ? 1 : 0) +
       `<div class="mnb" data-nosnd style="--n:${n};grid-template:repeat(${n},minmax(0,1fr))/repeat(${n},minmax(0,1fr))">` +
       cells.map((_, i) => `<button class=mnc data-i=${i}></button>`).join('') +
-      '</div><div class=msg id=mnm></div><div class=arow><button class=cta id=re>Main lagi</button><button class="cta alt" id=ahn disabled>Petunjuk</button>' + HELP_BTN + '</div>';
+      '</div><div class=msg id=mnm></div><div class=arow><button class=cta id=re>Main lagi</button>' + HELP_BTN + '</div>';
     cellEls = [...el.querySelectorAll<HTMLElement>('.mnc')];
     const b = board();
     b.oncontextmenu = (e) => e.preventDefault();
@@ -103,7 +101,6 @@ export const mountMines: Mount = (id, el, info) => {
       planted = true;
       t0 = performance.now();
       iv = window.setInterval(hud, 200);
-      el.querySelector('#ahn')?.removeAttribute('disabled');
     }
     apply(reveal(cells, n, i));
   };
@@ -121,18 +118,6 @@ export const mountMines: Mount = (id, el, info) => {
     hud();
   };
 
-  /** Petunjuk: buka satu petak aman yang belum terbuka (setelah iklan hadiah ditonton). */
-  const helpReveal = (): void => {
-    if (over() || !planted) return;
-    const safe: number[] = [];
-    cells.forEach((c, i) => { if (!c.mine && !c.open && !c.flag) safe.push(i); });
-    if (!safe.length) return;
-    apply(reveal(cells, n, safe[Math.floor(Math.random() * safe.length)] as number));
-  };
-  const askHelp = (): void => {
-    if (!requestReward(helpReveal)) toast('Iklan belum siap, coba lagi sebentar');
-  };
-
   const cancelHold = (): void => { if (hold) clearTimeout(hold.timer); hold = null; };
 
   el.onclick = (e) => {
@@ -146,7 +131,6 @@ export const mountMines: Mount = (id, el, info) => {
       return;
     }
     if (hit(e, '#re')) newGame();
-    if (hit(e, '#ahn') && !over()) askHelp();
   };
 
   // Petak diproses lewat pointer (bukan click) supaya "tahan lama" = aksi kebalikan mode saat ini.
