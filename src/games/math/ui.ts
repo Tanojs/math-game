@@ -3,6 +3,34 @@ import { $, hit } from '../../core/dom.js';
 import { LEVELS, type Level } from '../../core/html.js';
 import type { Cleanup, Mount } from '../../core/types.js';
 import { best } from '../../app/records.js';
+import { levelCards, topRecord, type LevelInfo } from '../../app/levelCards.js';
+
+const SUM_LEVELS: readonly LevelInfo[] = [
+  { name: 'Mudah', desc: 'Angka sampai 10', sample: '7 + 5 = ?' },
+  { name: 'Sedang', desc: 'Angka sampai 30', sample: '24 − 13 = ?' },
+  { name: 'Sulit', desc: 'Angka sampai 99', sample: '84 ÷ 7 + 19 = ?' },
+];
+const TRUE_FALSE_LEVELS: readonly LevelInfo[] = [
+  { name: 'Mudah', desc: 'Angka sampai 10', sample: '7 + 5 = 12 ?' },
+  { name: 'Sedang', desc: 'Angka sampai 30', sample: '24 − 13 = 11 ?' },
+  { name: 'Sulit', desc: 'Angka sampai 99', sample: '84 ÷ 7 + 19 = 31 ?' },
+];
+const OP_LEVELS: readonly LevelInfo[] = [
+  { name: 'Mudah', desc: 'Pilih + atau −, angka sampai 10', sample: '7 ? 5 = 12' },
+  { name: 'Sedang', desc: 'Operator sampai ×, angka sampai 30', sample: '24 ? 13 = 11' },
+  { name: 'Sulit', desc: 'Semua operator, angka sampai 99', sample: '84 ? 7 = 12' },
+];
+const COMPARE_LEVELS: readonly LevelInfo[] = [
+  { name: 'Mudah', desc: 'Bandingkan hasil sampai 10', sample: '7 + 5 ○ 13' },
+  { name: 'Sedang', desc: 'Bandingkan hasil sampai 30', sample: '24 − 13 ○ 11' },
+  { name: 'Sulit', desc: 'Bandingkan hasil sampai 99', sample: '84 ÷ 7 + 19 ○ 31' },
+];
+const TIMES_LEVELS: readonly LevelInfo[] = [
+  { name: 'Mudah', desc: 'Perkalian sampai 6 × 6', sample: '4 × 5 = ?' },
+  { name: 'Sedang', desc: 'Perkalian sampai 12 × 12', sample: '9 × 11 = ?' },
+  { name: 'Sulit', desc: 'Perkalian sampai 20 × 20', sample: '17 × 18 = ?' },
+];
+const LEVEL_INFO: Record<string, readonly LevelInfo[]> = { hc: SUM_LEVELS, ty: SUM_LEVELS, tf: TRUE_FALSE_LEVELS, op: OP_LEVELS, cmp: COMPARE_LEVELS, tb: TIMES_LEVELS };
 import { makeQuestion, pointsFor, type Choice, type MathId, type Question } from './logic.js';
 
 let lastLevel: Level = 1;
@@ -14,9 +42,10 @@ export const mountMath: Mount = (id, el, info) => {
   const menu = (): void => {
     off?.();
     off = null;
-    info('');
+    const top = topRecord(id, 3);
+    info(`Rekor ${top || '–'}`);
     el.innerHTML =
-      '<div class=modes>' + LEVELS.map((n, i) => `<button class="b mode" data-m=${i}>${n}</button>`).join('') + '</div><div class=arow>' + HELP_BTN + '</div>';
+      levelCards(id, LEVEL_INFO[id] ?? SUM_LEVELS, 'Pilih level. Kerjakan soal sebanyak mungkin dalam 60 detik.') + '<div class=arow>' + HELP_BTN + '</div>';
     el.onclick = (e) => {
       const b = hit(e, '[data-m]');
       if (b) {

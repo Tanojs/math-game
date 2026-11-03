@@ -3,6 +3,13 @@ import { $, hit } from '../../core/dom.js';
 import { LEVELS, type Level } from '../../core/html.js';
 import type { Cleanup, Mount } from '../../core/types.js';
 import { best } from '../../app/records.js';
+import { levelCards, topRecord, type LevelInfo } from '../../app/levelCards.js';
+
+const CONNECT_LEVELS: readonly LevelInfo[] = [
+  { name: 'Mudah', desc: 'Penjumlahan dan pengurangan', sample: '8 + 5 = 13' },
+  { name: 'Sedang', desc: 'Tambah perkalian', sample: '6 × 7 = 42' },
+  { name: 'Sulit', desc: 'Semua operasi, termasuk pembagian', sample: '36 ÷ 4 = 9' },
+];
 import { makeRound, PAIRS, type Round } from './logic.js';
 
 let lastLevel: Level = 1;
@@ -18,7 +25,9 @@ export const mountConnect: Mount = (id, el, info) => {
     off?.();
     off = null;
     info('');
-    el.innerHTML = '<div class=modes>' + LEVELS.map((n, i) => `<button class="b mode" data-m=${i}>${n}</button>`).join('') + '</div><div class=arow>' + HELP_BTN + '</div>';
+    const top = topRecord(id, 3);
+    info(`Rekor ${top || '–'}`);
+    el.innerHTML = levelCards(id, CONNECT_LEVELS, 'Pilih level untuk mulai bermain.') + '<div class=arow>' + HELP_BTN + '</div>';
     el.onclick = (e) => {
       const b = hit(e, '[data-m]');
       if (b) { lastLevel = Number(b.dataset.m) as Level; off = run(lastLevel); }
