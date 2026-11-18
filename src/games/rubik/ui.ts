@@ -1,4 +1,5 @@
 import { HELP_BTN } from '../../app/howto.js';
+import { OLL_CASES, PLL_CASES, setupMoves } from './cases.js';
 import { $, $$, hit } from '../../core/dom.js';
 import { getStr, setStr } from '../../core/storage.js';
 import { celebrate } from '../../core/banner.js';
@@ -19,8 +20,6 @@ const FACE_TRANSFORM: Record<FaceKey, string> = {
   z: 'translateZ(29px)', Z: 'rotateY(180deg) translateZ(29px)', x: 'rotateY(90deg) translateZ(29px)',
   X: 'rotateY(-90deg) translateZ(29px)', y: 'rotateX(90deg) translateZ(29px)', Y: 'rotateX(-90deg) translateZ(29px)',
 };
-const BUTTON_COLOR: Record<FaceName, FaceKey> = { U: 'y', D: 'Y', L: 'X', R: 'x', F: 'z', B: 'Z' };
-const FACES: FaceName[] = ['U', 'D', 'L', 'R', 'F', 'B'];
 
 let size = 3; // bertahan selama sesi
 
@@ -45,10 +44,9 @@ export const mountRubik: Mount = (_id, el, info) => {
 
   el.innerHTML =
     '<div class=seg id=rsz>' + [2, 3, 4].map((n) => `<button data-n=${n}>${n}x${n}</button>`).join('') + '</div>' +
-    '<div class="rv"><div class="sc" id="sc"></div></div><div class=msg id=rm></div><div class=rg>' +
-    // data-nosnd: tombol putar sisi tidak membunyikan "tik" ganda; bunyi putaran datang dari animasi (sfx 'turn')
-    ['', "'"].map((q) => FACES.map((f) => `<button class=b data-nosnd data-f="${f + q}" style="background:${COLOR[BUTTON_COLOR[f]]};color:#000">${f + q}</button>`).join('')).join('') +
-    '</div><div class=rc><button class=cta data-a=s>Acak</button><button class="cta alt" data-a=u>Urungkan</button>' +
+    '<div class="rv"><div class="sc" id="sc"></div></div><div class=msg id=rm></div>' +
+    // pilihan kasus latihan: ketuk kasus untuk langsung menyetel kubus ke kasus itu
+    '<div class=seg id=rcs><button data-cs=oll>OLL</button><button data-cs=pll>PLL</button></div><div class=rg id=rcl></div><div class=rc><button class=cta data-a=s>Acak</button><button class="cta alt" data-a=u>Urungkan</button>' +
     '<button class="cta alt" data-a=v>Balikkan semua</button><button class="cta alt" data-a=r>Reset</button>' +
     '<button class="cta alt" data-a=l>Huruf warna</button>' + HELP_BTN + '</div><div class=lgd id=lg></div>';
 
@@ -165,11 +163,32 @@ export const mountRubik: Mount = (_id, el, info) => {
     l: () => { const on = $('.rv').classList.toggle('lb'); legend(on); setStr('mgl', on ? '1' : ''); },
   };
 
+  // ---- kasus latihan OLL/PLL ----
+  let caseSet: 'oll' | 'pll' = 'oll';
+  let caseIdx = -1;
+  const renderCases = (): void => {
+    const list = caseSet === 'oll' ? OLL_CASES : PLL_CASES;
+    $$('#rcs button').forEach((x) => x.classList.toggle('on', x.dataset.cs === caseSet));
+    $('#rcl').innerHTML = list.map((c, i) => `<button class="cta alt${i === caseIdx ? ' on' : ''}" data-cc=${i}>${c.name}</button>`).join('');
+  };
+  const loadCase = (i: number): void => {
+    if (busy || queue.length) return;
+    const c = (caseSet === 'oll' ? OLL_CASES : PLL_CASES)[i];
+    if (!c) return;
+    setSize(3);
+    resetAll();
+    for (const m of setupMoves(c.alg)) { hist.push(m); go(m, 's', 75); }
+    scrambled = true; caseIdx = i; say(''); hud(); renderCases();
+  };
+  renderCases();
+
   el.onclick = (e) => {
     const nb = hit(e, '[data-n]');
     if (nb) return setSize(Number(nb.dataset.n));
     const b = hit(e, 'button');
     if (!b) return;
+    if (b.dataset.cs) { caseSet = b.dataset.cs as 'oll' | 'pll'; caseIdx = -1; return renderCases(); }
+    if (b.dataset.cc !== undefined) return loadCase(Number(b.dataset.cc));
     const f = b.dataset.f;
     if (f) go(faceMove(f[0] as FaceName, f.length > 1, N), 'u');
     else if (b.dataset.a) actions[b.dataset.a]?.();
