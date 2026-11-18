@@ -20,14 +20,13 @@ export const OLL_CASES: readonly Case[] = [
   { name: 'Dot', alg: 'F R U R\' U\' F\' f R U R\' U\' f\'' },
   { name: 'L-Shape', alg: 'f R U R\' U\' f\'' },
   { name: 'Line', alg: 'F R U R\' U\' F\'' },
-  { name: 'L', alg: 'F R\' F\' R U R U\' R\'' },
 ];
 
 export const PLL_CASES: readonly Case[] = [
   { name: 'Ua', alg: 'M2 U M U2 M\' U M2' },
   { name: 'Ub', alg: 'M2 U\' M U2 M\' U\' M2' },
   { name: 'H', alg: 'M2 U M2 U2 M2 U M2' },
-  { name: 'Z', alg: 'M2 U M2 U M\' U2 M2 U2 M\'' },
+  { name: 'Z', alg: 'U2 M2 U M2 U M\' U2 M2 U2 M\'' },
   { name: 'T', alg: 'R U R\' U\' R\' F R2 U\' R\' U\' R U R\' F\'' },
   { name: 'Y', alg: 'F R U\' R\' U\' R U R\' F\' R U R\' U\' R\' F R F\'' },
   { name: 'F', alg: 'R\' U\' F\' R U R\' U\' R\' F R2 U\' R\' U\' R U R\' U R' },

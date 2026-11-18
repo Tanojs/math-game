@@ -45,9 +45,10 @@ export const mountRubik: Mount = (_id, el, info) => {
 
   el.innerHTML =
     '<div class=seg id=rsz>' + [2, 3, 4].map((n) => `<button data-n=${n}>${n}x${n}</button>`).join('') + '</div>' +
+    // latihan OLL/PLL: dropdown di atas kubus seperti pilihan ELO di catur; hanya tampil untuk 3x3
+    '<div class=eld id=rcd></div>' +
     '<div class="rv"><div class="sc" id="sc"></div></div><div class=msg id=rm></div>' +
-    // latihan OLL/PLL: dropdown seperti pilihan ELO di catur; hanya tampil untuk 3x3
-    '<div class=eld id=rcd></div><div class=rc><button class=cta data-a=s>Acak</button><button class="cta alt" data-a=u>Urungkan</button>' +
+    '<div class=rc><button class=cta data-a=s>Acak</button><button class="cta alt" data-a=u>Urungkan</button>' +
     '<button class="cta alt" data-a=v>Balikkan semua</button><button class="cta alt" data-a=r>Reset</button>' +
     '<button class="cta alt" data-a=l>Huruf warna</button>' + HELP_BTN + '</div><div class=lgd id=lg></div>';
 
