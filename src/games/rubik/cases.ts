@@ -20,6 +20,7 @@ export const OLL_CASES: readonly Case[] = [
   { name: 'Dot', alg: 'F R U R\' U\' F\' f R U R\' U\' f\'' },
   { name: 'L-Shape', alg: 'f R U R\' U\' f\'' },
   { name: 'Line', alg: 'F R U R\' U\' F\'' },
+  { name: 'L', alg: 'F R\' F\' R U R U\' R\'' },
 ];
 
 export const PLL_CASES: readonly Case[] = [

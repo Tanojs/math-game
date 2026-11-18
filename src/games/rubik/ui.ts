@@ -40,13 +40,14 @@ export const mountRubik: Mount = (_id, el, info) => {
   let running = false, scrambled = false, busy = false, dead = false;
   let queue: Job[] = [];
   let scr = 0;
+  let caseSet: 'oll' | 'pll' = 'oll', caseIdx = -1, caseOpen = false, caseMode = false;
   let rx = -28, ry = -38;
 
   el.innerHTML =
     '<div class=seg id=rsz>' + [2, 3, 4].map((n) => `<button data-n=${n}>${n}x${n}</button>`).join('') + '</div>' +
     '<div class="rv"><div class="sc" id="sc"></div></div><div class=msg id=rm></div>' +
-    // pilihan kasus latihan: ketuk kasus untuk langsung menyetel kubus ke kasus itu
-    '<div class=seg id=rcs><button data-cs=oll>OLL</button><button data-cs=pll>PLL</button></div><div class=rg id=rcl></div><div class=rc><button class=cta data-a=s>Acak</button><button class="cta alt" data-a=u>Urungkan</button>' +
+    // latihan OLL/PLL: dropdown seperti pilihan ELO di catur; hanya tampil untuk 3x3
+    '<div class=eld id=rcd></div><div class=rc><button class=cta data-a=s>Acak</button><button class="cta alt" data-a=u>Urungkan</button>' +
     '<button class="cta alt" data-a=v>Balikkan semua</button><button class="cta alt" data-a=r>Reset</button>' +
     '<button class="cta alt" data-a=l>Huruf warna</button>' + HELP_BTN + '</div><div class=lgd id=lg></div>';
 
@@ -114,7 +115,7 @@ export const mountRubik: Mount = (_id, el, info) => {
           running = false;
           scrambled = false;
           const time = Date.now() - t0;
-          const record = bestTime(recordKey(), time);
+          const record = caseMode ? false : bestTime(recordKey(), time);
           say(`Selesai! ${fmtTime(time)} · ${moves} langkah${record ? ' · rekor baru!' : ''}`);
           const host = $('.rv');
           celebrate(host, record ? `Selesai! ${fmtTime(time)}\nRekor baru!` : `Selesai! ${fmtTime(time)}`, 'win', { fade: true });
@@ -129,12 +130,13 @@ export const mountRubik: Mount = (_id, el, info) => {
   };
   const go = (m: LayerMove, k: Kind, ms = 170): void => { queue.push({ m, k, ms }); pump(); };
 
-  const resetAll = (): void => { resetCubies(cubies); placeAll(); hist = []; moves = 0; scrambled = false; running = false; queue = []; };
+  const resetAll = (): void => { resetCubies(cubies); placeAll(); hist = []; moves = 0; scrambled = false; running = false; queue = []; caseMode = false; caseIdx = -1; renderCases(); };
   const setSize = (n: number): void => {
     if (busy || queue.length || n === N) return;
     N = size = n;
     hist = []; moves = 0; scrambled = false; running = false; queue = [];
     rakitKubus(); placeAll(); view(); hud(); say('');
+    caseMode = false; caseIdx = -1; renderCases();
   };
 
   const actions: Record<string, () => void> = {
@@ -163,13 +165,18 @@ export const mountRubik: Mount = (_id, el, info) => {
     l: () => { const on = $('.rv').classList.toggle('lb'); legend(on); setStr('mgl', on ? '1' : ''); },
   };
 
-  // ---- kasus latihan OLL/PLL ----
-  let caseSet: 'oll' | 'pll' = 'oll';
-  let caseIdx = -1;
+  // ---- kasus latihan OLL/PLL (hanya 3x3; tidak masuk rekor) ----
   const renderCases = (): void => {
     const list = caseSet === 'oll' ? OLL_CASES : PLL_CASES;
-    $$('#rcs button').forEach((x) => x.classList.toggle('on', x.dataset.cs === caseSet));
-    $('#rcl').innerHTML = list.map((c, i) => `<button class="cta alt${i === caseIdx ? ' on' : ''}" data-cc=${i}>${c.name}</button>`).join('');
+    const label = caseIdx >= 0 ? `${caseSet.toUpperCase()} · ${list[caseIdx]?.name ?? ''}` : 'Latihan OLL/PLL';
+    const d = $('#rcd');
+    d.classList.toggle('hide', N !== 3);
+    d.innerHTML =
+      `<button class="b eldb" data-co aria-expanded="${caseOpen}"><span>${label}</span><span class=eldc>${caseOpen ? '▴' : '▾'}</span></button>` +
+      (caseOpen
+        ? `<div class=eldl><div class=rcsw><button data-cs=oll class="${caseSet === 'oll' ? 'on' : ''}">OLL</button><button data-cs=pll class="${caseSet === 'pll' ? 'on' : ''}">PLL</button></div>` +
+          list.map((c, i) => `<button data-cc=${i}${i === caseIdx ? ' class=on' : ''}>${c.name}</button>`).join('') + '</div>'
+        : '');
   };
   const loadCase = (i: number): void => {
     if (busy || queue.length) return;
@@ -178,7 +185,8 @@ export const mountRubik: Mount = (_id, el, info) => {
     setSize(3);
     resetAll();
     for (const m of setupMoves(c.alg)) { hist.push(m); go(m, 's', 75); }
-    scrambled = true; caseIdx = i; say(''); hud(); renderCases();
+    caseMode = true; caseIdx = i; caseOpen = false;
+    scrambled = true; say(''); hud(); renderCases();
   };
   renderCases();
 
@@ -187,6 +195,7 @@ export const mountRubik: Mount = (_id, el, info) => {
     if (nb) return setSize(Number(nb.dataset.n));
     const b = hit(e, 'button');
     if (!b) return;
+    if (b.dataset.co !== undefined) { caseOpen = !caseOpen; return renderCases(); }
     if (b.dataset.cs) { caseSet = b.dataset.cs as 'oll' | 'pll'; caseIdx = -1; return renderCases(); }
     if (b.dataset.cc !== undefined) return loadCase(Number(b.dataset.cc));
     const f = b.dataset.f;
