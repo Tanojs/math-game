@@ -10,7 +10,7 @@ const levelChips = (prefix: string): string => LEVELS.map((n, i) => `<i>${n} ${g
 export function renderScores(): void {
   const rubik = [['2x2', 'rbk2'], ['3x3', 'rbk'], ['4x4', 'rbk4']] as const;
   $('#scr').innerHTML =
-    '<h1 class="ttl">Rekor</h1><div class="card">' +
+    '<h1 class="ttl">Rekor</h1><div class="card rk">' +
     MATH_IDS.map((id) => row(gameName(id), levelChips(id))).join('') +
     row('Hubungkan', levelChips('mtc')) +
     row('Game 24', levelChips('g24')) +

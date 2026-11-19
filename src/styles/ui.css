@@ -27,3 +27,9 @@
 .row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px 10px;padding:10px 0;border-bottom:2px dashed color-mix(in srgb,var(--ink) 35%,transparent)}.row:last-child{border-bottom:0}
 .row i{font-style:normal;font-size:.78rem;font-weight:700;color:#000;border:2px solid var(--ln);border-radius:8px;padding:1px 7px;margin-left:6px;background:var(--y)}
 .row i:nth-child(1){background:var(--g)}.row i:nth-child(3){background:var(--r)}
+
+/* Rekor: nama game di atas, skor per level dalam 3 kolom sama lebar */
+.card.rk .row{display:block}
+.card.rk .row b{display:block;margin-bottom:6px}
+.card.rk .row span{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.card.rk .row i{margin:0;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}

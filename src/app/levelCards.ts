@@ -17,7 +17,7 @@ export function levelCards(id: string, levels: readonly LevelInfo[], intro: stri
       `<span class=lvn>${l.name}</span>` +
       `<span class=lvd>${l.desc}</span>` +
       `<span class=lvr>Terbaik<b>${r || '–'}</b></span>` +
-      `<span class=lvs>${l.sample}</span>` +
+      `<span class=lvs><span class=lvk>Contoh =</span> ${l.sample}</span>` +
       `<button class=lvgo data-m=${i}>Mulai</button>` +
       '</div>';
   }).join('');
