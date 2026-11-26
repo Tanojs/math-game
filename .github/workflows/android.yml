@@ -68,6 +68,10 @@ jobs:
           if [ ! -d android ]; then npx cap add android; fi
           npx cap sync android
           cp -r resources/android/res/. android/app/src/main/res/
+          # Kunci orientasi tegak: layar landscape membuat tampilan jelek
+          M=android/app/src/main/AndroidManifest.xml
+          sed -i 's#android:name="\.MainActivity"#android:name=".MainActivity" android:screenOrientation="portrait"#' "$M"
+          grep -q 'android:screenOrientation="portrait"' "$M" || { echo "::error::Gagal mengunci orientasi portrait"; exit 1; }
           VN=$(node -p "require('./package.json').version")
           VC=$((GITHUB_RUN_NUMBER + VERSION_CODE_OFFSET))
           F=android/app/build.gradle
