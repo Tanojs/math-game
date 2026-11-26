@@ -6,6 +6,7 @@ import { mountXox } from './xox/ui.js';
 import { mountPuzzle15 } from './puzzle15/ui.js';
 import { mount2048 } from './game2048/ui.js';
 import { mountSudoku } from './sudoku/ui.js';
+import { mountKakuro } from './kakuro/ui.js';
 import { mountChess } from './chess/ui.js';
 import { mountReversi } from './reversi/ui.js';
 import { mountRubik } from './rubik/ui.js';
@@ -34,6 +35,7 @@ export const GAMES: GameDef[] = [
   { id: 'g15', name: '15 Puzzle', mount: mountPuzzle15 },
   { id: 'g2048', name: '2048', mount: mount2048 },
   { id: 'sdk', name: 'Sudoku', mount: mountSudoku },
+  { id: 'kkr', name: 'Kakuro', mount: mountKakuro },
   { id: 'chs', name: 'Catur', mount: mountChess },
   { id: 'rev', name: 'Reversi', mount: mountReversi },
   { id: 'rbk', name: 'Rubik', mount: mountRubik },

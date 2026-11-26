@@ -9,6 +9,7 @@
 @import './games/math.css';
 @import './games/boards.css';
 @import './games/sudoku.css';
+@import './games/kakuro.css';
 @import './games/chess.css';
 @import './games/reversi.css';
 @import './games/sticks.css';

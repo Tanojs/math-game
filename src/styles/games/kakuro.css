@@ -1,0 +1,11 @@
+/* Kakuro: papan hitam-putih. Angka jumlah di petak hitam: kanan atas = deret mendatar, kiri bawah = deret menurun */
+.sq.kk{gap:2px;background:var(--ln);border-radius:8px;grid-template:repeat(var(--n),minmax(0,1fr))/repeat(var(--n),minmax(0,1fr))}
+.sq.kk>div{border:0;border-radius:3px;font-size:calc(56cqw/var(--n));color:var(--ink);background:var(--card)}
+.sq.kk>.kb{position:relative;background:var(--ink);color:var(--card)}
+.sq.kk>.kb>i,.sq.kk>.kb>u{position:absolute;font-style:normal;text-decoration:none;font-size:calc(30cqw/var(--n));line-height:1;font-weight:700}
+.sq.kk>.kb>i{top:12%;right:14%}
+.sq.kk>.kb>u{bottom:10%;left:14%}
+.sq.kk>.kw{cursor:pointer}
+.sq.kk>.kw.hl{background:var(--c);color:#000}
+.sq.kk>.kw.sel{background:var(--y);color:#000}
+.sq.kk>.kw.er{color:var(--r)}

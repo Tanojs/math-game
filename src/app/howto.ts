@@ -31,6 +31,8 @@ export const HOWTO: Readonly<Record<string, string>> = {
     p('Dua ubin dengan angka sama yang bertabrakan akan menyatu menjadi dua kali lipat. Raih ubin <b>2048</b>. Game selesai jika papan penuh dan tidak ada langkah lagi.'),
   sdk: p('Isi setiap baris, kolom, dan kotak 3×3 dengan angka 1 sampai 9 tanpa ada angka yang sama.') +
     p('Pilih kotak kosong, lalu pilih angka. Angka yang sudah ada dari awal tidak bisa diubah.'),
+  kkr: p('Isi kotak putih dengan angka 1 sampai 9. Angka di kotak hitam adalah jumlah untuk deret di bawahnya (<b>kanan atas</b> = mendatar, <b>kiri bawah</b> = menurun).') +
+    p('Dalam satu deret, angka tidak boleh sama dan jumlahnya harus sesuai petunjuk. Deret yang salah ditandai merah. Teka-teki selesai jika semua kotak terisi dan aturannya benar.'),
   chs: p('Mainkan catur melawan bot (pilih level ELO di atas papan) atau bersama teman di satu HP.') +
     p('Ketuk bidak lalu ketuk petak tujuan, atau seret bidak ke tujuannya. <b>Urungkan</b> membatalkan langkah. Menangkan permainan dengan skakmat.'),
   rev: p('Tujuannya punya piringan paling banyak saat papan penuh. Taruh piringan di petak kosong yang mengapit piringan lawan dalam satu garis lurus.') +
@@ -78,6 +80,8 @@ export const HOWTO_EN: Readonly<Record<string, string>> = {
     p('Two tiles with the same number that collide merge into double. Reach the <b>2048</b> tile. The game ends when the board is full and there are no moves left.'),
   sdk: p('Fill every row, column, and 3×3 box with the numbers 1 to 9 without repeating any number.') +
     p('Pick an empty cell, then pick a number. Numbers given at the start cannot be changed.'),
+  kkr: p('Fill the white cells with the numbers 1 to 9. The number in a black cell is the total for the run below it (<b>top right</b> = across, <b>bottom left</b> = down).') +
+    p('Within a run no number may repeat and the total must match the clue. Wrong runs turn red. The puzzle is solved when every cell is filled and every run is correct.'),
   chs: p('Play chess against the bot (choose the ELO level above the board) or with a friend on the same phone.') +
     p('Tap a piece then tap the target square, or drag the piece to its destination. <b>Undo</b> cancels a move. Win by checkmate.'),
   rev: p("The goal is to have the most discs when the board is full. Place a disc on an empty square that surrounds the opponent's disc in a straight line.") +
