@@ -35,13 +35,10 @@ test('arah putaran benar: R searah jarum jam memindah kolom depan-kanan ke atas'
 
 test('acak lalu urungkan semua = selesai; solved terdeteksi', () => {
   for (const n of [2, 3, 4]) for (let r = 0; r < 20; r++) {
-    const c = createCubies(n);
-    let seq = scrambleMoves(n);
-    seq.forEach((m) => commit(c, m));
-    // acakan yang kebetulan langsung selesai (sekitar 0,1% pada 2x2) diulang, supaya tes tidak acak-acakan
-    while (isSolved(c, COLORS)) { resetCubies(c); seq = scrambleMoves(n); seq.forEach((m) => commit(c, m)); }
+    const c = createCubies(n), seq = scrambleMoves(n);
     assert.equal(seq.length, [12, 22, 40][n - 2]);
-    assert.ok(!isSolved(c, COLORS));
+    seq.forEach((m) => commit(c, m));
+    assert.ok(!isSolved(c, COLORS) || n === 2 && seq.length === 0);
     [...seq].reverse().forEach((m) => commit(c, inverse(m)));
     assert.ok(isSolved(c, COLORS));
     resetCubies(c);

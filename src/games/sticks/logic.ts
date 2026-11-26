@@ -103,21 +103,12 @@ const digitsOf = (v: number, n: number): boolean[] =>
  */
 export function tryGenerate(lv: Level, maxTries: number, loose = false): Puzzle | null {
   const n = lv.digits, k = lv.moves;
-  // Tanpa angka 0 (termasuk 10, 20, ...): satu digit 1-9, dua digit 11-99 yang kedua digitnya tidak nol.
-  const lo = n === 1 ? 1 : 11, hi = n === 1 ? 9 : 99;
+  const lo = n === 1 ? 0 : 10, hi = n === 1 ? 9 : 99;
   const F = 21 * n, P = F + 1;
-  const hasZero = (v: number): boolean => (n === 1 ? false : v % 10 === 0 || Math.floor(v / 10) === 0);
-  const pick = (): number => {
-    let v = R(lo, hi);
-    while (hasZero(v)) v = R(lo, hi);
-    return v;
-  };
   for (let it = 0; it < maxTries; it++) {
-    const a = pick(), b = pick(), plus = Math.random() < 0.5;
+    const a = R(lo, hi), b = R(lo, hi), plus = Math.random() < 0.5;
     const c = plus ? a + b : a - b;
-    if (c < lo || c > hi || hasZero(c)) continue;
-    // hindari soal sepele: dua suku sama, atau hasil sama dengan salah satu suku
-    if (a === b || c === a || c === b) continue;
+    if (c < lo || c > hi) continue;
     let s: Slots = [...digitsOf(a, n), ...digitsOf(b, n), ...digitsOf(c, n), true, plus];
     const plan: Array<[number, number]> = [];
     for (let i = 0; i < k; i++) {
@@ -131,8 +122,6 @@ export function tryGenerate(lv: Level, maxTries: number, loose = false): Puzzle 
       plan.unshift([t, f]);
     }
     if (readTerms(s).some((v) => v < 0) || !s[F] || isEquation(s)) continue;
-    // tampilan awal juga tidak boleh memuat digit 0 (hasil acakan batang)
-    if (Array.from({ length: 3 * n }, (_, g) => digitAt(s.slice(g * 7, g * 7 + 7))).includes(0)) continue;
     // Mode digit-saja: soal tidak boleh bisa diselesaikan hanya dengan membalik tanda operator.
     if (lv.digitOnly && isEquation(s.map((v, j) => (j === P ? !v : v)))) continue;
     if (k > 1 && solvableWithin(s, loose ? 1 : k - 1)) continue;

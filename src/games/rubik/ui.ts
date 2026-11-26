@@ -76,7 +76,7 @@ export const mountRubik: Mount = (_id, el, info) => {
   };
   const placeAll = (): void => cubies.forEach((_, i) => place(i));
   const view = (): void => {
-    $('#sc').style.transform = `scale(${Math.min(1.6, el.clientWidth / (N * (N >= 3 ? 100 : 110)))}) rotateX(${rx}deg) rotateY(${ry}deg)`;
+    $('#sc').style.transform = `scale(${Math.min(1.6, el.clientWidth / (N * 110))}) rotateX(${rx}deg) rotateY(${ry}deg)`;
   };
 
   const recordKey = (): string => (N === 3 ? 'rbk' : 'rbk' + N);

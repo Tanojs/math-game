@@ -14,6 +14,3 @@
 .lvc:nth-child(2) .lvgo{background:var(--g)}
 .lvc:nth-child(3) .lvgo{background:var(--k)}
 .lvgo:active{box-shadow:1px 1px 0 var(--ln);filter:brightness(.97)}
-
-/* label "Contoh =" di kartu level */
-.lvk{opacity:.7;font-weight:600;margin-right:2px}

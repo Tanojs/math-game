@@ -5,7 +5,7 @@
  */
 export const APP_NAME = 'Math Games';
 export const APP_VERSION = '1.2.0'; // harus sama dengan "version" di package.json (dijaga tes)
-export const DEVELOPER = 'Tano';
+export const DEVELOPER = 'Tano Store';
 /** Tautan yang dibagikan lewat tombol Bagikan. Ganti dengan situs / halaman unduhanmu. */
 export const SHARE_URL = 'https://github.com/Tanojs/math-game';
 /** Email kontak untuk Kebijakan Privasi (wajib diisi sebelum rilis ke Play Store). Kosong = tidak ditampilkan. */

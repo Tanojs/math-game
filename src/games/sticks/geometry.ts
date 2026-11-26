@@ -40,10 +40,10 @@ export function layoutFor(n: 1 | 2): Layout {
     eq = [bar(190, 360, 80, false, t), bar(190, 420, 80, false, t)];
   } else {
     // A = dua digit kiri-atas, B = dua digit kanan-atas, "=" di tengah, C = dua digit kanan-bawah
-    // Jarak antar digit 12px; operator (40px) diberi ruang 36px di kiri dan kanan supaya tidak menempel ke angka
-    blocks = [[4, 40], [80, 40], [256, 40], [332, 40], [256, 262], [332, 262]];
-    w = 64; h = 142; t = 18; cx = 200; cy = 111; len = 40;
-    eq = [bar(200, 206, 40, false, t), bar(200, 238, 40, false, t)];
+    blocks = [[4, 40], [96, 40], [220, 40], [312, 40], [220, 262], [312, 262]];
+    // "+", "−" dan "=" sepanjang segmen angka (56px) supaya jelas terlihat
+    w = 84; h = 142; t = 18; cx = 200; cy = 111; len = 56;
+    eq = [bar(200, 206, 56, false, t), bar(200, 238, 56, false, t)];
   }
   const opH = bar(cx, cy, len, false, t), opV = bar(cx, cy, len, true, t);
   const slots = blocks.flatMap(([x, y]) => digit(x, y, w, h, t));
